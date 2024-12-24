@@ -12,7 +12,7 @@ export function Team() {
             全流程业务经验团队
           </h3>
           <Text style={{fontSize: '16px',color: '#616161'}}>
-            业务团队深耕碳市场，从政策研究到企业实践全流程覆盖
+            业务团队深耕二氧化碳
           </Text>
         </Flex>
         <Divider orientation="vertical" />
@@ -22,7 +22,7 @@ export function Team() {
             信息技术与 AI 支持
           </h3>
           <Text style={{fontSize: '16px',color: '#616161'}}>
-            技术团队专注碳市场数字化与智能化
+            技术团队专注二氧化碳
           </Text>
         </Flex>
 
@@ -37,7 +37,7 @@ export function Team() {
             复合专业背景
           </h3>
           <Text style={{fontSize: '16px',color: '#616161'}}>
-            拥有国际化教育背景，覆盖经济金融、环境科学与政策领域
+            拥有国际化二氧化碳
           </Text>
         </Flex>
       </Flex>
