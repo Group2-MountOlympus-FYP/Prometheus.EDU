@@ -1,0 +1,31 @@
+/* StatsGrid.module.css */
+.root {
+    width: 78%;
+    margin: 50px auto 0;
+}
+
+.simpleGrid {
+    gap: 30px;
+}
+
+.value {
+    font-size: rem(24px);
+    font-weight: 700;
+    line-height: 1;
+}
+
+.diff {
+    line-height: 1;
+    display: flex;
+    align-items: center;
+}
+
+.icon {
+    color: light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-3));
+}
+
+.title {
+    font-weight: 700;
+    font-size: 24px;
+    text-transform: uppercase;
+}
