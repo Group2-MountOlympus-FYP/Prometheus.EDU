@@ -15,15 +15,16 @@ export default function AboutUs() {
           textAlign: 'center',
           color: 'white',
           padding: '120px 20px',
+          top: '-100px',
           backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.7)), url(${background.src})`, // 添加半透明叠加层
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           backgroundRepeat: 'no-repeat',
         }}
       >
-        <h1 style={{ fontSize: '70px', fontWeight: 'bold', margin: 0 }}>关于我们</h1>
+        <h1 style={{ fontSize: '70px', fontWeight: 'bold', margin: 0 }}>腮帮子</h1>
       </div>
-      <h2 style={{ margin: '60px 0', textAlign: 'center', fontSize: '30px' }}>什么是CarbonElla</h2>
+      <h2 style={{ margin: '30px 0', textAlign: 'center', fontSize: '30px' }}>什么是CarbonElla</h2>
       <p style={{ margin: '20px 100px', textAlign: 'center', fontSize: '20px', color: '#616161' }}>CarbonElla提供碳资产交易全流程服务，建立控排企业集成化社群，
         搭建低碳绿色业务一站式服务平台。</p>
       <p style={{ margin: '20px 100px', textAlign: 'center', fontSize: '20px', color: '#616161' }}>在中国能源转型需求迫切，“双碳战略”大背景下，CarbonElla团队
