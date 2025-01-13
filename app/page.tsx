@@ -8,6 +8,7 @@ import { FeaturesCards } from '@/components/FeaturesCards/FeaturesCards';
 import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 import { StatsGrid } from '@/components/StatsGrid/StatsGrid';
 import { Welcome } from '@/components/Welcome/Welcome';
+import { BLEDisplay } from '@/components/BLEDataDisplay/bluetoothDataDisplay';
 
 export default function HomePage() {
 
@@ -22,6 +23,7 @@ export default function HomePage() {
       <FeaturesCards />
       <FooterSimple />
       <ChatbotWindow />
+      <BLEDisplay />
 
     </>
   );
