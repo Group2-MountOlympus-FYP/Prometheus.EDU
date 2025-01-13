@@ -1,4 +1,5 @@
 //BluetoothDevice -> BluetoothRemoteGATTServer -> BluetoothRemoteGATTService -> BluetoothRemoteGATTCharacteristic
+/// <reference types="web-bluetooth" /> 
 import { HeartRateDataParser } from "./BLEDataParser"
 
 //蓝牙连接类
