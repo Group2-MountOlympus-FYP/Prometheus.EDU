@@ -1,5 +1,6 @@
 'use client'
 
+import "./BLEStyle.css"
 import { useEffect, useState } from "react"
 
 import { HeartRateStrapData, EmptyDevice } from "./BLEConfig"
@@ -35,14 +36,12 @@ export function BLEDisplay(){
         }
     }, [connector])
     return (
-        <div>
+        <div className='frame'>
+            <div className='main_data'>
+                <div className='secondary_data'>BatteryLevel: { bluetoothData.length > 0 ? bluetoothData[1] + "%": "--" }</div>
+                HeartRate: { bluetoothData.length > 0 ? bluetoothData[0] + " BPM" : "--"}
+            </div>
             <button onClick={() => getBLEInformation(HeartRateStrapData)}>Heartbeat test</button>
-            <section>
-            <ol>
-                <li>HeartRate: { bluetoothData.length > 0 ? bluetoothData[0] + " BPM" : "loading..."}</li>
-                <li>BatteryLevel: { bluetoothData.length > 0 ? bluetoothData[1] + "%": "loading..." }</li>    
-            </ol>
-            </section>
         </div>
     )
 }

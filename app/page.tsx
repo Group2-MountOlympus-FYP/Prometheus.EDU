@@ -8,7 +8,7 @@ import { FeaturesCards } from '@/components/FeaturesCards/FeaturesCards';
 import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 import { StatsGrid } from '@/components/StatsGrid/StatsGrid';
 import { Welcome } from '@/components/Welcome/Welcome';
-import { BLEDisplay } from '@/components/BLEDataDisplay/bluetoothDataDisplay';
+import { BLEDisplay } from '@/components/BLEDataDisplay/HeartBeatDataTest';
 
 export default function HomePage() {
 
