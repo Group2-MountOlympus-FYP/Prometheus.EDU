@@ -184,6 +184,8 @@ def ensure_user_login():
     验证用户登录,未登录返回401
     :return: User
     """
+    if not 'id' in session:
+        return jsonify({'message': 'You are not logged in!'}), 401
     user_id = session["id"]
 
     if user_id is None:
