@@ -33,3 +33,6 @@ COMP3032J Final Year Project.
    donerenv\Scripts\activate
    flask run
    ```
+
+## 如何使用
+   [API文档](http://127.0.0.1:5000/apidocs)

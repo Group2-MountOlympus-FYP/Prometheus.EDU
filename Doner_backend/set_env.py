@@ -34,13 +34,25 @@ def activate_virtualenv():
     activate_script = os.path.join(venv_name, "Scripts", "activate") if sys.platform == "win32" else os.path.join(
         venv_name, "bin", "activate")
 
-    # 环境变量内容
-    flask_env_variables = """
-export FLASK_ENV=development
-export FLASK_APP=run.py
-export FLASK_DEBUG=1
-export SQLALCHEMY_DATABASE_URI="postgresql://postgres:boyr_8170@vhboyr.com:5432/doner"
-    """
+    # 在 Windows 中写入环境变量到 activate.bat 文件
+    if sys.platform == "win32":
+        flask_env_variables_win = """
+    set FLASK_ENV=development
+    set FLASK_APP=run.py
+    set FLASK_DEBUG=1
+    set SQLALCHEMY_DATABASE_URI=postgresql://postgres:boyr_8170@vhboyr.com:5432/doner
+        """
+        # 打开并将环境变量写入 Windows 激活脚本
+        with open(activate_script, 'a') as file:
+            file.write(flask_env_variables_win)
+    else:
+        # 环境变量内容
+        flask_env_variables = """
+    export FLASK_ENV=development
+    export FLASK_APP=run.py
+    export FLASK_DEBUG=1
+    export SQLALCHEMY_DATABASE_URI="postgresql://postgres:boyr_8170@vhboyr.com:5432/doner"
+        """
 
     # 对于 Unix 和 Mac，修改 activate 脚本
     if sys.platform != "win32":
