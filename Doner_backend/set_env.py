@@ -1,6 +1,7 @@
 import os
 import sys
 import subprocess
+import platform
 
 # 虚拟环境的名称或路径
 venv_name = "donerenv"  # 可以根据需要自定义虚拟环境的名字
@@ -26,7 +27,10 @@ def install_requirements():
     print("Installing requirements...")
     if os.path.exists("requirements.txt"):
         print("Installing requirements from requirements.txt...")
-        subprocess.check_call([os.path.join(venv_name, 'bin', 'pip'), "install", "-r", "requirements.txt"])
+        if platform.system() == 'Windows':
+            subprocess.check_call([os.path.join(venv_name, 'Scripts', 'pip'), "install", "-r", "requirements.txt"])
+        elif platform.system() == 'Darwin' or platform.system() == 'Linux':
+            subprocess.check_call([os.path.join(venv_name, 'bin', 'pip'), "install", "-r", "requirements.txt"])
 
 
 # 激活虚拟环境并设置环境变量
