@@ -1,6 +1,6 @@
 from functools import wraps
 from flask import request, jsonify, session
-from .User import User
+
 
 def login_required(f):
     @wraps(f)
@@ -13,4 +13,5 @@ def login_required(f):
                 return jsonify({'message': 'You are not logged in!'}), 401
 
         return f(*args, **kwargs)
+
     return decorated_function

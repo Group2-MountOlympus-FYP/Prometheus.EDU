@@ -179,22 +179,11 @@ class User(db.Model):
         return True
 
 
-def ensure_user_login():
+def get_current_user():
     """
-    验证用户登录,未登录返回401
+    获取当前登录用户,务必用login_require装饰器
     :return: User
     """
-    if not 'id' in session:
-        return jsonify({'message': 'You are not logged in!'}), 401
     user_id = session["id"]
 
-    if user_id is None:
-        user_id = request.cookies.get('id')  # 从cookie中获取user_id
-        if not user_id:
-            return jsonify({'message': 'You are not logged in!'}), 401
-        session['id'] = user_id  # 将user_id存储到session中
-
-    user = User.getUserById(int(user_id))
-    if user is None:
-        return jsonify({"error": "User not found"}), 404
-    return user
+    return User.getUserById(int(user_id))

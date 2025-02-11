@@ -9,7 +9,7 @@ import os
 from .Comment import Comment
 from .ActivityLog import ActivityLog
 from .schemas import *
-
+from decorator import login_required
 from flasgger import swag_from
 
 post_bp = Blueprint('post', __name__)
@@ -55,8 +55,8 @@ post_bp = Blueprint('post', __name__)
         }
     ]
 })
+@login_required
 def publish():
-    ensure_user_login()
     title = request.form.get('title')
     content = request.form.get('content')
     files = request.files.getlist('images')
@@ -205,14 +205,16 @@ def favorit_post():
         }
     ]
 })
+@login_required
 def follow():
-    user = ensure_user_login()
+    user = get_current_user()
     composer_id = request.form.get('composer_id')
     result = user.toggle_follow(composer_id)
     return result
 
 
 @post_bp.route('/comment', methods=['POST'])
+
 @swag_from({
     "responses": {
         "200": {
@@ -253,7 +255,6 @@ def follow():
     ]
 })
 def comment():
-    ensure_user_login()
     target_id = request.form['target_id']
     comment_text = request.form['comment']
     comment = Comment.commnet_on_post(target_id, comment_text, session['id'])
@@ -295,8 +296,9 @@ def comment():
         }
     ]
 })
+@login_required
 def liked_comment():
-    user = ensure_user_login()
+    user = get_current_user()
     comment_id = request.form.get('comment_id')
     comment = Comment.query.get(comment_id)
     if comment:

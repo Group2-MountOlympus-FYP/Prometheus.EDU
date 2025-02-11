@@ -16,7 +16,7 @@ from wtforms.validators import InputRequired
 import hashlib
 from .schemas import *
 from flasgger import swag_from
-
+from .decorator import login_required
 
 class AdminLoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired()])
@@ -57,9 +57,10 @@ def setRoot(app):
         "summary": "Fetch homepage data",
         "description": "This endpoint retrieves all posts and user details for the homepage.",
     })
+    @login_required
     def index():
 
-        user = ensure_user_login()
+        user = get_current_user()
         user_dict = UserSchema(only=["id", "username", "nickname", "avatar", "status"]).dump(user)
 
         posts = Post.get_all_posts()
@@ -86,12 +87,14 @@ def setRoot(app):
         "summary": "User's profile and posts",
         "description": "User's profile and posts",
     })
+    @login_required
     def profile_page():
-        user = ensure_user_login()
+        user = get_current_user()
         return jsonify(UserSchema(exclude=["password_hash"]).dump(user))
 
 
     @app.route('/my_likes')
+    @login_required
     @swag_from({
         "responses": {
             "200": {
@@ -113,8 +116,9 @@ def setRoot(app):
         "summary": "User's profile and posts",
         "description": "User's profile and posts",
     })
+    @login_required
     def my_likes():
-        user = ensure_user_login()
+        user = get_current_user()
         posts = user.liked_posts  # 获取该用户赞过的帖子
         return jsonify({"posts": PostSchema(many=True).dump(posts)})
 
@@ -140,8 +144,9 @@ def setRoot(app):
         "summary": "用户收藏的内容",
         "description": "获取用户收藏的内容列表"
     })
+    @login_required
     def my_collections():
-        user = ensure_user_login()
+        user = get_current_user()
         posts = user.favorited_posts  #用户收藏
         return jsonify({"posts": PostSchema(many=True).dump(posts)})
 
