@@ -15,6 +15,12 @@ from flasgger import swag_from
 post_bp = Blueprint('post', __name__)
 
 
+@post_bp.before_request
+@login_required
+def before_request():
+    return
+
+
 @post_bp.route('/publish', methods=['POST'])
 @swag_from({
     "responses": {
@@ -214,7 +220,6 @@ def follow():
 
 
 @post_bp.route('/comment', methods=['POST'])
-
 @swag_from({
     "responses": {
         "200": {
