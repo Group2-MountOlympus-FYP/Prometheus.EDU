@@ -68,6 +68,19 @@ def activate_virtualenv():
     print(f"Activate your virtual environment by running the following command in your terminal:")
     if sys.platform == "win32":
         print(f"  {venv_name}\\Scripts\\activate")
+        activate_bat_path = os.path.join(venv_name,"Scripts","activate.bat")
+        
+          # 环境变量内容
+        flask_env_variables_win = """
+        set FLASK_ENV=development
+        set FLASK_APP=run.py
+        set FLASK_DEBUG=1
+        set SQLALCHEMY_DATABASE_URI=postgresql://postgres:boyr_8170@vhboyr.com:5432/doner
+        """
+
+        # 追加环境变量到 activate.bat 文件
+        with open(activate_bat_path, "a") as file:
+            file.write(flask_env_variables_win)
     else:
         print(f"  source {venv_name}/bin/activate")
 
