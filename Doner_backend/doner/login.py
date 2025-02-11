@@ -1,7 +1,6 @@
 # login.py
 
-from flask import Blueprint, redirect, url_for, current_app, request, jsonify, session, make_response, \
-    session, make_response
+from flask import Blueprint, redirect,request, jsonify, session, make_response
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, DateField, SelectField, BooleanField
 from wtforms.validators import InputRequired, EqualTo, Email
@@ -20,6 +19,7 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired()])
     password = PasswordField('Password', validators=[InputRequired()])
     remember = BooleanField('Remember Me')
+
 
 @login_bp.route('/get_csrf', methods=['GET'])
 def get_csrf():
@@ -49,6 +49,8 @@ def get_csrf():
     # 为客户端生成一个 CSRF Token
     csrf_token = generate_csrf()
     return jsonify({"csrf_token": csrf_token})
+
+
 @login_bp.route('/', methods=['POST'])
 def login():
     """
@@ -126,7 +128,7 @@ def login():
         if u and not u.status == UserStatus.BANNED:
             ActivityLog.log_login(u.id)
             if form.remember.data:
-                resp = redirect(url_for('index'))
+                resp = make_response(jsonify({"id": u.id}))
                 resp.set_cookie('id', str(u.id), max_age=30 * 24 * 3600)  # 设置一个月的 Cookie
                 return resp
             else:
@@ -137,6 +139,7 @@ def login():
                 return jsonify({"message": "YOU ARE BANNED!!!"})
             return jsonify({"message": "WRONG PASSWORD!!!"})
     return jsonify({"error": "form is not valid"}), 400
+
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired()])
@@ -172,6 +175,7 @@ def register():
           - name: gender
             in: formData
             type: string
+            enum: [male,female,other]
             required: true
             description: 性别
           - name: password
@@ -214,8 +218,8 @@ def register():
             new_user.addUser()
             ActivityLog.log_register(new_user.id)
 
-        return redirect(url_for('index'))
-    return jsonify({"form": form})
+            return jsonify({"id": new_user.id})
+    return "form is not valid", 401
 
 
 @login_bp.route('/verify-username', methods=['POST'])
