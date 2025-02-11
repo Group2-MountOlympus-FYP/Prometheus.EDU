@@ -9,7 +9,7 @@ import os
 from .Comment import Comment
 from .ActivityLog import ActivityLog
 from .schemas import *
-from decorator import login_required
+from .decorator import login_required
 from flasgger import swag_from
 
 post_bp = Blueprint('post', __name__)
