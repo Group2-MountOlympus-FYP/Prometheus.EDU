@@ -12,6 +12,24 @@ COMP3032J Final Year Project.
 
 2. Run the project with the following command
 
-```shell
-npm run dev
-```
+   ```shell
+   npm run dev
+   ```
+3. 安装python环境
+
+   ```shell
+   python Doner_backend/set_env.py
+   ```
+4. 激活环境并运行
+   在mac上:
+   ```shell
+   cd Doner_backend
+   source donerenv/bin/activate
+   flask run
+   ```
+   在win上:
+   ```shell
+   cd Doner_backend
+   donerenv\Scripts\activate
+   flask run
+   ```
