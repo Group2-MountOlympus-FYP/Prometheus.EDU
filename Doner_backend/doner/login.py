@@ -11,7 +11,7 @@ from .User import *
 
 from .UserStatus import UserStatus
 from .ActivityLog import ActivityLog
-
+from .decorator import login_required
 login_bp = Blueprint('login', __name__)
 
 
@@ -280,6 +280,7 @@ def verifyUsername():
 
 
 @login_bp.route('/get_session')
+@login_required
 def give_session():
     """
         获取当前会话的用户 ID
@@ -336,7 +337,7 @@ def delete_cookie():
                 message: "Error during logout process"
         """
     ActivityLog.log_logout(session.get('id'))
-    resp = redirect(url_for('index'))
+    resp = make_response()
     resp.delete_cookie('id')
     session.clear()
     return resp
