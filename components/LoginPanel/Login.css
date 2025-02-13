@@ -1,0 +1,39 @@
+.bgLogin{
+    padding-top: 20px;
+    border-radius: 10px;
+    width: 500px;
+    box-shadow: 10px 10px 5px grey;
+}
+.text{
+    text-align: right;
+    width: 25%;
+}
+.input{
+    border: none;
+    border-bottom: 1px solid black;
+    text-align: left;
+    width: 80%;
+}
+.input:focus{
+    outline: none;
+    border: none;
+    border-bottom: 3px solid black;
+}
+#title{
+    text-align: center;
+    font-weight: bolder;
+    font-size: 25px;
+}
+#footer{
+    text-align: center;
+    padding-bottom: 20px;
+}
+#footer button{
+    text-align: center;
+}
+table{
+    width: 100%;
+}
+tr{
+    height: 50px;
+}

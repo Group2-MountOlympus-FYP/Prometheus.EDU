@@ -1,0 +1,61 @@
+.bg{
+    border-radius: 10px;
+    width: 500px;
+    box-shadow: 10px 10px 5px grey;
+}
+.text{
+    text-align: right;
+    width: 25%;
+}
+.input{
+    border: none;
+    border-bottom: 1px solid black;
+    text-align: left;
+    width: 80%;
+}
+.input:focus{
+    outline: none;
+    border: none;
+    border-bottom: 3px solid black;
+}
+.username-warnning{
+    margin-left: 20px;
+    border-radius: 3px;
+    box-shadow: 2px 2px 2px grey;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+    position: absolute;
+    color: red;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+    user-select: none;
+}
+.username-warnning.show{
+    opacity: 1;
+    visibility: visible;
+}
+.username-warnning.hide{
+    opacity: 0;
+    visibility: hidden;
+}
+#title{
+    text-align: center;
+    font-weight: bolder;
+    font-size: 25px;
+}
+#footer{
+    text-align: center;
+    padding-bottom: 20px;
+}
+#footer button{
+    text-align: center;
+}
+table{
+    width: 100%;
+}
+tr{
+    height: 50px;
+}
