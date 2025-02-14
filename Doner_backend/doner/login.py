@@ -344,6 +344,7 @@ def delete_cookie():
 
 
 @login_bp.route('/get_user_name_by_session', methods=['GET'])
+@login_required
 def get_user_name_by_session():
     """
         根据会话获取当前登录用户的用户名
@@ -388,15 +389,8 @@ def get_user_name_by_session():
               application/json:
                 error: "User not found"
         """
-    if session.get('id', -1) != -1:
-        u = User.getUserById(session.get('id', -1))
 
-        if u:
-            return jsonify(username=u.username)
-        else:
-            return jsonify(error="User not found"), 404
-    else:
-        return jsonify(error="User not logged in"), 401
+    return jsonify(User.getUserById(session["id"]).username)
 
 
 @login_bp.route('/get_user_name_by_id', methods=['POST'])
