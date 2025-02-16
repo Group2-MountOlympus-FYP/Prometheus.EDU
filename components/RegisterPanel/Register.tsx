@@ -1,13 +1,14 @@
 'use client'
 import React, { useState } from 'react';
 import './Register.css'
+import { CheckUsernameExist } from '@/app/api/Register/router';
 
 export function RegisterPanel(){
     const today = new Date().toISOString().split('T')[0]
     const [isUsernameExist, setIsUsernameExist] = useState(false) //用户名是否已存在
     const [birthDate, setDate] = useState(today)
     const [password, setPassword] = useState()
-    const [username, setUsername] = useState()
+    const [username, setUsername] = useState('')
     const [gender, setGender] = useState(2)
 
     const handelDateChane = (e:any) => {
@@ -22,9 +23,22 @@ export function RegisterPanel(){
         setUsername(e.target.value)
     }
     
-    const handelUsernameCheck = () => {
+    const handelUsernameCheck = async() => {
         //检查用户名
-        console.log(1)
+        CheckUsernameExist(username)
+        .then((response) => response.json())
+        .then((data) => {
+            //console.log(data)
+            if(data.Occupied == false){
+                setIsUsernameExist(false)
+                console.log(isUsernameExist)
+            }else{
+                setIsUsernameExist(true)
+            }
+        })
+        .catch((error) => {
+            console.error("Error: " , error)
+        })
     }
 
     const handelGenderChange = (e:any) => {

@@ -1,4 +1,3 @@
-import { baseURL } from "../general";
 export async function CheckUsernameExist(username:string){
     const url = '/login/verify-username'
     const formData = new URLSearchParams()
