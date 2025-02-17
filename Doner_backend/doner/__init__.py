@@ -20,6 +20,11 @@ def create_app():
     app.debug = True
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SWAGGER'] = {
+        'title': 'Doner API',
+        'uiversion': 3
+    }
+    app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 50MB
     app.secret_key = 'boyuan'
     migrate = Migrate(app, db)
     setRoot(app)

@@ -57,12 +57,7 @@ def setRoot(app):
         "summary": "Fetch homepage data",
         "description": "This endpoint retrieves all posts and user details for the homepage.",
     })
-    @login_required
     def index():
-
-        user = get_current_user()
-        user_dict = UserSchema(only=["id", "username", "nickname", "avatar", "status"]).dump(user)
-
         posts = Post.get_all_posts()
         post_dicts = PostSchema(many=True).dump(posts)
 
@@ -70,7 +65,7 @@ def setRoot(app):
         for post, serialized_post in zip(posts, post_dicts):
             serialized_post.update(post.as_dict())
 
-        return jsonify({"user": user_dict, "posts": post_dicts})
+        return jsonify({"posts": post_dicts})
 
     @app.route('/my_profile')
     @swag_from({
@@ -150,6 +145,49 @@ def setRoot(app):
         posts = user.favorited_posts  #用户收藏
         return jsonify({"posts": PostSchema(many=True).dump(posts)})
 
+    @app.route('/change_avatar',methods=['POST'])
+    @login_required
+    @swag_from({
+        "responses": {
+            "200": {
+                "description": "成功更新头像",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "description": "操作成功后的消息"
+                        }
+                    },
+                    "examples": {
+                        "application/json": {
+                            "message": "头像更新成功"
+                        }
+                    }
+                }
+            },
+        },
+        "tags": ["User"],
+        "summary": "更新用户头像",
+        "description": "用户通过上传文件来更新自己的头像。文件必须是有效的图片格式。如果用户未登录，则返回 401 错误。",
+        "parameters": [
+            {
+                "name": "file",
+                "in": "formData",
+                "type": "file",
+                "required": True,
+                "description": "用户上传的头像图片文件"
+            }
+        ]
+    })
+    def change_avatar():
+        file = request.files.get('file')
+        user = get_current_user()
+        user.saveAvatar(file)
+        return "success"
+
+
+
 
     @app.route('/admin', methods=['GET', 'POST'])
     def admin_page():
@@ -160,13 +198,13 @@ def setRoot(app):
                 if generate_hash(
                         form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
                     session['admin'] = True
-                    return 200
+                    return "success"
                 else:
                     return jsonify(
                         {"message": "WRONG PASSWORD!!!"}), 401
 
             else:
-                return 200
+                return "success"
 
         # Query all users from the database
         users = User.query.all()

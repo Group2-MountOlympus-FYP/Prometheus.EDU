@@ -6,7 +6,7 @@ from .Post import Post
 from datetime import datetime
 from .Like import likes
 from .UserStatus import UserStatus
-from .utils import hash_file_contents
+from .utils import fileUpload
 import os
 from flask import url_for
 from .ActivityLog import ActivityLog
@@ -115,10 +115,7 @@ class User(db.Model):
         return like_exists is not None
 
     def saveAvatar(self, file):
-        filename = hash_file_contents(file)
-        file.seek(0)  # 重置文件指针到开始位置
-        file.save(os.path.join('static', 'avatars', filename))
-        self.avatar = filename
+        self.avatar = fileUpload(file)
         db.session.commit()
 
     @property

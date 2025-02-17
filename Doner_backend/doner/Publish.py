@@ -1,5 +1,5 @@
 from flask import Blueprint, redirect, url_for, current_app, request, jsonify, session, make_response, session, \
-    make_response
+    make_response, abort
 
 from .Post import Post
 from werkzeug.utils import secure_filename
@@ -34,6 +34,7 @@ def before_request():
     "tags": ["Post"],
     "summary": "发布新帖子",
     "description": "用户提交标题、内容以及图片来发布新帖子，并返回发布后的帖子信息",
+    "consumes":"multipart/form-data",
     "parameters": [
         {
             "name": "title",
@@ -54,7 +55,8 @@ def before_request():
             "in": "formData",
             "type": "array",
             "items": {
-                "type": "file"
+                "type": "file",
+                "format": "binary"
             },
             "required": False,
             "description": "帖子附带的图片（可选）"
@@ -63,6 +65,8 @@ def before_request():
 })
 @login_required
 def publish():
+    if 'multipart/form-data' not in request.content_type:
+        abort(400, description="请求必须使用 multipart/form-data 格式")
     title = request.form.get('title')
     content = request.form.get('content')
     files = request.files.getlist('images')
