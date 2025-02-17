@@ -12,7 +12,7 @@ from langchain.chains import RetrievalQA
 
 def load_files(directory: str, kind: str):
     documents = []
-    
+
     for root, _, files in os.walk(directory):
         for filename in files:
             if filename.endswith(('.html', '.htm', '.md')):
@@ -45,49 +45,48 @@ def load_files(directory: str, kind: str):
                 except Exception as e:
                     print(f"Error processing file {filepath}: {str(e)}")
                     continue
-        
+
     return documents
+
 
 def create_vector_store_batched(documents, embeddings, batch_size=100):
     """Batch process documents to create vector store"""
     text_splitter = CharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
     vector_store = None
-    
+
     try:
         for i in range(0, len(documents), batch_size):
             batch = documents[i:i + batch_size]
             split_docs = text_splitter.split_documents(
                 [Document(page_content=doc) for doc in batch]
             )
-            
+
             if vector_store is None:
                 vector_store = FAISS.from_documents(split_docs, embeddings)
             else:
                 vector_store.add_documents(split_docs)
-                
+
             print(f'Processed batch {i//batch_size + 1}/{len(documents)//batch_size + 1}')
-        
+
         return vector_store
     except Exception as e:
         print(f"Error in create_vector_store_batched: {str(e)}")
         return None
 
 
-
-
-def initialize_rag_system(documents_dir: list, 
+def initialize_rag_system(documents_dir: list,
                           is_local: bool,
-                          openai_model: str = "gpt-4o-mini", 
+                          openai_model: str = "gpt-4o-mini",
                           openai_api_key: str = ''
                           ):
-    
+
     # Initialize embeddings
     embeddings = OllamaEmbeddings(model="bge-m3")
     print('Embeddings initialized.')
 
     if os.path.exists('vector_store.faiss'):
-        vector_store = FAISS.load_local('vector_store.faiss', 
-                                        embeddings=embeddings, 
+        vector_store = FAISS.load_local('vector_store.faiss',
+                                        embeddings=embeddings,
                                         allow_dangerous_deserialization=True)
         print('Vector store loaded.')
     else:
@@ -106,16 +105,15 @@ def initialize_rag_system(documents_dir: list,
         vector_store.save_local('vector_store.faiss')
         print('Vector store saved.')
 
-    
-    
     # Step 4: Initialize LLM
     # llm = CodeQwenLLM()
     if is_local:
         print("Local LLM not implemented yet.")
     else:
         # llm = OpenAILLM(openai_model, openai_api_key)
+        pass
     print('LLM initialized.')
-    
+
     # Step 5: Establish RAG pipeline
     prompt_template = """
     Instructions:
@@ -125,42 +123,41 @@ def initialize_rag_system(documents_dir: list,
 
     Retrieved Documents:
     {context}
-    
+
     User Query:
     {question}
     """
 
-    prompt = ChatPromptTemplate.from_template(prompt_template) # PROMPT?
+    prompt = ChatPromptTemplate.from_template(prompt_template)  # PROMPT?
 
     qa_chain = RetrievalQA.from_chain_type(
-        llm=llm, 
-        chain_type="stuff", 
-        retriever=vector_store.as_retriever(), 
+        llm=llm,
+        chain_type="stuff",
+        retriever=vector_store.as_retriever(),
         chain_type_kwargs={"prompt": prompt}
     )
 
-    
     # prompt = ChatPromptTemplate.from_template(prompt_template)
-    
+
     def format_docs(docs):
         return "\n\n".join(doc.page_content for doc in docs)
-    
+
     # # Create a stuff chain with the custom prompt
     # combine_documents_chain = create_stuff_documents_chain(
     #     llm=llm,
     #     prompt=prompt,
     # )
-    
+
     # qa_chain = (
     #     {
     #         "context": vector_store.as_retriever() | format_docs,
     #         "question": RunnablePassthrough(),
-    #     } 
-    #     | prompt 
-    #     | llm 
+    #     }
+    #     | prompt
+    #     | llm
     #     # | StrOutputParser()
     # )
-    
+
     return qa_chain, vector_store
 
 
@@ -168,9 +165,11 @@ def rag_generate(query: str, qa_chain):
     answer = qa_chain.invoke(query)
     return answer
 
+
 def bare_llm_generate(query: str, llm):
     answer = llm.invoke(query)
     return answer
+
 
 def retrieve_documents_only(query: str, vector_store):
     retrieved_docs = vector_store.as_retriever().invoke(query)
@@ -208,7 +207,8 @@ if __name__ == "__main__":
             print(f"total time: {total_time}")
 
             current_time = datetime.datetime.now().strftime('%m%d%H%M%S')
-            with open(f'generated_code_{current_time}.txt', 'w', encoding='utf-8') as file:
+            with open(f'generated_code_{current_time}.txt',
+                      'w', encoding='utf-8') as file:
                 file.write(f"User Query: {query}\n")
 
                 file.write("\nRetrieved Documents:\n")
