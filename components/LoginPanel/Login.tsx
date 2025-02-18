@@ -2,10 +2,13 @@
 
 import { useState } from "react"
 import './Login.css'
+import { GetCSRF, GetCookie } from "@/app/api/General"
+import { Login } from "@/app/api/Login/router"
 
 export function LoginPanel(){
-    const [username, setUsername] = useState()
-    const [password, setPassword] = useState()
+    const [username, setUsername] = useState('')
+    const [password, setPassword] = useState('')
+    const [isRemember, setIsRemember] = useState(false)
 
     const handleUsername = (e:any) => {
         setUsername(e.target.value)
@@ -14,9 +17,35 @@ export function LoginPanel(){
     const handlePassword = (e:any) => {
         setPassword(e.target.value)
     }
+    const handleIsRemember = (e:any) => {
+        setIsRemember(e.target.checked)
+    }
+    const handleLogin = async (e:any) => {
+        e.preventDefault()
+        let csrf
+        const response = await GetCSRF()
+        if(response == true){
+            
+        }else{
+            alert("error!")
+            return
+        }
+        csrf = GetCookie("csrf_token")
+
+        Login(username,password,csrf,isRemember)
+        .then(response => {
+            if(response.status == 200){
+                return response.json()
+            }
+        })
+        .then(data => {
+            document.cookie = `user_id=${data.id}`
+        })
+
+    }
     return(
         <div className="bgLogin">
-            <form>
+            <form onSubmit={handleLogin}>
                 <table>
                     <tbody>
                         <tr>
@@ -33,6 +62,7 @@ export function LoginPanel(){
                         <tr>
                             <td colSpan={2} id='footer'>
                                 <p>Don't have account? <a href="">Sign Up</a></p>
+                                <p>Remember Me<input type="checkbox" checked={isRemember} onChange={handleIsRemember}></input></p>
                                 <button type="submit">Login</button>
                             </td>
                         </tr>
