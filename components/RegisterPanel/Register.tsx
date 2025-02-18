@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import './Register.css'
 import { CheckUsernameExist, RegisterUser } from '@/app/api/Register/router';
 import { GetCSRF, GetCookie } from '@/app/api/General';
+import { getText } from './language';
 
 export function RegisterPanel(){
     const today = new Date().toISOString().split('T')[0]
@@ -93,38 +94,38 @@ export function RegisterPanel(){
                     <tbody>
                     <tr>
                         <td id='title' colSpan={2}>
-                            <p>Welcom To Doner</p>
+                            <p>{getText('welcome')}</p>
                         </td>
                     </tr>
                     <tr>
-                        <td className='text'>Username: </td>
+                        <td className='text'>{getText('username')}: </td>
                         <td>
                             <input type="text" maxLength={20} value={username} onChange={handelUsername} className='input' onBlur={handelUsernameCheck}></input>
-                            <div className={`username-warnning ${isUsernameExist ? "show" : "hide"}`}>Username Exist!</div>
+                            <div className={`username-warnning ${isUsernameExist ? "show" : "hide"}`}>{getText('user_exit')}</div>
                         </td>
                     </tr>
                     <tr>
-                        <td className='text'>Password: </td>
+                        <td className='text'>{getText('password')}: </td>
                         <td><input type="password" value={password} onChange={handelPassword} maxLength={20} className='input' minLength={6}
                         pattern='^[a-zA-Z0-9]+$'
-                        title="密码只能包含字母、数字和特殊字符。"></input></td>
+                        title={getText('password_hint')}></input></td>
                     </tr>
                     <tr>
-                        <td className='text'>Gender: </td>
+                        <td className='text'>{getText('gender')}: </td>
                         <td>
-                            <input type="radio" value={0} name="gender" checked={gender===0} onChange={handelGenderChange}/>  <label>Male</label>   
-                            <input type="radio" value={1} name="gender" checked={gender===1} onChange={handelGenderChange}/> <label>Female</label>
-                            <input type="radio" value={2} name="gender" checked={gender===2} onChange={handelGenderChange}/> <label>Other</label>
+                            <input type="radio" value={0} name="gender" checked={gender===0} onChange={handelGenderChange}/>  <label>{getText('male')}</label>   
+                            <input type="radio" value={1} name="gender" checked={gender===1} onChange={handelGenderChange}/> <label>{getText('female')}</label>
+                            <input type="radio" value={2} name="gender" checked={gender===2} onChange={handelGenderChange}/> <label>{getText('other')}</label>
                         </td>
                     </tr>
                     <tr>
-                        <td className='text'>Birthday: </td>
+                        <td className='text'>{getText('birthday')}: </td>
                         <td><input type="date" value={birthDate} onChange={handelDateChane} className='input'></input></td>
                     </tr>
                     <tr>
                         <td id='footer' colSpan={2}>
-                            <p>Already have account? <a href=''>Login</a></p>
-                            <button type='submit' disabled={!isAbleToSubmit}>Submit</button>
+                            <p>{getText('already_have_account')} <a href=''>Login</a></p>
+                            <button type='submit' disabled={!isAbleToSubmit}>{getText('submit')}</button>
                         </td>
                     </tr>
                     </tbody>
