@@ -25,6 +25,7 @@ marshmallow-sqlalchemy==1.4.0
 mistune==3.1.0
 packaging==24.2
 psycopg2-binary==2.9.10
+PyPDF2==3.0.1
 PyYAML==6.0.2
 referencing==0.36.1
 requests==2.32.3

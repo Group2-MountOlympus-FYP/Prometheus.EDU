@@ -2,6 +2,7 @@ import datetime
 import os
 import time
 from bs4 import BeautifulSoup
+from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
@@ -15,36 +16,28 @@ def load_files(directory: str, kind: str):
 
     for root, _, files in os.walk(directory):
         for filename in files:
-            if filename.endswith(('.html', '.htm', '.md')):
-                filepath = os.path.join(root, filename)
-                try:
-                    if filename.endswith(('.html', '.htm')):
-                        with open(filepath, 'r', encoding='utf-8') as file:
-                            soup = BeautifulSoup(file, 'html.parser')
-                            if kind == 'pytorch' or 'jax':
-                                sections = soup.find_all('div', class_='section')
-                                if sections:
-                                    text = "\n".join(section.get_text(separator='') for section in sections)
-                                else:
-                                    # If no sections found, get all text
-                                    text = soup.get_text(separator='\n')
-                            elif kind == 'mindspore' or kind == 'jittor':
-                                sections = soup.find_all('div', class_='section')
-                                if sections:
-                                    text = "\n".join(section.get_text(separator=' ') for section in sections)
-                                else:
-                                    # If no sections found, get all text
-                                    text = soup.get_text(separator='')
-                            else:
-                                text = soup.get_text(separator='\n')
-                            documents.append(text)
-                    else:  # .md files
-                        with open(filepath, 'r', encoding='utf-8') as file:
-                            text = file.read()
-                            documents.append(text)
-                except Exception as e:
-                    print(f"Error processing file {filepath}: {str(e)}")
-                    continue
+            if not filename.endswith(('.html', '.htm', '.md')):
+                return
+
+            filepath = os.path.join(root, filename)
+            try:
+                if filename.endswith(('.html', '.htm')):
+                    with open(filepath, 'r', encoding='utf-8') as file:
+                        soup = BeautifulSoup(file, 'html.parser')
+                        text = soup.get_text(separator='\n')
+                        documents.append(text)
+                elif filename.endswith('.md'):
+                    with open(filepath, 'r', encoding='utf-8') as file:
+                        text = file.read()
+                        documents.append(text)
+                elif filename.endswith('.pdf'):
+                    reader = PdfReader(filepath)
+                    text = ""
+                    for page in reader.pages:
+                        text += page.extract_text() or ""
+            except Exception as e:
+                print(f"Error processing file {filepath}: {str(e)}")
+                continue
 
     return documents
 
