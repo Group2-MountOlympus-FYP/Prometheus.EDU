@@ -32,3 +32,28 @@ export function GetCookie(name:string) {
     }
     return null; // 如果未找到，返回 null
 }
+
+export async function GetUsername(id:number) {
+    const url = '/login/get_user_name_by_id'
+    const data = id
+    fetch(url, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json',
+            "Accept": "*/*",
+            "Connection": "keep-alive"
+        },
+        body: JSON.stringify(data)
+    }).then(response => {
+        if(!response.ok){
+            throw new Error('Network error')
+        }
+        return response.json()
+    }).then(data => {
+        console.log(data.username)
+        return data.username
+    })
+}

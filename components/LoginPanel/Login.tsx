@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import './Login.css'
-import { GetCSRF, GetCookie } from "@/app/api/General"
+import { GetCSRF, GetCookie, GetUsername } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
 
@@ -41,7 +41,12 @@ export function LoginPanel(){
         })
         .then(data => {
             document.cookie = `user_id=${data.id}`
+            const id = Number(GetCookie('user_id'))
+            GetUsername(id).then(response => {
+                document.cookie = `username=${response}`
+            })
         })
+
 
     }
     return(
