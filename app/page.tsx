@@ -8,12 +8,14 @@ import { Welcome } from '@/components/Welcome/Welcome';
 import { VideoPlayer } from '@/components/VideoPlayPanel/VideoPlayer';
 import { RegisterPanel } from '@/components/RegisterPanel/Register';
 import { LoginPanel } from '@/components/LoginPanel/Login';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
 
 export default function HomePage() {
 
 
   return (
     <>
+      <LanguageSwitcher/>
       <RegisterPanel/>
       <LoginPanel/>
       <Welcome />
