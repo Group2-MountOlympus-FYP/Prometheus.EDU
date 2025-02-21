@@ -1,5 +1,5 @@
 export async function Login(username:string, password:string, csrf:any, isRemember:any){
-    const url = '/login/login'
+    const url = '/login'
     const formData = new URLSearchParams()
     const data = {
         'username': username,

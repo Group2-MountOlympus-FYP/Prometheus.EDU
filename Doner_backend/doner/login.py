@@ -51,7 +51,7 @@ def get_csrf():
     return jsonify({"csrf_token": csrf_token})
 
 
-@login_bp.route('/login', methods=['POST'])
+@login_bp.route('', methods=['POST'])
 def login():
     """
     User Login
