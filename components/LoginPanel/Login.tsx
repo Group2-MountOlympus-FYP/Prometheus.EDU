@@ -41,11 +41,7 @@ export function LoginPanel(){
             }
         })
         .then(data => {
-            document.cookie = `user_id=${data.id}`
-            const id = Number(GetCookie('user_id'))
-            GetUsername(id).then(response => {
-                document.cookie = `username=${response}`
-            })
+            document.location.href = '/user-info'
         })
 
 

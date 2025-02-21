@@ -15,6 +15,7 @@ export function UserProfile(props:any){
             <div>
                 <Text>{props.username}</Text>
                 <Text>{props.birthdate}</Text>
+                <Text>{props.nickname}</Text>
             </div>
             </Group>
         </div>

@@ -44,7 +44,7 @@ export default function UserInfoPage() {
     }) 
     return (
         <div className="bg">
-            <UserProfile username={username} birthdate={BirthDate}/>
+            <UserProfile username={username} birthdate={BirthDate} nickname={nickName}/>
             <TabBar/>
         </div>
     )
