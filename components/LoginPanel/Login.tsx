@@ -2,9 +2,10 @@
 
 import { useState } from "react"
 import './Login.css'
-import { GetCSRF, GetCookie, GetUsername } from "@/app/api/General"
+import { GetCSRF, GetCookie } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
+import { GetUsername } from "@/app/api/User/router"
 
 export function LoginPanel(){
     const [username, setUsername] = useState('')
