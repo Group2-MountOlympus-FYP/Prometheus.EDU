@@ -7,8 +7,54 @@ from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
 from langchain_core.prompts import ChatPromptTemplate
-from embeddings import OllamaEmbeddings
 from langchain.chains import RetrievalQA
+from langchain.embeddings.base import Embeddings
+from typing import List
+import requests
+
+# Create embeddings with Ollama and vector store
+class OllamaEmbeddings(Embeddings):
+    """
+    Custom Embeddings class to interact with Ollama's API.
+    """
+
+    def __init__(self, model: str = "embedding-model-name", api_url: str = "http://localhost:11434"):
+        """
+        Initialize with the model name and Ollama API URL.
+        """
+        self.model = model
+        self.api_url = api_url
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        """
+        Embed multiple documents by sending them to Ollama's API.
+        """
+        embeddings = []
+        for text in texts:
+            embedding = self.embed_query(text)
+            embeddings.append(embedding)
+        return embeddings
+
+    def embed_query(self, text: str) -> List[float]:
+        """
+        Embed a single query/document.
+        """
+        payload = {
+            "model": self.model,
+            "input": text
+        }
+        response = requests.post(f"{self.api_url}/v1/embeddings", json=payload)
+        if response.status_code != 200:
+            raise ValueError(f"Error fetching embedding from Ollama: {response.text}")
+        data = response.json()
+        return data["data"][0]["embedding"]
+
+    @property
+    def embedding_dimension(self) -> int:
+        """
+        Return the dimension of the embeddings.
+        """
+        return 768
 
 
 class TA_Client:
@@ -102,8 +148,11 @@ class TA_Client:
             TA_Client.vector_store = self.create_vector_store_batched(self.documents, TA_Client.embeddings)
             print('Vector store created.')
 
-            TA_Client.vector_store.save_local('vector_store.faiss')
-            print('Vector store saved.')
+            if TA_Client.vector_store is not None:
+                TA_Client.vector_store.save_local('vector_store.faiss')
+                print('Vector store saved.')
+            else:
+                raise Exception("Vector store creation failed. Please check the input documents and embeddings. Peylix is Watching You.")
 
 
         # Establish RAG pipeline
@@ -163,53 +212,53 @@ class TA_Client:
         return retrieved_docs
 
 
-if __name__ == "__main__":
-    print("RAG Module Activated.\n")
-    print("Type 'exit' or 'quit' to terminate the program.\n")
-
-
-    while True:
-        query = input("Enter your code-related query: ")
-        if query.lower() in ['exit', 'quit']:
-            print("Goodbye!")
-            break
-
-        try:
-            start_time = time.time()
-
-            ta_client = TA_Client(api_key='',
-                                  directory='docs',
-                                  model='gpt-4o')
-
-            answer = ta_client.generate(query)
-            retrieved_docs = ta_client.retrieve_documents_only(query)
-
-            end_time = time.time()
-
-            total_time = end_time - start_time
-
-            print("\nGenerated Code:\n")
-            print(answer['result'])
-            print("\n" + "=" * 50 + "\n")
-
-            print(f"total time: {total_time}")
-
-            current_time = datetime.datetime.now().strftime('%m%d%H%M%S')
-            with open(f'generated_code_{current_time}.txt',
-                      'w', encoding='utf-8') as file:
-                file.write(f"User Query: {query}\n")
-
-                file.write("\nRetrieved Documents:\n")
-
-                for idx, doc in enumerate(retrieved_docs, 1):
-                    file.write(f"\nDocument {idx}:\n")
-                    file.write(doc.page_content)
-                    file.write("\n" + "-" * 40 + "\n")
-
-                file.write("\nGenerated Code:\n")
-                file.write(answer['result'])
-                file.write("\n" + "=" * 50 + "\n")
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            print("\n" + "=" * 50 + "\n")
+# if __name__ == "__main__":
+#     print("RAG Module Activated.\n")
+#     print("Type 'exit' or 'quit' to terminate the program.\n")
+#
+#
+#     while True:
+#         query = input("Enter your code-related query: ")
+#         if query.lower() in ['exit', 'quit']:
+#             print("Goodbye!")
+#             break
+#
+#         try:
+#             start_time = time.time()
+#
+#             ta_client = TA_Client(api_key='',
+#                                   directory='docs',
+#                                   model='gpt-4o')
+#
+#             answer = ta_client.generate(query)
+#             retrieved_docs = ta_client.retrieve_documents_only(query)
+#
+#             end_time = time.time()
+#
+#             total_time = end_time - start_time
+#
+#             print("\nGenerated Code:\n")
+#             print(answer['result'])
+#             print("\n" + "=" * 50 + "\n")
+#
+#             print(f"total time: {total_time}")
+#
+#             current_time = datetime.datetime.now().strftime('%m%d%H%M%S')
+#             with open(f'generated_code_{current_time}.txt',
+#                       'w', encoding='utf-8') as file:
+#                 file.write(f"User Query: {query}\n")
+#
+#                 file.write("\nRetrieved Documents:\n")
+#
+#                 for idx, doc in enumerate(retrieved_docs, 1):
+#                     file.write(f"\nDocument {idx}:\n")
+#                     file.write(doc.page_content)
+#                     file.write("\n" + "-" * 40 + "\n")
+#
+#                 file.write("\nGenerated Code:\n")
+#                 file.write(answer['result'])
+#                 file.write("\n" + "=" * 50 + "\n")
+#         except Exception as e:
+#             print(f"An error occurred: {e}")
+#             print("\n" + "=" * 50 + "\n")
 
