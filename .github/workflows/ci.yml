@@ -1,0 +1,36 @@
+name: Flask CI Pipeline
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # 设置 Python 环境
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.12'
+
+      # 安装依赖
+      - name: Install dependencies
+        run: |
+          python Doner_backend/set_env.py
+
+      # 运行 flask run 检查是否启动成功
+      - name: Run Flask Application
+        run: |
+          cd Doner_backend
+          source donerenv/bin/activate
+          flask run
