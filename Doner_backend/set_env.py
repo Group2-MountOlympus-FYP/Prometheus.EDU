@@ -28,9 +28,9 @@ def install_requirements():
     if os.path.exists("requirements.txt"):
         print("Installing requirements from requirements.txt...")
         if platform.system() == 'Windows':
-            subprocess.check_call([os.path.join(venv_name, 'Scripts', 'pip'), "install", "-r", "requirements.txt"])
+            subprocess.check_call([os.path.join(venv_name, 'Scripts', 'pip'), "install", "-r", "requirements.txt","--no-deps"])
         elif platform.system() == 'Darwin' or platform.system() == 'Linux':
-            subprocess.check_call([os.path.join(venv_name, 'bin', 'pip'), "install", "-r", "requirements.txt"])
+            subprocess.check_call([os.path.join(venv_name, 'bin', 'pip'), "install", "-r", "requirements.txt","--no-deps"])
 
 
 # 激活虚拟环境并设置环境变量

@@ -25,7 +25,8 @@ httpcore==1.0.7
 httpx==0.28.1
 httpx-sse==0.4.0
 idna==3.10
-imagekitio
+requests-toolbelt==1.0.0
+imagekitio==4.1.0
 importlib-metadata==6.8.0
 itsdangerous==2.1.2
 Jinja2==3.1.5
@@ -58,7 +59,6 @@ python-dotenv==1.0.1
 PyYAML==6.0.2
 referencing==0.36.1
 requests==2.32.3
-requests-toolbelt==1.0.0
 rpds-py==0.22.3
 setuptools==75.8.0
 six==1.17.0
