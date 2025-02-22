@@ -3,11 +3,15 @@ from .extensions import db
 from .ReplyTarget import ReplyTarget
 from datetime import datetime
 from.ActivityLog import ActivityLog
+
+
 post_likes = db.Table('post_likes',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
     db.Column('comment_id', db.Integer, db.ForeignKey('comment.id'), primary_key=True),
     db.Column('created_at', db.DateTime, default=datetime.utcnow)
 )
+
+
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True, autoincrement=True)
@@ -101,5 +105,4 @@ class Comment(ReplyTarget):
         if parent_comment and parent_comment.parent_comment :
                 return "Reply "+parent_comment.user.username+": "
         return ""    
-            
-    
+  

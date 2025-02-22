@@ -1,6 +1,8 @@
 from flask import jsonify
 from .extensions import db
 from datetime import datetime
+
+
 class ReplyTarget(db.Model):
     __tablename__ = 'reply_target'
     id = db.Column(db.Integer, primary_key=True)

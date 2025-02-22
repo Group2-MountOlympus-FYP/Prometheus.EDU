@@ -4,6 +4,8 @@ from .ReplyTarget import ReplyTarget
 from datetime import datetime
 from .Like import likes
 from .Comment import Comment
+
+
 class Post(ReplyTarget):
     __tablename__ = 'post'
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True, autoincrement=True)

@@ -1,5 +1,3 @@
-# login.py
-
 from flask import Blueprint, redirect,request, jsonify, session, make_response
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, DateField, SelectField, BooleanField
