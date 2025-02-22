@@ -33,4 +33,6 @@ jobs:
         run: |
           cd Doner_backend
           source donerenv/bin/activate
-          flask run
+          flask run &
+          sleep 10
+          curl -s http://localhost:5000/  # Check if Flask is responding
