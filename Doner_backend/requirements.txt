@@ -25,7 +25,7 @@ httpcore==1.0.7
 httpx==0.28.1
 httpx-sse==0.4.0
 idna==3.10
-imagekitio==4.1.0
+imagekitio
 importlib-metadata==6.8.0
 itsdangerous==2.1.2
 Jinja2==3.1.5
