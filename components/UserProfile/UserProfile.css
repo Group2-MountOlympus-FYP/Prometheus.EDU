@@ -1,0 +1,75 @@
+@keyframes editPanelMoveIn {
+    0%{
+        transform: translate(-50%, -50%) translateY(100vh);
+        opacity: 0;
+    }
+    100%{
+        transform: translate(-50%, -50%) translateY(0px);
+        opacity: 1;
+    }
+}
+@keyframes editPanelClose {
+    0%{
+        transform: translate(-50%, -50%) translateY(0px);
+        opacity: 1;
+    }
+    100%{
+        transform: translate(-50%, -50%) translateY(100vh);
+        opacity: 0;
+        visibility: hidden;
+        display: none;
+    }
+}
+
+.edit-panel{
+    position: fixed;
+    margin: auto;
+    border: 1px solid black;
+    width: 60%;
+    height: 80%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: aquamarine;
+    z-index: 999;
+}
+.edit-panel.show{
+    opacity: 1;
+    visibility: visible;
+    display: block;
+    animation: editPanelMoveIn 0.5s ease-in-out;
+}
+.edit-panel.hide{
+    opacity: 0;
+    animation: editPanelClose 0.5s ease-in-out;
+}
+.overlay{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 999;
+}
+.overlay.hide{
+    opacity: 0;
+    visibility: hidden;
+    display: none;
+}
+.overlay.show{
+    opacity: 1;
+    visibility: visible;
+    display: block;
+}
+.edit-panel-header{
+    width: 100%;
+    border: none;
+    border-bottom: 1px solid black;
+    text-align: right;
+    padding: 0px 10px 0px 10px;
+}
+.edit-panel-body{
+    width: 100%;
+}
+
