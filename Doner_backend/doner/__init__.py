@@ -3,7 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from .login import login_bp
 from .extensions import db
-from .router import setRoot
+from .router import setRoot,init_admin
 
 import os.path
 
@@ -38,4 +38,5 @@ def create_app():
 
 def register_extensions(app):
     db.init_app(app)
+    init_admin(app)
 

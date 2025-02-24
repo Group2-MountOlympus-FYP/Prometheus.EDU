@@ -2,8 +2,6 @@ from flask import Blueprint, request, jsonify
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
-from langchain.schema import Document
-from .athena_ta_core import TA_Client
 
 athena_bp = Blueprint('athena', __name__)
 

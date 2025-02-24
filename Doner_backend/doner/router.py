@@ -17,6 +17,8 @@ import hashlib
 from .schemas import *
 from flasgger import swag_from
 from .decorator import login_required
+from flask_admin import Admin, AdminIndexView, expose
+from flask_admin.contrib.sqla import ModelView
 
 class AdminLoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired()])
@@ -186,59 +188,90 @@ def setRoot(app):
         user.saveAvatar(file)
         return "success"
 
+    # @app.route('/admin', methods=['GET', 'POST'])
+    # def admin_page():
+    #     form = AdminLoginForm()
+    #     if not session.get('admin'):
+    #
+    #         if form.validate_on_submit():
+    #             if generate_hash(
+    #                     form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
+    #                 session['admin'] = True
+    #                 return "success"
+    #             else:
+    #                 return jsonify(
+    #                     {"message": "WRONG PASSWORD!!!"}), 401
+    #
+    #         else:
+    #             return "success"
+    #
+    #     # Query all users from the database
+    #     users = User.query.all()
+    #     posts = Post.query.all()
+    #     logs = ActivityLog.query.all()
+    #
+    #     if request.method == 'POST':
+    #         # Check if the delete button is clicked
+    #         print(request.form)
+    #         if 'delete_user' in request.form:
+    #             user_id_to_delete = int(request.form.get('delete_user'))  # type: ignore
+    #             # Delete the user and associated posts from the database
+    #             user_to_delete = User.query.get(user_id_to_delete)
+    #             if user_to_delete:
+    #                 user_to_delete.delete_user_and_related_posts()
+    #
+    #         elif 'edit_user' in request.form:
+    #             # If the form is submitted, update the user status
+    #             user_id = int(request.form.get('user_id'))  # type: ignore
+    #             new_status = request.form.get('new_status')
+    #
+    #             # Find the user by ID
+    #             user = User.query.get(user_id)
+    #
+    #             if user:
+    #                 # Update the user's status
+    #                 user.status = UserStatus[new_status]  # type: ignore
+    #                 db.session.commit()
+    #
+    #         elif 'delete_post' in request.form:
+    #             post_id_to_delete = int(request.form.get('delete_post'))  # type: ignore
+    #             post_to_delete = Post.query.get(post_id_to_delete)
+    #             if post_to_delete:
+    #                 post_to_delete.delete_post()
+    #
+    #     # Pass UserStatus enum to the template
+    #     return jsonify({"users": users, "posts": posts, "user_status_enum": UserStatus, "logs": logs})
 
+class AdminModelView(ModelView):
+    def is_accessible(self):
+        return session.get('admin')  # 只有 session['admin'] = True 时才能访问
 
+    def inaccessible_callback(self, name, **kwargs):
+        return jsonify({"message": "WRONG PASSWORD!!!"}), 401  # 直接返回 401 错误
 
-    @app.route('/admin', methods=['GET', 'POST'])
-    def admin_page():
+# 自定义 Admin 首页，避免未登录用户访问
+class MyAdminIndexView(AdminIndexView):
+    @expose('/')
+    def index(self):
         form = AdminLoginForm()
         if not session.get('admin'):
-
             if form.validate_on_submit():
-                if generate_hash(
-                        form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
-                    session['admin'] = True
-                    return "success"
-                else:
-                    return jsonify(
-                        {"message": "WRONG PASSWORD!!!"}), 401
+                    if generate_hash(
+                            form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
+                        session['admin'] = True
+                        return "success"
+                    else:
+                        return jsonify(
+                            {"message": "WRONG PASSWORD!!!"}), 401
 
             else:
-                return "success"
+                    return super().index()
+        return super().index()
 
-        # Query all users from the database
-        users = User.query.all()
-        posts = Post.query.all()
-        logs = ActivityLog.query.all()
+def init_admin(app):
+    admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())
 
-        if request.method == 'POST':
-            # Check if the delete button is clicked
-            print(request.form)
-            if 'delete_user' in request.form:
-                user_id_to_delete = int(request.form.get('delete_user'))  # type: ignore
-                # Delete the user and associated posts from the database
-                user_to_delete = User.query.get(user_id_to_delete)
-                if user_to_delete:
-                    user_to_delete.delete_user_and_related_posts()
-
-            elif 'edit_user' in request.form:
-                # If the form is submitted, update the user status
-                user_id = int(request.form.get('user_id'))  # type: ignore
-                new_status = request.form.get('new_status')
-
-                # Find the user by ID
-                user = User.query.get(user_id)
-
-                if user:
-                    # Update the user's status
-                    user.status = UserStatus[new_status]  # type: ignore
-                    db.session.commit()
-
-            elif 'delete_post' in request.form:
-                post_id_to_delete = int(request.form.get('delete_post'))  # type: ignore
-                post_to_delete = Post.query.get(post_id_to_delete)
-                if post_to_delete:
-                    post_to_delete.delete_post()
-
-        # Pass UserStatus enum to the template
-        return jsonify({"users": users, "posts": posts, "user_status_enum": UserStatus, "logs": logs})
+    # 保护 Flask-Admin 只能被管理员访问
+    admin.add_view(ModelView(ActivityLog, db.session))
+    admin.add_view(ModelView(User, db.session))
+    admin.add_view(ModelView(Post, db.session, endpoint="admin_post"))
