@@ -42,7 +42,7 @@ jobs:
       - name: Deploy to Server
         env:
           SSH_HOST: csi420-01-vm2.ucd.ie
-          SSH_USER: root
+          SSH_USER: student
           DEPLOY_PATH: ~/next
         run: |
           # 将构建后的项目文件同步到服务器
