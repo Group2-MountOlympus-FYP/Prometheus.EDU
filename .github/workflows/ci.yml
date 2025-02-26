@@ -4,9 +4,9 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    branches:
-      - main
+    paths:
+      - 'Doner_backend/**'
+
 
 jobs:
   build:
@@ -29,10 +29,12 @@ jobs:
           python Doner_backend/set_env.py
 
       # 运行 flask run 检查是否启动成功
-      - name: Run Flask Application
+      - name: Run Pytest
         run: |
           cd Doner_backend
           source donerenv/bin/activate
-          flask run &
-          sleep 10
-          curl -s http://localhost:5000/  # Check if Flask is responding
+          pytest
+
+      - name: Fail if tests fail
+        if: failure()  # 如果测试失败，则整个工作流失败
+        run: exit 1

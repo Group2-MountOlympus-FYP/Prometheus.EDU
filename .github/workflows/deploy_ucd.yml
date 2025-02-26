@@ -32,18 +32,18 @@ jobs:
 
       - name: Set up SSH
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_UCD }}
         run: |
           mkdir -p ~/.ssh
           echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H vhboyr.com >> ~/.ssh/known_hosts
+          ssh-keyscan -H csi420-01-vm2.ucd.ie >> ~/.ssh/known_hosts
 
       - name: Deploy to Server
         env:
-          SSH_HOST: vhboyr.com
+          SSH_HOST: csi420-01-vm2.ucd.ie
           SSH_USER: root
-          DEPLOY_PATH: /root/next
+          DEPLOY_PATH: ~/next
         run: |
           # 将构建后的项目文件同步到服务器
           rsync -avz --delete --rsync-path="mkdir -p $DEPLOY_PATH && rsync" .next public package.json package-lock.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH
