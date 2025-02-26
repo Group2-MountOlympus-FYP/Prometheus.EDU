@@ -1,4 +1,4 @@
-name: Deploy Next.js to Server
+name: Deploy Next.js to UCD
 
 on:
   workflow_dispatch:
@@ -48,4 +48,4 @@ jobs:
           # 将构建后的项目文件同步到服务器
           rsync -avz --delete --rsync-path="mkdir -p $DEPLOY_PATH && rsync" .next public package.json package-lock.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH
           # 使用 shell 脚本确保正确的路径
-          ssh $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && npm --registry=https://registry.npmmirror.com install && pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env"
+          ssh $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && npm install && pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env"

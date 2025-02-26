@@ -1,4 +1,4 @@
-name: Deploy Next.js to Server
+name: Deploy Next.js to vhboyr.com
 
 on:
   workflow_dispatch:
