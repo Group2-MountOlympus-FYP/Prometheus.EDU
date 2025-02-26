@@ -3,7 +3,7 @@
 import { HoverCard } from '@/components/AboutUs-HoverCard/HoverCard';
 import { Team } from '@/components/AboutUs-HoverCard/OurTeam';
 import { TimeLine } from '@/components/AboutUs-HoverCard/TimeLine';
-import xt.js 支持静态图片导入
+import background from './background.jpg'; // 确保路径正确，Next.js 支持静态图片导入
 
 export default function AboutUs() {
   return (
