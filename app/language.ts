@@ -1,4 +1,6 @@
 // src/language.ts
+import { getLocalStorage, setLocalStorage } from "./api/General";
+
 type Language = 'en' | 'zh';
 
 let currentLanguage: Language = 'en'; // 默认语言设置为 'en'
@@ -7,9 +9,9 @@ let currentLanguage: Language = 'en'; // 默认语言设置为 'en'
 export const initializeLanguage = () => {
   // 确保只在浏览器环境中访问 localStorage
   if (typeof window !== 'undefined') {
-    const savedLanguage = localStorage.getItem('language') as Language;
-    if (savedLanguage) {
-      currentLanguage = savedLanguage;
+    const savedLanguage = getLocalStorage('language')
+    if (savedLanguage !== null) {
+      currentLanguage = savedLanguage as Language;
     }
   }
 };
@@ -17,9 +19,7 @@ export const initializeLanguage = () => {
 // 切换语言并保存到 localStorage
 export const setLanguage = (lang: Language) => {
   currentLanguage = lang;
-  if (typeof window !== 'undefined') { // 确保运行在客户端上
-    localStorage.setItem('language', lang); // 将选择的语言存储到 localStorage
-  }
+  setLocalStorage('language' , lang)
 };
 
 // 获取当前语言

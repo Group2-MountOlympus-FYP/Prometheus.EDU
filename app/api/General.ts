@@ -38,3 +38,24 @@ export function GetCookie(name:string) {
     }
     return null; // 如果未找到，返回 null
 }
+
+
+//封装好的访问浏览器专用API方法
+export function setLocalStorage(key:any, value:any){
+    if( typeof window !== undefined ){
+        localStorage.setItem(key, value);
+    }
+}
+
+export function getLocalStorage(key:any){
+    if(typeof window !== undefined){
+        return localStorage.getItem('language')
+    }
+    return null
+}
+
+export function windowRedirect(target:any){
+    if(typeof window !== undefined){
+        window.location.href = target
+    }
+}

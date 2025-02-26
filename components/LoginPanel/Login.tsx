@@ -5,6 +5,7 @@ import './Login.css'
 import { GetCSRF, GetCookie } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
+import { windowRedirect } from "@/app/api/General"
 
 export function LoginPanel(){
     const [username, setUsername] = useState('')
@@ -41,9 +42,7 @@ export function LoginPanel(){
         })
         .then(data => {
             //防止服务端报错
-            if(typeof document !== undefined){
-                document.location.href = '/user-info'
-            }
+            windowRedirect('/user-info')
         })
 
 
@@ -66,7 +65,7 @@ export function LoginPanel(){
                         </tr>
                         <tr>
                             <td colSpan={2} id='footer'>
-                                <p>{getText('already_have_account')} <a href="">Sign Up</a></p>
+                                <p>{getText('already_have_account')} <a href="/register">Sign Up</a></p>
                                 <p>{getText('remember')}<input type="checkbox" checked={isRemember} onChange={handleIsRemember}></input></p>
                                 <button type="submit">{getText('login')}</button>
                             </td>
