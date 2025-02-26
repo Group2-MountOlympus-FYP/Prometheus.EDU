@@ -32,10 +32,10 @@ jobs:
 
       - name: Set up SSH
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY_UCD }}
+          SSH_PRIVATE_KEY_UCD: ${{ secrets.SSH_PRIVATE_KEY_UCD }}
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY_UCD" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H csi420-01-vm2.ucd.ie >> ~/.ssh/known_hosts
 
@@ -49,3 +49,4 @@ jobs:
           rsync -avz --delete --rsync-path="mkdir -p $DEPLOY_PATH && rsync" .next public package.json package-lock.json $SSH_USER@$SSH_HOST:$DEPLOY_PATH
           # 使用 shell 脚本确保正确的路径
           ssh $SSH_USER@$SSH_HOST "cd $DEPLOY_PATH && npm install && pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env"
+    environment: UCD
