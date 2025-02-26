@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main  # 在推送到 main 分支时触发，可以改为其他分支
+      - unprotected
     paths-ignore:
       - 'Doner_backend/**'
 
