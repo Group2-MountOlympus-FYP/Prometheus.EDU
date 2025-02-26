@@ -5,7 +5,6 @@ import './Login.css'
 import { GetCSRF, GetCookie } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
-import { GetUsername } from "@/app/api/User/router"
 
 export function LoginPanel(){
     const [username, setUsername] = useState('')
@@ -41,7 +40,10 @@ export function LoginPanel(){
             }
         })
         .then(data => {
-            document.location.href = '/user-info'
+            //防止服务端报错
+            if(typeof document !== undefined){
+                document.location.href = '/user-info'
+            }
         })
 
 

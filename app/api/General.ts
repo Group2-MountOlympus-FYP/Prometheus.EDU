@@ -14,7 +14,11 @@ export async function GetCSRF() {
             referrerPolicy: 'no-referrer',
         });
         const data = await response.json();
-        document.cookie = `csrf_token=${data.csrf_token}; path=/; Secure; SameSite=Strict`;
+
+        if(typeof window !== undefined){
+            document.cookie = `csrf_token=${data.csrf_token}; path=/; Secure; SameSite=Strict`;
+        }
+        
         return true; // 成功时返回 true
     } catch (error) {
         console.log(error);
@@ -23,11 +27,13 @@ export async function GetCSRF() {
 }
 
 export function GetCookie(name:string) {
-    const cookies = document.cookie.split('; ');
-    for (const cookie of cookies) {
-        const [cookieName, cookieValue] = cookie.split('=');
-        if (cookieName === name) {
-            return decodeURIComponent(cookieValue); // 解码值
+    if(typeof window !== undefined){
+        const cookies = document.cookie.split('; ');
+        for (const cookie of cookies) {
+            const [cookieName, cookieValue] = cookie.split('=');
+            if (cookieName === name) {
+                return decodeURIComponent(cookieValue); // 解码值
+            }
         }
     }
     return null; // 如果未找到，返回 null

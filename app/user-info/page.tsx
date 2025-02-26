@@ -18,7 +18,9 @@ export default function UserInfoPage() {
                 if (status === 401) {
                     //未登录 重定向到登录界面
                     alert('You are not login, please login')
-                    window.location.href = '/login'
+                    if(typeof window !== undefined){
+                        window.location.href = '/login'
+                    }
                 } 
                 else if(status == 200){
                     //已登录，数据获取成功
