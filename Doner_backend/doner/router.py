@@ -1,3 +1,4 @@
+import sqlalchemy
 from flask import jsonify
 from flask import session, url_for, redirect, request
 
@@ -6,7 +7,6 @@ from .ReplyTarget import ReplyTarget
 from .User import *
 from .Post import Post
 from .extensions import db
-from .UserStatus import UserStatus
 from .Comment import Comment
 from .ActivityLog import ActivityLog
 from .Image import Image
@@ -19,6 +19,7 @@ from flasgger import swag_from
 from .decorator import login_required
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+
 
 class AdminLoginForm(FlaskForm):
     password = PasswordField('Password', validators=[InputRequired()])
@@ -63,10 +64,6 @@ def setRoot(app):
         posts = Post.get_all_posts()
         post_dicts = PostSchema(many=True).dump(posts)
 
-        # 在序列化后的字典中合并 as_dict() 的结果
-        for post, serialized_post in zip(posts, post_dicts):
-            serialized_post.update(post.as_dict())
-
         return jsonify({"posts": post_dicts})
 
     @app.route('/my_profile')
@@ -88,7 +85,6 @@ def setRoot(app):
     def profile_page():
         user = get_current_user()
         return jsonify(UserSchema(exclude=["password_hash"]).dump(user))
-
 
     @app.route('/my_likes')
     @login_required
@@ -147,7 +143,7 @@ def setRoot(app):
         posts = user.favorited_posts  #用户收藏
         return jsonify({"posts": PostSchema(many=True).dump(posts)})
 
-    @app.route('/change_avatar',methods=['POST'])
+    @app.route('/change_avatar', methods=['POST'])
     @login_required
     @swag_from({
         "responses": {
@@ -188,59 +184,107 @@ def setRoot(app):
         user.saveAvatar(file)
         return "success"
 
-    # @app.route('/admin', methods=['GET', 'POST'])
-    # def admin_page():
-    #     form = AdminLoginForm()
-    #     if not session.get('admin'):
-    #
-    #         if form.validate_on_submit():
-    #             if generate_hash(
-    #                     form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
-    #                 session['admin'] = True
-    #                 return "success"
-    #             else:
-    #                 return jsonify(
-    #                     {"message": "WRONG PASSWORD!!!"}), 401
-    #
-    #         else:
-    #             return "success"
-    #
-    #     # Query all users from the database
-    #     users = User.query.all()
-    #     posts = Post.query.all()
-    #     logs = ActivityLog.query.all()
-    #
-    #     if request.method == 'POST':
-    #         # Check if the delete button is clicked
-    #         print(request.form)
-    #         if 'delete_user' in request.form:
-    #             user_id_to_delete = int(request.form.get('delete_user'))  # type: ignore
-    #             # Delete the user and associated posts from the database
-    #             user_to_delete = User.query.get(user_id_to_delete)
-    #             if user_to_delete:
-    #                 user_to_delete.delete_user_and_related_posts()
-    #
-    #         elif 'edit_user' in request.form:
-    #             # If the form is submitted, update the user status
-    #             user_id = int(request.form.get('user_id'))  # type: ignore
-    #             new_status = request.form.get('new_status')
-    #
-    #             # Find the user by ID
-    #             user = User.query.get(user_id)
-    #
-    #             if user:
-    #                 # Update the user's status
-    #                 user.status = UserStatus[new_status]  # type: ignore
-    #                 db.session.commit()
-    #
-    #         elif 'delete_post' in request.form:
-    #             post_id_to_delete = int(request.form.get('delete_post'))  # type: ignore
-    #             post_to_delete = Post.query.get(post_id_to_delete)
-    #             if post_to_delete:
-    #                 post_to_delete.delete_post()
-    #
-    #     # Pass UserStatus enum to the template
-    #     return jsonify({"users": users, "posts": posts, "user_status_enum": UserStatus, "logs": logs})
+    @app.route('/change_profile', methods=['POST'])
+    @login_required
+    @swag_from({
+        "responses": {
+            "200": {
+                "description": "成功更新个人信息",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "description": "操作成功后的消息"
+                        }
+                    },
+                    "examples": {
+                        "application/json": {
+                            "message": "个人信息更新成功"
+                        }
+                    }
+                }
+            }
+        },
+        "tags": ["User"],
+        "summary": "更新用户个人信息",
+        "description": "用户通过上传form-data数据来更新个人信息。若某字段未传或为空，则跳过该字段的更新。注意：头像和密码不在此接口更新范围。如果用户未登录，则返回 401 错误。",
+        "parameters": [
+            {
+                "name": "username",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "用户名"
+            },
+            {
+                "name": "birthdate",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "出生日期"
+            },
+            {
+                "name": "gender",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "性别"
+            },
+            {
+                "name": "nickname",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "昵称"
+            },
+            {
+                "name": "status",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "用户状态"
+            },
+            {
+                "name": "deleted",
+                "in": "formData",
+                "type": "boolean",
+                "required": False,
+                "description": "是否删除"
+            }
+        ]
+    })
+    def change_profile():
+        user = get_current_user()
+        data = request.form
+
+        # 需要更新的字段列表，不包含头像和密码
+        fields_to_update = ['username', 'birthdate', 'gender', 'nickname', 'status', 'deleted']
+
+        def update_fields_recursively(fields):
+            if not fields:
+                return
+            field = fields[0]
+            value = data.get(field)
+            if value and value.strip():  # 使用 strip() 去除首尾空格
+                if field == 'deleted':
+                    # 将字符串转换为布尔值
+                    v = value.strip().lower()
+                    if v in ['true', '1', 'yes']:
+                        setattr(user, field, True)
+                    elif v in ['false', '0', 'no']:
+                        setattr(user, field, False)
+                else:
+                    setattr(user, field, value.strip())
+            update_fields_recursively(fields[1:])
+
+        update_fields_recursively(fields_to_update)
+        try:
+            db.session.commit()
+        except sqlalchemy.exc.IntegrityError:
+            return "用户名重复",401
+        return "个人信息更新成功"
+
 
 class AdminModelView(ModelView):
     def is_accessible(self):
@@ -249,6 +293,7 @@ class AdminModelView(ModelView):
     def inaccessible_callback(self, name, **kwargs):
         return jsonify({"message": "WRONG PASSWORD!!!"}), 401  # 直接返回 401 错误
 
+
 # 自定义 Admin 首页，避免未登录用户访问
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
@@ -256,17 +301,18 @@ class MyAdminIndexView(AdminIndexView):
         form = AdminLoginForm()
         if not session.get('admin'):
             if form.validate_on_submit():
-                    if generate_hash(
-                            form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
-                        session['admin'] = True
-                        return "success"
-                    else:
-                        return jsonify(
-                            {"message": "WRONG PASSWORD!!!"}), 401
+                if generate_hash(
+                        form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
+                    session['admin'] = True
+                    return "success"
+                else:
+                    return jsonify(
+                        {"message": "WRONG PASSWORD!!!"}), 401
 
             else:
-                    return super().index()
+                return super().index()
         return super().index()
+
 
 def init_admin(app):
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())

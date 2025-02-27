@@ -29,6 +29,7 @@ httpx-sse==0.4.0
 idna==3.10
 imagekitio==4.1.0
 importlib-metadata==6.8.0
+iniconfig==2.0.0
 itsdangerous==2.1.2
 Jinja2==3.1.5
 jsonpatch==1.33
@@ -50,12 +51,14 @@ mypy-extensions==1.0.0
 numpy==1.26.4
 orjson==3.10.15
 packaging==24.2
+pluggy==1.5.0
 propcache==0.3.0
 psycopg2-binary==2.9.10
 pydantic==2.10.6
 pydantic-settings==2.8.0
 pydantic_core==2.27.2
 PyPDF2==3.0.1
+pytest==8.3.4
 python-dotenv==1.0.1
 PyYAML==6.0.2
 referencing==0.36.1

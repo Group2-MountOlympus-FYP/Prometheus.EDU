@@ -1,3 +1,4 @@
+import sqlalchemy
 from flask import Blueprint, redirect, url_for, current_app, request, jsonify, session, make_response, session, \
     make_response, abort
 
@@ -11,6 +12,7 @@ from .ActivityLog import ActivityLog
 from .schemas import *
 from .decorator import login_required
 from flasgger import swag_from
+from .ReplyTarget import Tag
 
 post_bp = Blueprint('post', __name__)
 
@@ -34,7 +36,7 @@ def before_request():
     "tags": ["Post"],
     "summary": "发布新帖子",
     "description": "用户提交标题、内容以及图片来发布新帖子，并返回发布后的帖子信息",
-    "consumes":"multipart/form-data",
+    "consumes": "multipart/form-data",
     "parameters": [
         {
             "name": "title",
@@ -51,6 +53,15 @@ def before_request():
             "description": "帖子内容"
         },
         {
+            "name": "tags",
+            "in": "formData",
+            "type": "array",
+            "items": {
+                "type": "integer",
+            },
+            "description": "tag的id"
+        },
+        {
             "name": "images",
             "in": "formData",
             "type": "array",
@@ -63,14 +74,16 @@ def before_request():
         }
     ]
 })
-@login_required
 def publish():
     if 'multipart/form-data' not in request.content_type:
         abort(400, description="请求必须使用 multipart/form-data 格式")
     title = request.form.get('title')
     content = request.form.get('content')
     files = request.files.getlist('images')
+    tags_raw = request.form.get('tags')
+    tags = [int(tag.strip()) for tag in tags_raw.split(',') if tag.strip().isdigit()]
     new_post = Post(title=title, content=content, composer_id=session['id'])
+    new_post.tags = Tag.query.filter(Tag.id.in_(tags)).all()
     images_to_add = []
 
     for file in files:
@@ -215,7 +228,6 @@ def favorit_post():
         }
     ]
 })
-@login_required
 def follow():
     user = get_current_user()
     composer_id = request.form.get('composer_id')
@@ -305,7 +317,6 @@ def comment():
         }
     ]
 })
-@login_required
 def liked_comment():
     user = get_current_user()
     comment_id = request.form.get('comment_id')
@@ -357,3 +368,36 @@ def a_post(id):
     if not post:
         return "Post Not Found", 404
     return jsonify(PostSchema().dump(post))
+
+
+@post_bp.route('/add_tag', methods=['POST'])
+@swag_from({
+    "summary": "Add a new tag",
+    "description": "This endpoint allows you to create a new tag by providing a tag name.",
+    "tags": ["Post"],
+    "parameters": [
+        {
+            "name": "tag",
+            "in": "formData",
+            "type": "string",
+            "required": True,
+            "description": "The name of the tag to be added."
+        }
+    ],
+    "responses": {
+        "200": {
+            "description": "Tag added successfully.",
+        },
+        "400": {
+            "description": "Invalid input or tag creation failed."
+        }
+    }
+})
+def add_tag():
+    tag_name = request.form.get('tag')
+    tag = Tag(name=tag_name)
+    try:
+        tag.add()
+        return jsonify({"tag_id": tag.id})
+    except sqlalchemy.exc.IntegrityError:
+        return "Tag already exists", 400

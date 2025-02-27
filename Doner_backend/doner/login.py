@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash
 
 from .User import *
 
-from .UserStatus import UserStatus
+
 from .ActivityLog import ActivityLog
 from .decorator import login_required
 login_bp = Blueprint('login', __name__)

@@ -9,10 +9,16 @@ Post:
       type: array
       items:
         $ref: '#/Comment'
+    tags:
+      type: array
+      items:
+        $ref: '#/Tag'
     id:
       type: integer
     type:
       type: string
+    deleted:
+      type: boolean
     created_at:
       type: string
     title:
@@ -52,6 +58,8 @@ User:
       type: string
     status:
       type: string
+    deleted:
+      type: boolean
 ActivityLog:
   type: object
   properties:
@@ -72,7 +80,7 @@ Image:
   properties:
     id:
       type: integer
-    filename:
+    url:
       type: string
 Comment:
   type: object
@@ -81,6 +89,8 @@ Comment:
       type: integer
     type:
       type: string
+    deleted:
+      type: boolean
     created_at:
       type: string
     content:
@@ -89,3 +99,31 @@ Comment:
       type: integer
     post_id:
       type: integer
+Course:
+  type: object
+  properties:
+    id:
+      type: integer
+    type:
+      type: string
+    deleted:
+      type: boolean
+    created_at:
+      type: string
+    course_name:
+      type: string
+    description:
+      type: string
+    rating:
+      type: string
+    level:
+      type: string
+    status:
+      type: string
+Tag:
+  type: object
+  properties:
+    id:
+      type: integer
+    name:
+      type: string

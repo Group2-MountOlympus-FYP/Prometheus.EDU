@@ -1,12 +1,11 @@
 from flask import jsonify, session, request
 from werkzeug.security import check_password_hash
-
-from .extensions import db
+from enum import Enum, auto
+from .extensions import db ,shared_sequence
 from .Post import Post
 from datetime import datetime
 from .Like import likes
-from .UserStatus import UserStatus
-from .utils import fileUpload
+from .Image import Image
 import os
 from flask import url_for
 from .ActivityLog import ActivityLog
@@ -26,14 +25,23 @@ followers = db.Table('followers',
                      )
 
 
+class UserStatus(Enum):
+    NORMAL = auto()
+    VIP = auto()
+    BANNED = auto()
+    ADMIN = auto()
+    TEACHER = auto()
+
+
 class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer,shared_sequence,primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     birthdate = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     password_hash = db.Column(db.String(120), nullable=False)
     posts = db.relationship('Post', backref='composer')
-    avatar = db.Column(db.String(120), nullable=False)
+    avatar = db.Column(db.String(120), nullable=False,
+                       default='https://ik.imagekit.io/vhboyr/agent-halloween-japanese-man-ninja-svgrepo-com_w4qyshQea.svg')
     favorited_posts = db.relationship('Post', secondary=favorites, lazy='dynamic',
                                       backref=db.backref('favorited_by', lazy='dynamic'))
     followed = db.relationship('User',
@@ -45,6 +53,7 @@ class User(db.Model):
     liked_posts = db.relationship('Post', secondary=likes, backref=db.backref('liked_by', lazy='dynamic'))
     nickname = db.Column(db.String(80), default='default nickname')
     status = db.Column(db.Enum(UserStatus), default=UserStatus.NORMAL)
+    deleted = db.Column(db.Boolean, default=False, nullable=False)
 
     def addUser(self):
         db.session.add(self)
@@ -115,12 +124,8 @@ class User(db.Model):
         return like_exists is not None
 
     def saveAvatar(self, file):
-        self.avatar = fileUpload(file)
+        self.avatar = Image.save_image(file, self)
         db.session.commit()
-
-    @property
-    def avatarUrl(self):
-        return url_for('static', filename='avatars/' + self.avatar)
 
     @staticmethod
     def toggle_favorit_post(user_id, post_id):

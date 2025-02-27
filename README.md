@@ -36,3 +36,9 @@ COMP3032J Final Year Project.
 5. admin管理使用方法：执行第四步后访问http://127.0.0.1:5000/admin
 ## 如何使用
    [API文档](http://127.0.0.1:5000/apidocs)
+
+## 常用指令
+
+   ```shell
+   pip freeze > requirements.txt
+   ```

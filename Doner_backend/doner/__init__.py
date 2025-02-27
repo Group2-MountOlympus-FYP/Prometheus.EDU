@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from .login import login_bp
 from .extensions import db
 from .router import setRoot,init_admin
-
+from .course_bp import course_bp
 import os.path
 
 from .Publish import post_bp
@@ -28,10 +28,13 @@ def create_app():
     app.config['MAX_CONTENT_LENGTH'] = 500 * 1024 * 1024  # 50MB
     app.secret_key = 'boyuan'
     migrate = Migrate(app, db)
+
+
     setRoot(app)
     app.register_blueprint(login_bp, url_prefix='/login')
     app.register_blueprint(post_bp, url_prefix='/post')
     app.register_blueprint(athena_bp, url_prefix='/athena')
+    app.register_blueprint(course_bp, url_prefix='/course')
     app.register_blueprint(video_bp, url_prefix='/video')
 
 

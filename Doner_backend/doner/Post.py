@@ -1,8 +1,5 @@
-from flask import jsonify
 from .extensions import db
 from .ReplyTarget import ReplyTarget
-from datetime import datetime
-from .Like import likes
 from .Comment import Comment
 
 
@@ -11,8 +8,8 @@ class Post(ReplyTarget):
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True, autoincrement=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    images = db.relationship('Image', backref='post')
     composer_id= db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+
 
 
     __mapper_args__ = {

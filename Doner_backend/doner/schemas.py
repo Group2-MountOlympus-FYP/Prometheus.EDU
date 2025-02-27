@@ -2,6 +2,9 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
 from marshmallow.fields import Integer, String, Float, Boolean, List, Dict
+
+from .Course import Course
+from .ReplyTarget import Tag
 from .User import User
 from .Post import Post
 from .Comment import Comment
@@ -48,7 +51,12 @@ class ActivityLogSchema(SQLAlchemyAutoSchema):
         include_fk = True
         load_instance = True
 
-
+class CourseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Course
+class TagSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Tag
 # 定义一个映射表，key 是字段类型，value 是对应的 JSON 类型字符串
 FIELD_TO_JSON_TYPE = {
     String: "string",
@@ -126,4 +134,6 @@ save_dict_as_yaml("definitions", {
     "ActivityLog": get_schema_dict(ActivityLogSchema),
     "Image": get_schema_dict(ImageSchema),
     "Comment": get_schema_dict(CommentSchema),
+    "Course": get_schema_dict(CourseSchema),
+    "Tag": get_schema_dict(TagSchema)
 })
