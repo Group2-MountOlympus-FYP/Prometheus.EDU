@@ -11,6 +11,7 @@ from .Publish import post_bp
 from flask_migrate import Migrate
 
 from .athena import athena_bp
+from .Video import video_bp
 
 import os
 
@@ -31,6 +32,7 @@ def create_app():
     app.register_blueprint(login_bp, url_prefix='/login')
     app.register_blueprint(post_bp, url_prefix='/post')
     app.register_blueprint(athena_bp, url_prefix='/athena')
+    app.register_blueprint(video_bp, url_prefix='/video')
 
 
     return app
