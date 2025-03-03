@@ -1,6 +1,8 @@
 from flask import jsonify
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
+
+from .decorator import before_request, after_request
 from .login import login_bp
 from .extensions import db
 from .router import setRoot,init_admin
@@ -36,6 +38,10 @@ def create_app():
     app.register_blueprint(athena_bp, url_prefix='/athena')
     app.register_blueprint(course_bp, url_prefix='/course')
     app.register_blueprint(video_bp, url_prefix='/video')
+
+    # 注册 before_request 和 after_request 钩子
+    app.before_request(before_request)
+    app.after_request(after_request)
 
 
     return app
