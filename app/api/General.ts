@@ -42,20 +42,22 @@ export function GetCookie(name:string) {
 
 //封装好的访问浏览器专用API方法
 export function setLocalStorage(key:any, value:any){
-    if( typeof window !== undefined ){
+    if( typeof window !== "undefined" ){
+        //console.log(`Saving ${value} in ${key}`)
         localStorage.setItem(key, value);
     }
 }
 
 export function getLocalStorage(key:any){
-    if(typeof window !== undefined){
-        return localStorage.getItem('language')
+    if(typeof window !== "undefined"){
+        //console.log(`getting from local storage: ${key}`)
+        return localStorage.getItem(key)
     }
     return null
 }
 
 export function windowRedirect(target:any){
-    if(typeof window !== undefined){
+    if(typeof window !== "undefined"){
         window.location.href = target
     }
 }

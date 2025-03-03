@@ -1,0 +1,39 @@
+.panel-bg{
+    width: 35vw;
+    box-shadow: 10px 10px 5px grey;
+}
+.title{
+    width: 100%;
+    display: block;
+    text-align: left;
+    font-weight: bolder;
+    font-size: 34px;
+}
+.subtitle{
+    width: 100%;
+    text-align: left;
+    font-size: 20px;
+}
+.login{
+    padding-left: 10px;
+    white-space: nowrap;
+    text-align: right;
+    border: none;
+    background-color: aqua;
+}
+.login span{
+    cursor: pointer;
+}
+.register{
+    white-space: nowrap;
+    text-align: left;
+    border: none;
+    background-color: aqua;
+    padding-right: 10px;
+}
+.register span{
+    cursor: pointer;
+}
+.placeholder{
+    width: 100%;
+}

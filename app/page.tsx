@@ -5,25 +5,33 @@ import { FeaturesCards } from '@/components/FeaturesCards/FeaturesCards';
 import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 import { StatsGrid } from '@/components/StatsGrid/StatsGrid';
 import { Welcome } from '@/components/Welcome/Welcome';
-import { VideoPlayer } from '@/components/VideoPlayPanel/VideoPlayer';
-import { RegisterPanel } from '@/components/RegisterPanel/Register';
-import { LoginPanel } from '@/components/LoginPanel/Login';
+import { SignPanel } from '@/components/SignPanel/SignPanel';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
+import { useState } from 'react';
 
 export default function HomePage() {
 
+  const [isSignPanelOpen, setSignPanelOpen] = useState<boolean>(false)
+  const toggleSignPanel = () => {
+    if(isSignPanelOpen){
+      setSignPanelOpen(false)
+    }else{
+      setSignPanelOpen(true)
+    }
+  }
 
   return (
     <>
       <LanguageSwitcher/>
-      <RegisterPanel/>
-      <LoginPanel/>
+      <button onClick={toggleSignPanel}>Click to login</button>
+      <div hidden={isSignPanelOpen}>
+        <SignPanel></SignPanel>
+      </div>
       <Welcome />
       <StatsGrid />
       <FeaturesCards />
       <FooterSimple />
       <ChatbotWindow />
-      <VideoPlayer />
     </>
   );
 }
