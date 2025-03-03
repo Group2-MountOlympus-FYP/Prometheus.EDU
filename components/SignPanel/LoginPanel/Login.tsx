@@ -65,7 +65,6 @@ export function LoginPanel(){
                         </tr>
                         <tr>
                             <td colSpan={2} id='footer'>
-                                <p>{getText('already_have_account')} <a href="/register">Sign Up</a></p>
                                 <p>{getText('remember')}<input type="checkbox" checked={isRemember} onChange={handleIsRemember}></input></p>
                                 <button type="submit">{getText('login')}</button>
                             </td>

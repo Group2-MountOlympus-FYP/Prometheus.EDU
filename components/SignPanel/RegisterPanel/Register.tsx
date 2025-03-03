@@ -124,7 +124,6 @@ export function RegisterPanel(){
                     </tr>
                     <tr>
                         <td id='footer' colSpan={2}>
-                            <p>{getText('already_have_account')} <a href='/login'>Login</a></p>
                             <button type='submit' disabled={!isAbleToSubmit}>{getText('submit')}</button>
                         </td>
                     </tr>
