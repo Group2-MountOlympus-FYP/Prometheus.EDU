@@ -5,7 +5,7 @@ import { RegisterPanel } from "./RegisterPanel/Register"
 import './SignPanel.css'
 import { getText } from "./SignLanguage"
 
-export function SignPanel(){
+export function SignPanel(props:any){
     type signTypes = 'login' | 'register'
     const [signType, setSignType] = useState<signTypes>('login')
 
@@ -15,12 +15,14 @@ export function SignPanel(){
 
     const switchLogin = () => {
         setSignType('login')
+        //console.log(signType)
     }
     const switchRegister = () => {
         setSignType('register')
+        //console.log(signType)
     }
     return (
-        <div className="panel-bg">
+        <div className="panel-bg" {...props}>
             <span className="title">{getText('welcome')}</span>
             <span className="subtitle">{getText('subtitle')}</span>
             <table>
@@ -34,12 +36,12 @@ export function SignPanel(){
                         </td>
                         <td className="placeholder"></td>
                     </tr>
-                    <tr hidden = {signType != 'login'}>
+                    <tr hidden = {signType != 'register'}>
                         <td colSpan={3}>
                             <LoginPanel></LoginPanel>
                         </td>
                     </tr>
-                    <tr hidden = {signType != 'register'}>
+                    <tr hidden = {signType != 'login'}>
                         <td colSpan={3}>
                             <RegisterPanel></RegisterPanel>
                         </td>
