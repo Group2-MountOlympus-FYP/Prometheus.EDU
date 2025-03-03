@@ -14,8 +14,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
       zh: {
         welcome: "欢迎来到Prometheus.EDU",
         subittile: '在此添加副标题',
-        signon: '登录',
-        signin: '注册',
+        signon: 'Sign On',
+        signin: 'Sign In',
       },
 }
 
