@@ -6,8 +6,8 @@ import {theme} from '../theme';
 import Header from '@/components/HeaderMenu/Header';
 
 export const metadata = {
-    title: 'CarbonElla',
-    description: 'Building a better future for all',
+    title: 'Prometheus.EDU',
+    description: 'A Comprehensive Online Education Platform',
 };
 
 export default function RootLayout({children}: { children: any }) {
