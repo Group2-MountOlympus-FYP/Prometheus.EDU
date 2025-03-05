@@ -1,3 +1,5 @@
+'use client'
+
 import {Anchor, Container, Group} from '@mantine/core';
 import classes from './FooterSimple.module.css';
 

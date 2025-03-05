@@ -4,10 +4,11 @@ import React from 'react';
 import {ColorSchemeScript, MantineProvider} from '@mantine/core';
 import {theme} from '../theme';
 import Header from '@/components/HeaderMenu/Header';
+import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 
 export const metadata = {
-    title: 'CarbonElla',
-    description: 'Building a better future for all',
+    title: 'Prometheus.EDU',
+    description: 'A Comprehensive Online Education Platform',
 };
 
 export default function RootLayout({children}: { children: any }) {
@@ -25,6 +26,7 @@ export default function RootLayout({children}: { children: any }) {
         <MantineProvider theme={theme}>
             <Header/>
             {children}
+            <FooterSimple/>
         </MantineProvider>
         </body>
         </html>

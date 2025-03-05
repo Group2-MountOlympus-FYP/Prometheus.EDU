@@ -10,9 +10,11 @@ import './UserProfile.css'
 export function UserProfile(props:any){
     const avatar_path = ''
     const [isEdit , setIsEdit] = useState(false)
+    const [isFirstRender, setIsFirstRender] = useState(true)
 
     const openEditPanel = () => {
         setIsEdit(true)
+        setIsFirstRender(false)
     }
     const closeEditPanel = () => {
         setIsEdit(false)
@@ -20,7 +22,7 @@ export function UserProfile(props:any){
     return (
         <div>
             <div className={`overlay ${isEdit ? 'show' : 'hide'}`}></div>
-            <div className={`edit-panel ${isEdit ? "show" : "hide"}`}>
+            <div className={`edit-panel ${isEdit ? "show" : "hide"}`} hidden={isFirstRender}>
                 <div className="edit-panel-header">
                     <IoMdClose style={{cursor: 'pointer'}} onClick={closeEditPanel}/>
                 </div>

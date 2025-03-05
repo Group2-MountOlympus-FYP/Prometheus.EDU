@@ -1,0 +1,15 @@
+.bgImg{
+    background-image: url(./../../public/background.png);
+    background-size: cover;
+    background-position: center;
+    height: 55vh;
+    display: flex;
+    justify-self: center;
+    width: 100%;
+}
+.intro{
+    margin: auto;
+    /* background-color: rgba(105, 105, 105, 0.2); */
+    text-align: center;
+    padding-right: 10px;
+}
