@@ -1,24 +1,18 @@
-import sqlalchemy
-from flask import jsonify
-from flask import session, url_for, redirect, request
-
-from .ReplyTarget import ReplyTarget
-
-from .User import *
-from .Post import Post
-from .extensions import db
-from .Comment import Comment
-from .ActivityLog import ActivityLog
-from .Image import Image
-from wtforms import PasswordField
-from flask_wtf import FlaskForm
-from wtforms.validators import InputRequired
 import hashlib
-from .schemas import *
+
+import requests
+import sqlalchemy
 from flasgger import swag_from
-from .decorator import login_required
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+from flask_wtf import FlaskForm
+from wtforms import PasswordField
+from wtforms.validators import InputRequired
+
+from .User import *
+from .decorator import *
+from .extensions import db
+from .schemas import *
 
 
 class AdminLoginForm(FlaskForm):
@@ -82,6 +76,11 @@ def setRoot(app):
         "description": "User's profile and posts",
     })
     @login_required
+    @log_activity(
+        action='getProfile',
+        target_type='get',
+        target_id_func=lambda: get_current_user().id if get_current_user() else None
+    )
     def profile_page():
         user = get_current_user()
         return jsonify(UserSchema(exclude=["password_hash"]).dump(user))
@@ -110,6 +109,7 @@ def setRoot(app):
         "description": "User's profile and posts",
     })
     @login_required
+    @log_activity(action='getLikeInfo', target_type='get', target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def my_likes():
         user = get_current_user()
         posts = user.liked_posts  # 获取该用户赞过的帖子
@@ -138,9 +138,10 @@ def setRoot(app):
         "description": "获取用户收藏的内容列表"
     })
     @login_required
+    @log_activity(action='getCollectInfo', target_type='get', target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def my_collections():
         user = get_current_user()
-        posts = user.favorited_posts  #用户收藏
+        posts = user.favorited_posts  # 用户收藏
         return jsonify({"posts": PostSchema(many=True).dump(posts)})
 
     @app.route('/change_avatar', methods=['POST'])
@@ -178,6 +179,7 @@ def setRoot(app):
             }
         ]
     })
+    @log_activity(action='changeAvatar', target_type='post', target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def change_avatar():
         file = request.files.get('file')
         user = get_current_user()
@@ -254,6 +256,7 @@ def setRoot(app):
             }
         ]
     })
+    @log_activity(action='changeProfile', target_type='post', target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def change_profile():
         user = get_current_user()
         data = request.form
@@ -282,8 +285,116 @@ def setRoot(app):
         try:
             db.session.commit()
         except sqlalchemy.exc.IntegrityError:
-            return "用户名重复",401
+            return "用户名重复", 401
         return "个人信息更新成功"
+
+    @app.route('/delete_user/<int:user_id>', methods=['POST'])
+    @log_activity(action='delete_user',target_type='post',target_id_func=lambda user_id: user_id)
+    # @login_required
+    def delete_user(user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        try:
+            user.deleted = True
+            db.session.commit()
+            return jsonify({"message": "User marked as deleted"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": "Failed to delete user", "error": str(e)}), 500
+
+    @app.route('/change_user_status/<int:user_id>', methods=['POST'])
+    @login_required
+    @log_activity(action='changeStatus', target_type='post', target_id_func=lambda user_id: user_id)
+    @swag_from({
+        "responses": {
+            "200": {
+                "description": "成功更新个人信息",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "message": {
+                            "type": "string",
+                            "description": "操作成功后的消息"
+                        }
+                    },
+                    "examples": {
+                        "application/json": {
+                            "message": "个人信息更新成功"
+                        }
+                    }
+                }
+            }
+        },
+        "tags": ["Admin"],
+        "summary": "更新用户个人信息",
+        "description": "用户通过上传form-data数据来更新个人信息。若某字段未传或为空，则跳过该字段的更新。注意：头像和密码不在此接口更新范围。如果用户未登录，则返回 401 错误。",
+        "parameters": [
+            {
+                "name": "username",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "用户名"
+            },
+            {
+                "name": "birthdate",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "出生日期"
+            },
+            {
+                "name": "gender",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "性别"
+            },
+            {
+                "name": "nickname",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "昵称"
+            },
+            {
+                "name": "status",
+                "in": "formData",
+                "type": "string",
+                "required": False,
+                "description": "用户状态"
+            },
+            {
+                "name": "deleted",
+                "in": "formData",
+                "type": "boolean",
+                "required": False,
+                "description": "是否删除"
+            }
+        ]
+    })
+    def change_user_status(user_id):
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({"message": "User not found"}), 404
+
+        new_status_str = request.json.get("status")  # 获取前端传来的新状态（字符串）
+
+        # 验证 new_status 是否是合法的 UserStatus 值
+        try:
+            new_status = UserStatus[new_status_str]  # 直接从枚举获取值
+        except KeyError:
+            return jsonify({"message": "Invalid status"}), 400
+
+        try:
+            user.status = new_status  # 这里存储的是 UserStatus 枚举
+            db.session.commit()
+            return jsonify({"message": "User status updated successfully"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": "Failed to update user status", "error": str(e)}), 500
 
 
 class AdminModelView(ModelView):
@@ -314,10 +425,59 @@ class MyAdminIndexView(AdminIndexView):
         return super().index()
 
 
+class UserAdminModelView(ModelView):
+    form_columns = ['status']
+
+    def delete_model(self, model):
+        try:
+            session_cookie = {"session": request.cookies.get("session")}
+            url = url_for('delete_user', user_id=model.id, _external=True)
+            response = requests.post(url, cookies=session_cookie)
+            if response.status_code == 200:
+                return True
+            else:
+                return False
+        except Exception as e:
+            print("Error", e)
+            return False
+
+    def edit_form(self, obj=None):
+        """
+        自定义表单，确保 `status` 字段是下拉框，并且只能选择 `UserStatus` 中的值
+        """
+        form = super().edit_form(obj)
+        if hasattr(form, 'status'):
+            form.status.choices = [(status.name, status.name) for status in UserStatus]  # 让 choices 匹配 Enum
+
+        return form
+
+    def on_model_change(self, form, model, is_created):
+        """
+        拦截 `Flask-Admin` 的表单提交，请求 `change_user_status` 进行修改
+        """
+        try:
+            session_cookie = {"session": request.cookies.get("session")}
+            url = url_for('change_user_status', user_id=model.id, _external=True)
+            payload = {"status": model.status.name}  # 传递 status 字符串
+
+            response = requests.post(url, json=payload, cookies=session_cookie)
+
+            if response.status_code != 200:
+                raise ValueError(f"Failed to update user status: {response.json().get('message')}")
+
+            return True
+        except Exception as e:
+            print(f"Error updating user status: {e}")
+            raise ValueError(f"Error updating user status: {e}")
+
+
 def init_admin(app):
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())
 
     # 保护 Flask-Admin 只能被管理员访问
     admin.add_view(ModelView(ActivityLog, db.session))
-    admin.add_view(ModelView(User, db.session))
+    admin.add_view(UserAdminModelView(User, db.session))
     admin.add_view(ModelView(Post, db.session, endpoint="admin_post"))
+    admin.add_view(ModelView(Comment, db.session))
+    admin.add_view(ModelView(Course, db.session, endpoint="admin_course"))
+    admin.add_view(ModelView(Tag, db.session))

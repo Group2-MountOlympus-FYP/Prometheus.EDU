@@ -6,7 +6,7 @@ type Translations = {
 
 const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
-        welcome: "Sign On",
+        welcome: "Sign Up",
         username: "Username",
         user_exit: 'Username Already Exist!',
         password: 'Password',
@@ -14,13 +14,13 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         gender: 'Gender',
         male: 'Male',
         female: 'Female',
-        other: 'other',
+        other: 'Other',
         birthday: 'Birthday',
         already_have_account: 'Already have account?',
         submit: 'Submit',
       },
       zh: {
-        welcome: "登录",
+        welcome: "注册",
         username: "用户名",
         user_exit: '用户名已存在！',
         password: '密码',

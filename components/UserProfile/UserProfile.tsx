@@ -12,7 +12,7 @@ export function UserProfile(props:any){
     const [isEdit , setIsEdit] = useState(false)
     const [isFirstRender, setIsFirstRender] = useState(true)
 
-    const openEditPanel = () => {
+    const  openEditPanel= () => {
         setIsEdit(true)
         setIsFirstRender(false)
     }

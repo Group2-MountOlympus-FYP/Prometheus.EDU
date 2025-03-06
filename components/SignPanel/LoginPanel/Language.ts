@@ -16,7 +16,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         login: 'Login',
       },
       zh: {
-        welcome: "注册",
+        welcome: "登录",
         username: "用户名",
         user_exit: '用户名已存在！',
         password: '密码',
