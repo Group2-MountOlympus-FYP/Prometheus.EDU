@@ -1,6 +1,6 @@
 .panel-bg{
-    width: 35vw;
-    box-shadow: 10px 10px 5px grey;
+    width: 100%;
+    /* box-shadow: 10px 10px 5px grey; */
 }
 .title{
     width: 100%;

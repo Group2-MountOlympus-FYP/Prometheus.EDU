@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import { setLanguage, getLanguage } from "@/app/language"
 import { ActionIcon } from "@mantine/core"
 import Flag from 'react-world-flags'
+import { reloadWindow } from "@/app/api/General"
 
 export function LanguageSwitcher(){
     const [showEN, setShowEN] = useState(true)
@@ -13,8 +14,8 @@ export function LanguageSwitcher(){
         }else{
             setLanguage('zh')
         }
-        console.log(getLanguage())
-        window.location.reload()
+        //console.log(getLanguage())
+        reloadWindow()
     }
 
     useEffect(() => {
