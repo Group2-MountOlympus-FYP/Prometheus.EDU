@@ -2,9 +2,14 @@
 
 import { SearchBar } from "../SearchBar/SearchBar"
 import { useDisclosure } from "@mantine/hooks"
-import { Group, Burger, ActionIcon, Avatar } from "@mantine/core"
+import { Group, Burger, ActionIcon, Avatar, Modal } from "@mantine/core"
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
+import { SignPanel } from "../SignPanel/SignPanel"
+
+type headerProps = {
+    onLoginClick?: () => void
+}
 
 const links = [
     { link: '/', label: 'Collections' },
@@ -12,7 +17,7 @@ const links = [
     { link: '/', label: 'message' }
 ]
 export default function Header() {
-    const [ opened, { toggle } ] = useDisclosure(false)
+    const [ opened, { open, close } ] = useDisclosure(false)
 
     const items = links.map((link) => (
         <a
@@ -42,12 +47,16 @@ export default function Header() {
                         {items}
                     </Group>
                     <Group className={classes.links}>
-                        Login
+                        <span onClick={open}>Login</span>
                     </Group>
                 </Group>
                 
             </div>
             <div style={{height: '0', border: 'none' , borderBottom: '1px solid grey'}}></div>
+            <Modal opened={opened} onClose={close} style={{width:'35vw'}}>
+                <SignPanel opened={opened}></SignPanel>
+            </Modal>
+
         </header>
     )
 

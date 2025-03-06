@@ -61,3 +61,9 @@ export function windowRedirect(target:any){
         window.location.href = target
     }
 }
+
+export function reloadWindow(){
+    if(typeof window !== "undefined"){
+        window.location.reload()
+    }
+}
