@@ -1,5 +1,5 @@
 .bgLogin{
-    padding-top: 10px;
+    padding-top: 1vh;
     width: 100%;
 }
 .login-text{
@@ -27,8 +27,8 @@
 #login-title{
     text-align: center;
     font-weight: bolder;
-    font-size: 28px;
-    padding: 20px 0 10px 0;
+    font-size: clamp(20px, 2vw, 26px);
+    padding: 15px 0 0px 0;
 }
 #login-footer{
     text-align: center;
