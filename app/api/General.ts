@@ -67,3 +67,15 @@ export function reloadWindow(){
         window.location.reload()
     }
 }
+
+export function lockOverflow(){
+    if(typeof document !== 'undefined'){
+        document.body.style.overflow = 'hidden'
+    }
+}
+
+export function unlockOverflow(){
+    if(typeof document !== 'undefined'){
+        document.body.style.overflow = 'auto'
+    }
+}

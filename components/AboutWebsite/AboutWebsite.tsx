@@ -21,12 +21,6 @@ export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
                         ensuring that learners from diverse backgrounds can access high-quality education and support.</p> */}
                 </div>
             </div>
-            <Grid>
-                <Grid.Col span={6}></Grid.Col>
-                <Grid.Col span={6}>
-                    
-                </Grid.Col>
-            </Grid>
             <div >
                 
             </div>

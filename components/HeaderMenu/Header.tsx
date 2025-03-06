@@ -1,11 +1,12 @@
 'use client'
 
 import { SearchBar } from "../SearchBar/SearchBar"
-import { useDisclosure } from "@mantine/hooks"
 import { Group, Burger, ActionIcon, Avatar, Modal } from "@mantine/core"
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { SignPanel } from "../SignPanel/SignPanel"
+import { useState } from "react"
+import { lockOverflow, unlockOverflow } from "@/app/api/General"
 
 type headerProps = {
     onLoginClick?: () => void
@@ -17,7 +18,7 @@ const links = [
     { link: '/', label: 'message' }
 ]
 export default function Header() {
-    const [ opened, { open, close } ] = useDisclosure(false)
+    const [isLoginPanelOpen, setIsPanelOpen] = useState(false)
 
     const items = links.map((link) => (
         <a
@@ -47,15 +48,16 @@ export default function Header() {
                         {items}
                     </Group>
                     <Group className={classes.links}>
-                        <span onClick={open}>Login</span>
+                        <span onClick={() => {setIsPanelOpen(true);lockOverflow()}}>Login</span>
                     </Group>
                 </Group>
                 
             </div>
             <div style={{height: '0', border: 'none' , borderBottom: '1px solid grey'}}></div>
-            <Modal opened={opened} onClose={close} style={{width:'35vw'}}>
-                <SignPanel opened={opened}></SignPanel>
-            </Modal>
+            <div hidden={!isLoginPanelOpen} className={`${classes.overlay} ${isLoginPanelOpen ? 'show' : ''}`}></div>
+            <div hidden={!isLoginPanelOpen} className={`${classes.signPanel} ${isLoginPanelOpen ? classes.show : ''}`}>
+                <SignPanel onExitClick={() => {setIsPanelOpen(false);unlockOverflow()}}></SignPanel>
+            </div>
 
         </header>
     )

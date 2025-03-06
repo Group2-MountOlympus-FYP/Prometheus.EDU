@@ -8,7 +8,6 @@ import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
 
 export default function HomePage() {
-
   const courseCardProps: CourseCardInfo[] = [
     { playCount: 1532, url: 'courseSample.jpg', name: 'COMP3030J' },
     { playCount: 212, url: 'courseSample.jpg', name: 'COMP1004J' },
