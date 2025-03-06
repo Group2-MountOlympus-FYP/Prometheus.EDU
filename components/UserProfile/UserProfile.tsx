@@ -11,7 +11,7 @@ export function UserProfile(props:any){
     const avatar_path = ''
     const [isEdit , setIsEdit] = useState(false)
 
-    const openEditPanel = () => {
+    const  openEditPanel= () => {
         setIsEdit(true)
     }
     const closeEditPanel = () => {

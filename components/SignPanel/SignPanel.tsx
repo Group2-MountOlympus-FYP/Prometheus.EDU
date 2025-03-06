@@ -11,7 +11,7 @@ export function SignPanel(props:any){
 
     useEffect(() => {
         
-    }, [])    
+    }, [])
 
     const switchLogin = () => {
         setSignType('login')
@@ -23,19 +23,19 @@ export function SignPanel(props:any){
     }
     return (
         <div className="panel-bg" {...props}>
-            <span className="title">{getText('welcome')}</span>
-            <span className="subtitle">{getText('subtitle')}</span>
+        <div className="panel-content">
+            
+            <div className="title">
+                <span className="welcome">{getText('welcome')}</span>
+                <span className="site-name">{getText('sitename')}</span>
+            </div>
+
+            <div className="subtitle">
+                <span>{getText('subtitle')}</span>
+            <div/>
+            
             <table>
                 <tbody>
-                    <tr className="signType-selection">
-                        <td className={`login ${signType == 'login' ? "selected" : "" }`} onClick={switchLogin}>
-                            <span>{getText('signon')}</span>
-                        </td>
-                        <td className={`register ${signType == 'register' ? "selected" : ""}`} onClick={switchRegister}>
-                            <span>{getText('signin')}</span>
-                        </td>
-                        <td className="placeholder"></td>
-                    </tr>
                     <tr hidden = {signType != 'register'}>
                         <td colSpan={3}>
                             <LoginPanel></LoginPanel>
@@ -46,8 +46,38 @@ export function SignPanel(props:any){
                             <RegisterPanel></RegisterPanel>
                         </td>
                     </tr>
+                    
+                    {/* <td className={`login ${signType == 'login' ? "selected" : "" }`} onClick={switchLogin}>
+                            <span>{getText('signup')}</span>
+                    </td>
+                    <td className={`register ${signType == 'register' ? "selected" : ""}`} onClick={switchRegister}>
+                        <span>{getText('signin')}</span>
+                    </td> */}
+
+                    <tr className={`register-state ${signType == 'register' ? "hidden" : "" }`}>
+                        <td className="register-ask">
+                            <span>{getText('registerask')}</span>
+                        </td>
+                        <td className="register" onClick={switchRegister}>
+                            <span>{getText('signup')}</span>
+                        </td>
+                    </tr>
+                    <tr className={`login-state ${signType == 'login' ? "hidden" : "" }`}>
+                        <td className="login-ask">
+                            <span>{getText('loginask')}</span>
+                        </td>
+                        <td className="login" onClick={switchLogin}>
+                            <span>{getText('signin')}</span>
+                        </td>
+                    </tr>
+
+                    <tr className="placeholder"> <td></td> </tr>
+
                 </tbody>
             </table>
+            </div>
+
+        </div>
         </div>
     )
 }

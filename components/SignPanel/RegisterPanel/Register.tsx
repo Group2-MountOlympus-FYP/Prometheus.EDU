@@ -93,37 +93,37 @@ export function RegisterPanel(){
                 <table>
                     <tbody>
                     <tr>
-                        <td id='title' colSpan={2}>
-                            <p>{getText('welcome')}</p>
+                        <td id='register-title' colSpan={2}>
+                            {getText('welcome')}
                         </td>
                     </tr>
-                    <tr>
-                        <td className='text'>{getText('username')}: </td>
+                    <tr className="register-item">
+                        <td className='text'>{getText('username')}</td>
                         <td>
-                            <input type="text" maxLength={20} value={username} onChange={handelUsername} className='input' onBlur={handelUsernameCheck}></input>
+                            <input type="text" maxLength={20} value={username} onChange={handelUsername} className='register-input' onBlur={handelUsernameCheck}></input>
                             <div className={`username-warnning ${isUsernameExist ? "show" : "hide"}`}>{getText('user_exit')}</div>
                         </td>
                     </tr>
-                    <tr>
-                        <td className='text'>{getText('password')}: </td>
-                        <td><input type="password" value={password} onChange={handelPassword} maxLength={20} className='input' minLength={6}
+                    <tr className="register-item">
+                        <td className='text'>{getText('password')}</td>
+                        <td><input type="password" value={password} onChange={handelPassword} maxLength={20} className='register-input' minLength={6}
                         pattern='^[a-zA-Z0-9]+$'
                         title={getText('password_hint')}></input></td>
                     </tr>
-                    <tr>
-                        <td className='text'>{getText('gender')}: </td>
+                    <tr className="register-item">
+                        <td className='text'>{getText('gender')}</td>
                         <td>
                             <input type="radio" value={0} name="gender" checked={gender===0} onChange={handelGenderChange}/>  <label>{getText('male')}</label>   
                             <input type="radio" value={1} name="gender" checked={gender===1} onChange={handelGenderChange}/> <label>{getText('female')}</label>
                             <input type="radio" value={2} name="gender" checked={gender===2} onChange={handelGenderChange}/> <label>{getText('other')}</label>
                         </td>
                     </tr>
-                    <tr>
-                        <td className='text'>{getText('birthday')}: </td>
-                        <td><input type="date" value={birthDate} onChange={handelDateChane} className='input'></input></td>
+                    <tr className="register-item">
+                        <td className='text'>{getText('birthday')}</td>
+                        <td><input type="date" value={birthDate} onChange={handelDateChane} className='register-input'></input></td>
                     </tr>
                     <tr>
-                        <td id='footer' colSpan={2}>
+                        <td id='register-footer' colSpan={2}>
                             <button type='submit' disabled={!isAbleToSubmit}>{getText('submit')}</button>
                         </td>
                     </tr>

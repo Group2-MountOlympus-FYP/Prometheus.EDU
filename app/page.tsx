@@ -19,7 +19,6 @@ export default function HomePage() {
       setSignPanelOpen(true)
     }
   }
-
   return (
     <>
       <LanguageSwitcher/>

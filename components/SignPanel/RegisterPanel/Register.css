@@ -5,16 +5,23 @@
     text-align: right;
     width: 25%;
 }
-.input{
-    border: none;
-    border-bottom: 1px solid black;
+.register-input{
     text-align: left;
-    width: 80%;
+    width: 88%;
+    border: 1.3px solid #3498db;
+    border-radius: 4px;
+    padding: 2px 5px;
 }
-.input:focus{
+.register-input:focus{
+    text-align: left;
+    width: 88%;
+    border: 2px solid #3498db;
+    border-radius: 4px;
+    padding: 2px 5px;
     outline: none;
-    border: none;
-    border-bottom: 3px solid black;
+}
+.register-item td{
+    padding: 15px 0;
 }
 .username-warnning{
     margin-left: 20px;
@@ -39,17 +46,51 @@
     opacity: 0;
     visibility: hidden;
 }
-#title{
+#register-title{
     text-align: center;
     font-weight: bolder;
-    font-size: 25px;
+    font-size: 28px;
+    padding: 25px 0;
 }
-#footer{
+#register-footer{
     text-align: center;
-    padding-bottom: 20px;
+    padding-bottom: 14px;
 }
-#footer button{
+#register-footer button:disabled{
     text-align: center;
+    padding: 2px 12px 2.5px 12px;
+    background-color: #9ccded;
+    color: white;
+    border: 1px solid #9ccded;
+    border-radius: 4px;
+    margin: 16px 0;
+}
+#register-footer button{
+    text-align: center;
+    padding: 2px 12px 2.5px 12px;
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+    margin: 16px 0;
+}
+#register-footer button:hover{
+    text-align: center;
+    padding: 2px 12px 2.5px 12px;
+    background-color: #176ea7;
+    color: white;
+    border: 1px solid #176ea7;
+    border-radius: 4px;
+    margin: 16px 0;
+}
+#register-footer button:active{
+    text-align: center;
+    padding: 2px 12px 2.5px 12px;
+    background-color: #6ab0df;
+    color: white;
+    border: 1px solid #176ea7;
+    border-radius: 4px;
+    margin: 16px 0;
 }
 table{
     width: 100%;

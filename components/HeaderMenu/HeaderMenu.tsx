@@ -10,7 +10,6 @@ import {ColorSchemeToggle} from "@/components/ColorSchemeToggle/ColorSchemeToggl
 
 export function HeaderMenu({links}: HeaderMenuProps) {
 
-
     const [opened, {toggle}] = useDisclosure(false);
 
     const items = links.map((link) => {

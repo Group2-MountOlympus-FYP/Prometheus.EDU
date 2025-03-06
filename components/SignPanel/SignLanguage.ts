@@ -1,4 +1,5 @@
 import { getLanguage } from "@/app/language";
+import { register } from "module";
 
 type Translations = {
     [key: string]: string;
@@ -6,16 +7,22 @@ type Translations = {
 
 const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
-        welcome: "Welcome To Prometheus.EDU",
-        subtitle: 'add subtitle there',
-        signon: 'Sign On',
+        welcome: "Welcome to",
+        sitename: "Prometheus.EDU",
+        subtitle: 'A Comprehensive Online Education Platform',
+        signup: 'Sign Up',
         signin: 'Sign In',
+        registerask: 'Don\'t have an account? Click here ',
+        loginask: 'Already have an account? Click here ',
       },
       zh: {
-        welcome: "欢迎来到Prometheus.EDU",
-        subittile: '在此添加副标题',
-        signon: 'Sign On',
-        signin: 'Sign In',
+        welcome: "欢迎来到",
+        sitename: "Prometheus.EDU",
+        subittile: '一个线上教育综合平台',
+        signup: '注册',
+        signin: '登录',
+        registerask: '没有账号？点击这里',
+        loginask: '已经有账号了？点击这里',
       },
 }
 
