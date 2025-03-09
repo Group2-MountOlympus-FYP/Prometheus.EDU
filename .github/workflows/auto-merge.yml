@@ -1,0 +1,20 @@
+name: Auto Merge Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main  # 或者是你的目标分支
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Auto Merge PR
+        uses: pascalgn/automerge-action@v0.16.4  # 自动合并的 GitHub Action
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # 用于授权的 GitHub Token
+          merge_method: merge  # 可选：你可以指定合并方式（merge, squash, rebase）
