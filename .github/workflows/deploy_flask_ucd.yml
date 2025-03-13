@@ -35,8 +35,8 @@ jobs:
 
           # Pull the latest changes from the repository
           git pull 
-
-          python3 Doner_backend/deploy.py
+        
+          sudo supervisorctl restart doner
 
           echo "Deployment complete!"
         EOF
