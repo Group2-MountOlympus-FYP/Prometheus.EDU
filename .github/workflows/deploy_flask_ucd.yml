@@ -1,0 +1,87 @@
+name: Deploy Flask App to Server
+
+on:
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      env:
+        SSH_PRIVATE_KEY_UCD: ${{ secrets.SSH_PRIVATE_KEY_UCD }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY_UCD" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H csi420-01-vm2.ucd.ie >> ~/.ssh/known_hosts
+
+    - name: Deploy to Server
+      env:
+        SSH_HOST: csi420-01-vm2.ucd.ie
+        SSH_USER: student
+        DEPLOY_PATH: ~/flask
+      run: |
+        echo "Deploying to server..."
+        
+        # Connect to the server and perform the deployment
+        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          set -e
+
+          # Ensure the deploy path exists
+          if [ ! -d "$DEPLOY_PATH" ]; then
+            echo "First time deploy, creating directory..."
+            mkdir -p $DEPLOY_PATH
+          fi
+
+          # Go to the deploy directory
+          cd $DEPLOY_PATH
+
+          # Pull the latest changes from the repository
+          git pull || git clone https://github.com/yourusername/yourrepository.git .
+
+          # Ensure Python3 and pip are installed
+          if ! command -v python3 &> /dev/null; then
+            echo "Python3 is not installed, installing it..."
+            sudo apt update
+            sudo apt install python3 python3-pip -y
+          fi
+
+          # Create or activate the virtual environment
+          if [ ! -d "$DEPLOY_PATH/donerenv" ]; then
+            echo "Creating virtual environment..."
+            python3 -m venv donerenv
+          fi
+          source $DEPLOY_PATH/donerenv/bin/activate
+
+          # Install dependencies
+          echo "Installing dependencies..."
+          pip install -r requirements.txt
+
+          # Run the deploy script
+          echo "Running the deploy script..."
+          python $DEPLOY_PATH/deploy_flask.py
+
+          # Restart Gunicorn via Supervisor
+          echo "Managing Gunicorn with Supervisor..."
+
+          # Check if Supervisor is installed, if not install it
+          if ! command -v supervisorctl &> /dev/null; then
+            echo "Supervisor is not installed, installing it..."
+            sudo apt install supervisor -y
+          fi
+
+          # Configure Supervisor to manage Gunicorn process
+          sudo cp $DEPLOY_PATH/your_flask_app.conf /etc/supervisor/conf.d/your_flask_app.conf
+
+          # Reload Supervisor to apply new configurations
+          sudo supervisorctl reread
+          sudo supervisorctl update
+          sudo supervisorctl restart your_flask_app || sudo supervisorctl start your_flask_app
+
+          echo "Deployment complete!"
+        EOF

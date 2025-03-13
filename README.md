@@ -49,6 +49,10 @@ COMP3032J Final Year Project.
    pip freeze > requirements.txt
    ```
 
+   ```shell
+   pip install -r requirements.txt --no-deps
+   ```
+
 ## 关于 Athena TA 模块
 
 在运行前，需要在 `Doner_backend/doner` 路径下创建 `.env`，并在其中添加 Google API Key
