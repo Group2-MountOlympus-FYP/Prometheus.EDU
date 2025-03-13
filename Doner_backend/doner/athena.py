@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, send_file, request 
+from flask import Blueprint, jsonify, send_file
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
@@ -8,12 +8,8 @@ from .athena_ta_core import TA_Client
 from dotenv import load_dotenv
 import os
 
-from fpdf import FPDF
-
 from io import BytesIO
-
-# ReportLab imports:
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer 
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
@@ -258,3 +254,4 @@ def generate_report():
         download_name="ta_report.pdf",
         mimetype='application/pdf'
     )
+
