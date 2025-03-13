@@ -4,6 +4,10 @@ import './Register.css'
 import { CheckUsernameExist, RegisterUser } from '@/app/api/Register/router';
 import { GetCSRF, GetCookie } from '@/app/api/General';
 import { getText } from './language';
+import { Modal } from '@mantine/core';
+import { useDisclosure } from '@mantine/hooks';
+import { UserAgreement } from '../UserAgreement/UserAgreement';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
 
 export function RegisterPanel(){
     const today = new Date().toISOString().split('T')[0]
@@ -14,6 +18,7 @@ export function RegisterPanel(){
     const [gender, setGender] = useState(2)
     const [isAbleToSubmit, setIsAbleToSubmit] = useState(false)
     const [isProtocolAgree, setIsProtocolAgree] = useState(false)
+    const [opened , { open, close }] = useDisclosure(false)
 
     const handelDateChane = (e:any) => {
         setDate(e.targer.value)
@@ -93,6 +98,17 @@ export function RegisterPanel(){
             //console.log(document.cookie)
         })
     }
+
+    const onProtocolAgree = () => {
+        console.log('agree')
+        setIsProtocolAgree(true)
+        close()
+    }
+    const onProtocolCancel = () => {
+        setIsProtocolAgree(false)
+        close()
+    }
+
     return(
         <div className='bg'>
             <form onSubmit={handleRegisterForm}>
@@ -135,8 +151,12 @@ export function RegisterPanel(){
                     <tr>
                         <td id='register-footer' colSpan={2}>
                             <span style={{display:'block'}}>
-                                {getText('protocol')}<input type='checkbox' checked={isProtocolAgree} onChange={(e:any) => setIsProtocolAgree(e.target.checked)}></input>
+                                {getText('protocol')} <a href='#' onClick={open}>{getText('protocol_name')}</a><input type='checkbox' checked={isProtocolAgree} onChange={(e:any) => setIsProtocolAgree(e.target.checked)}></input>
                             </span>
+                            <Modal opened={opened} onClose={close} title={getText('protocol_name')} size={'xl'}>
+                                <LanguageSwitcher/>
+                                <UserAgreement onAgreeClick={onProtocolAgree} onCancelClick={onProtocolCancel}/>
+                            </Modal>
                             <button type='submit' disabled={!isAbleToSubmit}>{getText('submit')}</button>
                         </td>
                     </tr>

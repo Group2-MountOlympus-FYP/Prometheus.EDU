@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Avatar, Group, Text } from "@mantine/core"
 import { FaRegEdit } from "react-icons/fa";
-import { UpdateUserInfoPanel } from "../UpdateUserInfo/UpdateUserInfo";
+import { UpdateUserInfoPanel } from "./UpdateUserInfo/UpdateUserInfo";
 import { IoMdClose } from "react-icons/io";
 import './UserProfile.css'
 

@@ -18,7 +18,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         birthday: 'Birthday',
         already_have_account: 'Already have account?',
         submit: 'Submit',
-        protocol: 'I have read and agree to the Privacy Policy and User Agreement.',
+        protocol: 'I have read and agree to the Privacy Policy and',
+        protocol_name: 'User Agreement',
       },
       zh: {
         welcome: "注册",
@@ -33,7 +34,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         birthday: '生日',
         already_have_account: '已有账户？',
         submit: '提交',
-        protocol: '我已阅读并同意《隐私政策与用户协议》',
+        protocol: '我已阅读并同意',
+        protocol_name: '《隐私政策与用户协议》',
       },
 }
 
