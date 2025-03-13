@@ -37,8 +37,6 @@ jobs:
 
           # Go to the deploy directory
           cd ~/Prometheus.EDU
-
-          
-
+          python3 Doner_backend/deploy.py
           echo "Deployment complete!"
         EOF

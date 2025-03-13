@@ -38,7 +38,10 @@ jobs:
           # Go to the deploy directory
           cd ~/Prometheus.EDU
 
-          python3 Doner_backend/deploy.py
+          # Pull the latest changes from the repository
+          git pull 
+        
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"
         EOF
