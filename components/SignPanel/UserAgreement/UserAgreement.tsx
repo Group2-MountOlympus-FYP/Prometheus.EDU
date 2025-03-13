@@ -4,9 +4,10 @@ import './UserAgreement.css'
 
 type UserAgreementProps = {
     onAgreeClick?():void
+    onCancelClick?():void
 }
 
-export function UserAgreement({ onAgreeClick = () => {}} : UserAgreementProps){
+export function UserAgreement({ onAgreeClick = () => {} , onCancelClick = () => {} } : UserAgreementProps){
     return (
         <div className="container">
             <h1>{getText("introduction")}</h1>
@@ -77,7 +78,10 @@ export function UserAgreement({ onAgreeClick = () => {}} : UserAgreementProps){
 
             <p>{getText("effective_date")} 2025-03-01</p>
 
-            <button onClick={onAgreeClick}>{getText("submit")}</button>
+            <div className="protocol-agree">
+                <button onClick={onAgreeClick}>{getText("agree")}</button>
+                <button onClick={onCancelClick}>{getText("cancel")}</button>
+            </div>
         </div>
 
     )

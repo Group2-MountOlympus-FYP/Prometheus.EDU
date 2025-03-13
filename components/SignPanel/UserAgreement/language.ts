@@ -42,6 +42,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         dispute_resolution: "Any dispute arising from this Agreement shall be resolved through negotiation; if negotiation fails, either party may file a lawsuit with the court having jurisdiction over our location.",
         contact: "If you have any questions about this Agreement, please contact us via:",
         effective_date: "Effective Date:",
+        agree: 'Agree',
+        cancel: 'Cancel',
     },
     zh: {
         introduction: "欢迎您使用我们的服务！为了保障您的合法权益，明确双方权利义务，我们制定了本《隐私政策与用户协议》（以下简称“本协议”）。",
@@ -80,6 +82,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         dispute_resolution: "因本协议产生的争议，双方应协商解决，协商不成的，提交本公司所在地有管辖权的法院诉讼解决。",
         contact: "如对本协议有任何疑问，您可通过以下方式联系我们：",
         effective_date: "生效日期：",
+        agree: '同意',
+        cancel: '取消',
     },
 }
 

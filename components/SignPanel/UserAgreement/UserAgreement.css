@@ -23,3 +23,17 @@ ul {
     margin: 10px 0;
     padding-left: 20px;
 }
+.protocol-agree{
+    display: flex;
+    justify-content: center;
+}
+.protocol-agree button{
+    margin: 0 10px 0 10px;
+    cursor: pointer;
+    text-align: center;
+    padding: 2px 16px 5px 16px;
+    background-color: #3498db;
+    color: white;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+}

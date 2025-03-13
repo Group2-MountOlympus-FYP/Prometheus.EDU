@@ -99,8 +99,14 @@ export function RegisterPanel(){
         })
     }
 
-    const showProtocol = () => {
-        
+    const onProtocolAgree = () => {
+        console.log('agree')
+        setIsProtocolAgree(true)
+        close()
+    }
+    const onProtocolCancel = () => {
+        setIsProtocolAgree(false)
+        close()
     }
 
     return(
@@ -145,7 +151,7 @@ export function RegisterPanel(){
                             </span>
                             <Modal opened={opened} onClose={close} title={getText('protocol_name')} size={'xl'}>
                                 <LanguageSwitcher/>
-                                <UserAgreement/>
+                                <UserAgreement onAgreeClick={onProtocolAgree} onCancelClick={onProtocolCancel}/>
                             </Modal>
                             <button type='submit' disabled={!isAbleToSubmit}>{getText('submit')}</button>
                         </td>
