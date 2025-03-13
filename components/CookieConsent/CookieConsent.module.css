@@ -1,0 +1,53 @@
+.banner{
+    position: "fixed";
+    bottom: 0;
+    left: 0;
+    width: "100%";
+    background-color: "#333";
+    color: "#fff";
+    padding: 0px 20px 0px 20px;
+    display: "flex";
+    justify-content: "space-between";
+    align-items: "center";
+    z-index: 1000;
+    background-color: #3498db;
+    color: white;
+}
+.text{
+    margin: 0;
+    font-size: "14px";
+}
+.link{
+    color: "#ffd700";
+    text-decoration: "underline";
+}
+.buttons{
+    text-align: center;
+    display: "flex";
+    gap: "10px";
+}
+.buttons button{
+    padding: 2px 12px 2.5px 12px;
+    background-color: white;
+    color: black;
+    border: 1px solid #3498db;
+    border-radius: 4px;
+    margin: 16px 0;
+    cursor: pointer;
+}
+.accept{
+    background-color: "#4CAF50";
+    color: "#fff";
+    border: "none";
+    padding: "8px 12px";
+    cursor: "pointer";
+    border-radius: "4px";
+}
+.decline{
+    background-color: "#f44336";
+    color: "#fff";
+    border: "none";
+    padding: "8px 12px";
+    cursor: "pointer";
+    border-radius: "4px";
+}

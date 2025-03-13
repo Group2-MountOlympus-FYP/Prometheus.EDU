@@ -44,6 +44,9 @@ export function GetCookie(name:string) {
 export function setLocalStorage(key:any, value:any){
     if( typeof window !== "undefined" ){
         //console.log(`Saving ${value} in ${key}`)
+        if(getLocalStorage('cookieConsent') !== 'true'){
+            return
+        }
         localStorage.setItem(key, value);
     }
 }
