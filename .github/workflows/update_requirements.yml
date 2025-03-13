@@ -6,7 +6,7 @@ on:
     branches:
       - unprotected
     paths:
-      - 'Doner_backend/**'
+      - 'Doner_backend/requirements.txt'
 
 jobs:
   deploy:
@@ -38,7 +38,7 @@ jobs:
           # Go to the deploy directory
           cd ~/Prometheus.EDU
 
-          python3 Doner_backend/deploy.py
+          
 
           echo "Deployment complete!"
         EOF

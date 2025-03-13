@@ -46,12 +46,7 @@ def activate_virtualenv():
     print(f"Added environment variables to {activate_script}")
 
 # 使用 Supervisor 启动或重启 Flask 应用
-def manage_flask_with_supervisor():
-    print("Managing Flask app with Supervisor...")
 
-    # 假设 Supervisor 配置文件名为 'doner.conf'
-    program_name = 'doner'  # Supervisor 中配置的程序名
-    subprocess.check_call(['sudo', 'supervisorctl', 'restart', program_name])
 
 if __name__ == "__main__":
     if platform.system() == 'Linux':
@@ -59,6 +54,5 @@ if __name__ == "__main__":
         create_virtualenv()
         install_requirements()
         activate_virtualenv()
-        manage_flask_with_supervisor()
     else:
         print("This script is designed to run on Ubuntu Linux.")
