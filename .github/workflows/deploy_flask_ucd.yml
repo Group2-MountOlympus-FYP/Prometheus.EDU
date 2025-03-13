@@ -40,7 +40,7 @@ jobs:
           cd ~/flask
 
           # Pull the latest changes from the repository
-          git pull || git clone https://github.com/Group2-MountOlympus-FYP/Prometheus.EDU.git
+          git pull || git clone git@github.com:Group2-MountOlympus-FYP/Prometheus.EDU.git
 
           python3 ~/flask/Doner_backend/deploy.py
 
