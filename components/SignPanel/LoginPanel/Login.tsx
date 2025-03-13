@@ -57,13 +57,17 @@ export function LoginPanel(){
                                 {getText('welcome')}
                             </td>
                         </tr>
-                        <tr className="login-item">
+                        <tr>
                             <td className='login-text'>{getText('username')}</td>
-                            <td><input type="text" className="login-input" maxLength={20} value={username} onChange={handleUsername}></input></td>
+                            <td className="login-inputbox">
+                                <input type="text" className="login-input" maxLength={20} value={username} onChange={handleUsername}></input>
+                            </td>
                         </tr>
-                        <tr className="login-item">
+                        <tr>
                             <td className="login-text">{getText('password')}</td>
-                            <td><input type="password" className="login-input" maxLength={20} value={password} onChange={handlePassword}></input></td>
+                            <td className="login-inputbox">
+                                <input type="password" className="login-input" maxLength={20} value={password} onChange={handlePassword}></input>
+                            </td>
                         </tr>
                         <tr>
                             <td colSpan={2} id='login-footer'>
