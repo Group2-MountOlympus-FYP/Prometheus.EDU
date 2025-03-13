@@ -63,10 +63,7 @@ jobs:
 
       - name: Create Pull Request to merge into main
         run: |
-          # 创建 PR
-          pr_url=$(gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --json url -q '.url')
-          pr_number=$(echo $pr_url | sed 's/.*\/pull\///')  # 提取 PR ID
-          # 合并 PR
-          gh pr merge $pr_number --auto --delete-branch
+          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment."
+          gh pr merge --head unprotected --base main --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
