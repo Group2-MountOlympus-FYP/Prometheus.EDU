@@ -36,7 +36,7 @@ jobs:
           # Pull the latest changes from the repository
           git pull 
         
-          echo ${{ secrets.SERVER_PASSWORD }} | sudo supervisorctl restart doner
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"
         EOF
