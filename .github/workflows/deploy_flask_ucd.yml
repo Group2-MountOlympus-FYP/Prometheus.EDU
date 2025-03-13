@@ -1,4 +1,4 @@
-name: Deploy Flask App to Server
+name: Deploy Flask App to UCD Server
 
 on:
   workflow_dispatch:
@@ -27,7 +27,7 @@ jobs:
         DEPLOY_PATH: ~/flask
       run: |
         echo "Deploying to server..."
-        
+        mkdir -p $DEPLOY_PATH
         # Connect to the server and perform the deployment
         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
           set -e
@@ -35,7 +35,7 @@ jobs:
           # Ensure the deploy path exists
           if [ ! -d "$DEPLOY_PATH" ]; then
             echo "First time deploy, creating directory..."
-            mkdir -p $DEPLOY_PATH
+            mkdir -p "$DEPLOY_PATH"
           fi
 
           # Go to the deploy directory
