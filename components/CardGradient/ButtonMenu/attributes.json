@@ -1,9 +1,0 @@
-{
-  "title": "Button with menu",
-  "category": "buttons",
-  "withColor": true,
-  "canvas": {
-    "center": true,
-    "maxWidth": 120
-  }
-}
