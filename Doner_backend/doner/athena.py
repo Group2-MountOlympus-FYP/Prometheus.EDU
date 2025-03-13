@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify 
+from flask import Blueprint, jsonify, send_file, request 
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
@@ -8,12 +8,21 @@ from .athena_ta_core import TA_Client
 from dotenv import load_dotenv
 import os
 
+from fpdf import FPDF
+
+from io import BytesIO
+
+# ReportLab imports:
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, PageBreak
+from reportlab.lib.pagesizes import LETTER
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib.enums import TA_CENTER
+
 
 load_dotenv()
 
 athena_bp = Blueprint('athena', __name__)
 
-print("Current working directory:", os.getcwd())
 ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY'),
                       directory='./doner/study_materials',
                       model='gemini-2.0-flash')
@@ -126,4 +135,174 @@ def retrieve_documents_only():
     return jsonify({"error": "Invalid form data"}), 400
 
 
+@athena_bp.route('/generate_pdf', methods=['POST'])
+def generate_pdf():
+    """
+    生成 PDF 文档接口
+    ---
+    tags:
+      - TA Client
+    summary: 生成基于RAG结果的PDF文档
+    description: 根据用户查询生成一个包含答案的PDF文档，提供给用户下载。
+    parameters:
+      - name: query
+        in: formData
+        type: string
+        required: true
+        description: 用户查询问题
+    responses:
+      200:
+        description: 成功生成并返回PDF文件
+        content:
+          application/pdf:
+            schema:
+              type: string
+              format: binary
+    """
+    form = QueryForm()
+    if form.validate_on_submit():
+        query = form.query.data
+        result = ta_client.generate(query)
 
+        # Create PDF
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=14)
+
+        pdf.cell(200, 10, txt="Query Response", ln=True, align="C")
+        pdf.ln(10)
+
+        pdf.multi_cell(0, 10, txt=f"Query: {query}")
+        pdf.ln(5)
+        pdf.multi_cell(0, 10, txt=f"Answer: {result}")
+
+        # Save PDF to a temporary file
+        pdf_filename = "response.pdf"
+        pdf.output(pdf_filename)
+
+        return send_file(pdf_filename, as_attachment=True)
+
+    return jsonify({"error": "Invalid form data"}), 400
+
+def build_pdf(report_text: str) -> BytesIO:
+    """
+    Build a multi-page PDF in memory using ReportLab with a cleaner layout.
+    :param report_text: The text content (e.g., step-by-step instructions) to include in the PDF.
+    :return: A BytesIO stream containing the PDF data.
+    """
+    # 1. Create a buffer for the PDF
+    buffer = BytesIO()
+
+    # 2. Configure a SimpleDocTemplate
+    #    Adjust margins and pagesize as desired
+    doc = SimpleDocTemplate(
+        buffer,
+        pagesize=LETTER,
+        rightMargin=40,
+        leftMargin=40,
+        topMargin=60,
+        bottomMargin=60
+    )
+
+    # 3. Setup default and custom styles
+    styles = getSampleStyleSheet()
+
+    # Some built-in styles you might use
+    title_style = styles["Title"]
+    heading_style = styles["Heading2"]
+    body_style = styles["BodyText"]
+
+    # Optionally, create a custom ParagraphStyle
+    # e.g., a justified style with extra spacing
+    custom_body_style = ParagraphStyle(
+        name="CustomBody",
+        parent=body_style,
+        alignment=0,  # 0=left, 1=center, 2=right, 4=justify
+        fontName="Helvetica",
+        fontSize=11,
+        leading=14,
+        spaceAfter=12,
+    )
+
+    # 4. Build the “flowables” list, which will be fed into the document
+    flowables = []
+
+    # -- Title
+    #   Centered by default in "Title", or you can override alignment here
+    title_style.alignment = TA_CENTER
+    flowables.append(Paragraph("TA Report", title_style))
+    flowables.append(Spacer(1, 20))  # Spacer(width, height)
+
+    # -- Optional: Add a subheading if you want
+    flowables.append(Paragraph("Detailed Step-by-Step Instructions", heading_style))
+    flowables.append(Spacer(1, 12))
+
+    # -- Now, split the report text into paragraphs
+    #    If your text has natural paragraph breaks, you can split by "\n\n"
+    #    or keep it simpler and do line-by-line.
+    paragraphs = report_text.strip().split("\n\n")  # Split by double newlines
+
+    for idx, para in enumerate(paragraphs, start=1):
+        # Add a heading or bullet for each paragraph if you want enumerated steps
+        # e.g., "Step 1:", "Step 2:"
+        step_heading = f"<b>Step {idx}:</b> " if len(paragraphs) > 1 else ""
+
+        # Combine the heading with the paragraph text
+        text_with_heading = f"{step_heading}{para.replace('\n', '<br/>')}"
+
+        # Create a Paragraph object with your custom style
+        flowables.append(Paragraph(text_with_heading, custom_body_style))
+        flowables.append(Spacer(1, 12))
+
+        # Optionally insert a page break after each step if the text is lengthy
+        # flowables.append(PageBreak())
+
+    # 5. Build the PDF
+    doc.build(flowables)
+
+    # 6. Reset the buffer’s cursor and return
+    buffer.seek(0)
+    return buffer
+
+
+@athena_bp.route('/generate_report', methods=['POST'])
+def generate_report():
+    """
+    基于 RAG 的生成报告接口 (PDF)
+    ---
+    tags:
+      - TA Client
+    summary: 基于 RAG 生成带有分步骤说明的 PDF 报告
+    description: 提供问题查询，返回一个包含详细分步骤说明的 PDF 报告。
+    parameters:
+      - name: query
+        in: formData
+        type: string
+        required: true
+        description: 用户查询问题
+    responses:
+      200:
+        description: 成功返回生成的 PDF 报告
+        schema:
+          type: file
+    """
+    form = QueryForm()
+    if not form.validate_on_submit():
+        return jsonify({"error": "Invalid form data"}), 400
+
+    # 1. Extract user query
+    query = form.query.data.strip()
+
+    # 2. Generate the step-by-step report text from your RAG pipeline
+    report_text = ta_client.generate_report(query)['result']
+
+    # 3. Build a nicely formatted PDF
+    pdf_buffer = build_pdf(report_text)
+
+    # 4. Send the PDF back as a file
+    return send_file(
+        pdf_buffer,
+        as_attachment=True,
+        download_name="ta_report.pdf",
+        mimetype='application/pdf'
+    )

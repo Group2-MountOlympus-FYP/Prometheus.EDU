@@ -148,10 +148,12 @@ class TA_Client:
         """
         # You can tailor these instructions as needed
         system_instructions = (
-            "You are an AI Teaching Assistant. The user wants a PDF report that "
-            "explains step-by-step how to approach the problem or question. "
-            "Please provide a thorough, numbered list of steps or instructions, "
-            "followed by a concise summary at the end."
+            '''
+            You are an AI Teaching Assistant. The user wants a PDF report that 
+            explains step-by-step how to approach the problem or question. 
+            Please provide a thorough, numbered list of steps or instructions,
+            followed by a concise summary at the end.
+            '''
         )
 
         # Combine your system instructions with the user query
@@ -160,6 +162,8 @@ class TA_Client:
         # Use the same RAG pipeline, but with the augmented query
         answer = TA_Client.qa_chain.invoke(augmented_query)
         return answer
+
+
 
 
     def generate(self, query: str):
