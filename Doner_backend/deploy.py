@@ -25,16 +25,12 @@ def install_requirements():
     print("Installing requirements...")
     if os.path.exists("requirements.txt"):
         print("Installing requirements from requirements.txt...")
-        if platform.system() == 'Windows':
-            subprocess.check_call(
-                [os.path.join(venv_name, 'Scripts', 'pip'), "install", "-r", "requirements.txt", "--no-deps"])
-        elif platform.system() == 'Darwin' or platform.system() == 'Linux':
-            subprocess.check_call(
-                [os.path.join(venv_name, 'bin', 'pip'), "install", "-r", "requirements.txt", "--no-deps"])
+        subprocess.check_call(
+            [os.path.join(venv_name, 'bin', 'pip'), "install", "-r", "requirements.txt", "--no-deps"])
 
 # 激活虚拟环境并设置环境变量
 def activate_virtualenv():
-    # 对于 Unix 和 Mac，修改 activate 脚本
+    # 对于 Ubuntu 系统，修改 activate 脚本
     activate_script = os.path.join(venv_name, "bin", "activate")
 
     flask_env_variables = """
@@ -49,19 +45,35 @@ def activate_virtualenv():
         file.write(flask_env_variables)
     print(f"Added environment variables to {activate_script}")
 
-# 使用 Gunicorn 启动 Flask 应用
-def start_flask():
-    print("Starting Flask app with Gunicorn...")
-    # 如果是 Linux 或 Mac，使用 bash 执行激活并启动 Gunicorn
-    if platform.system() == 'Darwin' or platform.system() == 'Linux':
-        subprocess.check_call(f"source {os.path.join(venv_name, 'bin', 'activate')} && gunicorn -w 4 -b 0.0.0.0:8000 run:app", shell=True)
-    # 如果是 Windows，直接运行批处理文件
-    elif platform.system() == 'Windows':
-        subprocess.check_call(f"{os.path.join(venv_name, 'Scripts', 'activate.bat')} && gunicorn -w 4 -b 0.0.0.0:8000 run:app", shell=True)
+# 使用 Supervisor 启动或重启 Flask 应用
+def manage_flask_with_supervisor():
+    print("Managing Flask app with Supervisor...")
+
+    # 检查 Supervisor 是否已安装
+    if subprocess.call(['which', 'supervisorctl'], stdout=subprocess.PIPE, stderr=subprocess.PIPE) != 0:
+        print("Supervisor is not installed. Installing it now...")
+        subprocess.check_call(['sudo', 'apt', 'install', 'supervisor', '-y'])
+
+    # 检查 Flask 应用是否已经在 Supervisor 中运行
+    # 假设 Supervisor 配置文件名为 'doner.conf'
+    program_name = 'doner'  # Supervisor 中配置的程序名
+
+    try:
+        # 查看程序状态
+        subprocess.check_call(['sudo', 'supervisorctl', 'status', program_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        print(f"{program_name} is already running, restarting...")
+        subprocess.check_call(['sudo', 'supervisorctl', 'restart', program_name])
+    except subprocess.CalledProcessError:
+        print(f"{program_name} is not running, starting it...")
+        # 如果程序未启动，则启动它
+        subprocess.check_call(['sudo', 'supervisorctl', 'start', program_name])
 
 if __name__ == "__main__":
-    project_dir = os.getcwd()
-    create_virtualenv()
-    install_requirements()
-    activate_virtualenv()
-    start_flask()
+    if platform.system() == 'Linux':
+        project_dir = os.getcwd()
+        create_virtualenv()
+        install_requirements()
+        activate_virtualenv()
+        manage_flask_with_supervisor()
+    else:
+        print("This script is designed to run on Ubuntu Linux.")

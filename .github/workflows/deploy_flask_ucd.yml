@@ -42,46 +42,9 @@ jobs:
           cd $DEPLOY_PATH
 
           # Pull the latest changes from the repository
-          git pull || git clone https://github.com/yourusername/yourrepository.git .
+          git pull || git clone https://github.com/Group2-MountOlympus-FYP/Prometheus.EDU.git
 
-          # Ensure Python3 and pip are installed
-          if ! command -v python3 &> /dev/null; then
-            echo "Python3 is not installed, installing it..."
-            sudo apt update
-            sudo apt install python3 python3-pip -y
-          fi
-
-          # Create or activate the virtual environment
-          if [ ! -d "$DEPLOY_PATH/donerenv" ]; then
-            echo "Creating virtual environment..."
-            python3 -m venv donerenv
-          fi
-          source $DEPLOY_PATH/donerenv/bin/activate
-
-          # Install dependencies
-          echo "Installing dependencies..."
-          pip install -r requirements.txt
-
-          # Run the deploy script
-          echo "Running the deploy script..."
-          python $DEPLOY_PATH/deploy_flask.py
-
-          # Restart Gunicorn via Supervisor
-          echo "Managing Gunicorn with Supervisor..."
-
-          # Check if Supervisor is installed, if not install it
-          if ! command -v supervisorctl &> /dev/null; then
-            echo "Supervisor is not installed, installing it..."
-            sudo apt install supervisor -y
-          fi
-
-          # Configure Supervisor to manage Gunicorn process
-          sudo cp $DEPLOY_PATH/your_flask_app.conf /etc/supervisor/conf.d/your_flask_app.conf
-
-          # Reload Supervisor to apply new configurations
-          sudo supervisorctl reread
-          sudo supervisorctl update
-          sudo supervisorctl restart your_flask_app || sudo supervisorctl start your_flask_app
+          python3 $DEPLOY_PATH/Doner_backend/deploy.py
 
           echo "Deployment complete!"
         EOF
