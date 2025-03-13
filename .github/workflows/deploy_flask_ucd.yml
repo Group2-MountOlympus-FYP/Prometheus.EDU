@@ -63,21 +63,10 @@ jobs:
 
       - name: Create Pull Request to merge into main
         run: |
-          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment."
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  merge-pr:
-    runs-on: ubuntu-latest
-    needs: create-pr  # 只有创建 PR 后再进行合并操作
-
-    steps:
-      - name: Configure Git user
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-      - name: Merge PR if checks pass
-        run: |
-          gh pr merge --auto
+          # 创建 PR
+          pr_url=$(gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --json url -q '.url')
+          pr_number=$(echo $pr_url | sed 's/.*\/pull\///')  # 提取 PR ID
+          # 合并 PR
+          gh pr merge $pr_number --auto --delete-branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
