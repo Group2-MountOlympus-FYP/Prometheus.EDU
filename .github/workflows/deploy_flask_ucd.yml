@@ -72,8 +72,12 @@ jobs:
     needs: create-pr  # 只有创建 PR 后再进行合并操作
 
     steps:
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Merge PR if checks pass
         run: |
-          gh pr merge --auto --delete-branch
+          gh pr merge --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
