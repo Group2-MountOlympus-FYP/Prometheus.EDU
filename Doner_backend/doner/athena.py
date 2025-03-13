@@ -1,12 +1,24 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, jsonify 
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
 
+from .athena_ta_core import TA_Client
+
+from dotenv import load_dotenv
+import os
+
+
+load_dotenv()
+
 athena_bp = Blueprint('athena', __name__)
 
-# ta_client = TA_Client(api_key="dummy_api_key", directory="docs")
-ta_client = None # TODO Remove this line and construct a real TA_Client
+print("Current working directory:", os.getcwd())
+ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY'),
+                      directory='./doner/study_materials',
+                      model='gemini-2.0-flash')
+
+
 
 class QueryForm(FlaskForm):
     query = StringField('Query', validators=[InputRequired()])
@@ -112,3 +124,6 @@ def retrieve_documents_only():
         docs_content = [doc.page_content for doc in documents]
         return jsonify({"documents": docs_content})
     return jsonify({"error": "Invalid form data"}), 400
+
+
+
