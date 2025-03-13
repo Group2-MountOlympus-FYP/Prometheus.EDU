@@ -3,7 +3,7 @@ name: Flask CI Pipeline
 on:
   push:
     branches:
-      - main
+      - unprotected
     paths:
       - 'Doner_backend/**'
 

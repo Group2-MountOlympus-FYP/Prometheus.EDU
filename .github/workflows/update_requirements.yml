@@ -1,4 +1,4 @@
-name: Deploy Flask App to UCD Server
+name: Update Flask App Requirements on UCD Server
 
 on:
   workflow_dispatch:
