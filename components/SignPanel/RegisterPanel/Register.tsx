@@ -13,6 +13,7 @@ export function RegisterPanel(){
     const [username, setUsername] = useState('')
     const [gender, setGender] = useState(2)
     const [isAbleToSubmit, setIsAbleToSubmit] = useState(false)
+    const [isProtocolAgree, setIsProtocolAgree] = useState(false)
 
     const handelDateChane = (e:any) => {
         setDate(e.targer.value)
@@ -52,7 +53,11 @@ export function RegisterPanel(){
 
     const handleRegisterForm = async (e:any) => {
         e.preventDefault()
-        let csrf
+
+        if(!isProtocolAgree){
+            alert('You must confirm the Agreement to continue')
+            return
+        }
         
         const response = await GetCSRF()
         if(response == true){
@@ -62,7 +67,7 @@ export function RegisterPanel(){
             return
         }
 
-        csrf = GetCookie("csrf_token")
+        let csrf = GetCookie("csrf_token")
         //处理gender
         let genderStr
         if(gender == 0){
@@ -74,6 +79,7 @@ export function RegisterPanel(){
         else{
             genderStr = 'other'
         }
+        console.log(birthDate)
         RegisterUser(username, password, genderStr, birthDate, csrf)
         .then((response) => {
             if(response.status == 401){
@@ -124,6 +130,9 @@ export function RegisterPanel(){
                     </tr>
                     <tr>
                         <td id='register-footer' colSpan={2}>
+                            <span style={{display:'block'}}>
+                                {getText('protocol')}<input type='checkbox' checked={isProtocolAgree} onChange={(e:any) => setIsProtocolAgree(e.target.checked)}></input>
+                                </span>
                             <button type='submit' disabled={!isAbleToSubmit}>{getText('submit')}</button>
                         </td>
                     </tr>

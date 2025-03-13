@@ -12,7 +12,7 @@ type signPanelProps = {
 
 export function SignPanel({onExitClick = () => {}} : signPanelProps){
     type signTypes = 'login' | 'register'
-    const [signType, setSignType] = useState<signTypes>('login')
+    const [signType, setSignType] = useState<signTypes>('register')
 
     useEffect(() => {
         

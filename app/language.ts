@@ -16,6 +16,6 @@ export function getLanguage():Language{
   if(language !== null){
     return language as Language
   }
-  console.error('language wrong!')
+  //console.error('language wrong!')
   return 'en' 
 }
