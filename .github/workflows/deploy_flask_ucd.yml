@@ -38,7 +38,10 @@ jobs:
           # Go to the deploy directory
           cd ~/Prometheus.EDU
 
-          python3 Doner_backend/deploy.py
+          # Pull the latest changes from the repository
+          git pull 
+        
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"
         EOF
@@ -46,7 +49,7 @@ jobs:
 
   create-pr:
     runs-on: ubuntu-latest
-    needs: flask-deploy  # 确保部署步骤完成后再执行
+    needs: deploy  # 确保部署步骤完成后再执行
 
     steps:
       - name: Checkout repository
@@ -57,16 +60,10 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit changes to unprotected branch
-        run: |
-          git checkout unprotected
-          git add .
-          git commit -m "Automated deployment commit"
-          git push origin unprotected
 
       - name: Create Pull Request to merge into main
         run: |
-          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --label "auto-merge"
+          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment."
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -75,8 +72,12 @@ jobs:
     needs: create-pr  # 只有创建 PR 后再进行合并操作
 
     steps:
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
       - name: Merge PR if checks pass
         run: |
-          gh pr merge --auto --delete-branch
+          gh pr merge --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
