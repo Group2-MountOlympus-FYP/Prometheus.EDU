@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { UserProfile } from "@/components/UserProfile/UserProfile"
-import { TabBar } from "@/components/TABBar/TabBar"
+import { TabBar } from "@/components/UserProfile/TABBar/TabBar"
 import { getUserProfile } from "../api/User/router"
 
 export default function UserInfoPage() {

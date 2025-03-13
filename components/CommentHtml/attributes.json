@@ -1,8 +1,0 @@
-{
-  "title": "Comment with html content",
-  "category": "comments",
-  "canvas": {
-    "center": true,
-    "maxWidth": 380
-  }
-}
