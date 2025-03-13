@@ -135,54 +135,6 @@ def retrieve_documents_only():
     return jsonify({"error": "Invalid form data"}), 400
 
 
-@athena_bp.route('/generate_pdf', methods=['POST'])
-def generate_pdf():
-    """
-    生成 PDF 文档接口
-    ---
-    tags:
-      - TA Client
-    summary: 生成基于RAG结果的PDF文档
-    description: 根据用户查询生成一个包含答案的PDF文档，提供给用户下载。
-    parameters:
-      - name: query
-        in: formData
-        type: string
-        required: true
-        description: 用户查询问题
-    responses:
-      200:
-        description: 成功生成并返回PDF文件
-        content:
-          application/pdf:
-            schema:
-              type: string
-              format: binary
-    """
-    form = QueryForm()
-    if form.validate_on_submit():
-        query = form.query.data
-        result = ta_client.generate(query)
-
-        # Create PDF
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=14)
-
-        pdf.cell(200, 10, txt="Query Response", ln=True, align="C")
-        pdf.ln(10)
-
-        pdf.multi_cell(0, 10, txt=f"Query: {query}")
-        pdf.ln(5)
-        pdf.multi_cell(0, 10, txt=f"Answer: {result}")
-
-        # Save PDF to a temporary file
-        pdf_filename = "response.pdf"
-        pdf.output(pdf_filename)
-
-        return send_file(pdf_filename, as_attachment=True)
-
-    return jsonify({"error": "Invalid form data"}), 400
 
 def build_pdf(report_text: str) -> BytesIO:
     """
