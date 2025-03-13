@@ -42,4 +42,3 @@ jobs:
 
           echo "Deployment complete!"
         EOF
-    environment: UCD_FLASK
