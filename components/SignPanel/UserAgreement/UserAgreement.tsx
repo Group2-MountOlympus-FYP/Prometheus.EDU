@@ -11,10 +11,6 @@ export function UserAgreement({ onAgreeClick = () => {}} : UserAgreementProps){
         <div className="container">
             <h1>{getText("introduction")}</h1>
 
-            <h2>{getText("introduction")}</h2>
-            <p>{getText("introduction")}</p>
-            <p>{getText("introduction")}</p>
-
             <h2>{getText("definitions")}</h2>
             <p>1. {getText("we")}</p>
             <p>2. {getText("user")}</p>
