@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { Group, SimpleGrid } from '@mantine/core';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
+import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 
 export default function HomePage() {
   const courseCardProps: CourseCardInfo[] = [
@@ -21,8 +22,6 @@ export default function HomePage() {
   ]
 
   const categories: string[] = ['CS', 'Sports', 'Life', 'Art', 'Math', 'Language','Others']
-
-  const [isSignPanelOpen, setSignPanelOpen] = useState<boolean>(false)
 
   return (
     <div style={{maxWidth: '100vw'}}>
@@ -42,7 +41,9 @@ export default function HomePage() {
           ))
         }
       </SimpleGrid>
-      
+      <div className={classes.cookieConsent}>
+        <CookieConsent/>
+      </div>
     </div>
   );
 }
