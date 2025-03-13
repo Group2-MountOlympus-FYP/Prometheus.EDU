@@ -30,19 +30,13 @@ jobs:
         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
           set -e
 
-          # Ensure the deploy path exists
-          if [ ! -d "~/flask" ]; then
-            echo "First time deploy, creating directory..."
-            mkdir -p ~/flask
-          fi
-
           # Go to the deploy directory
-          cd ~/flask
+          cd ~/Prometheus.EDU
 
           # Pull the latest changes from the repository
-          git pull || git clone git@github.com:Group2-MountOlympus-FYP/Prometheus.EDU.git
+          git pull 
 
-          python3 ~/flask/Doner_backend/deploy.py
+          python3 Doner_backend/deploy.py
 
           echo "Deployment complete!"
         EOF
