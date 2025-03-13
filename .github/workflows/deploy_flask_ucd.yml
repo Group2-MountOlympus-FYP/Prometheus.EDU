@@ -24,27 +24,25 @@ jobs:
       env:
         SSH_HOST: csi420-01-vm2.ucd.ie
         SSH_USER: student
-        DEPLOY_PATH: ~/flask
       run: |
         echo "Deploying to server..."
-        mkdir -p $DEPLOY_PATH
         # Connect to the server and perform the deployment
         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
           set -e
 
           # Ensure the deploy path exists
-          if [ ! -d "$DEPLOY_PATH" ]; then
+          if [ ! -d "~/flask" ]; then
             echo "First time deploy, creating directory..."
-            mkdir -p "$DEPLOY_PATH"
+            mkdir -p ~/flask
           fi
 
           # Go to the deploy directory
-          cd $DEPLOY_PATH
+          cd ~/flask
 
           # Pull the latest changes from the repository
           git pull || git clone https://github.com/Group2-MountOlympus-FYP/Prometheus.EDU.git
 
-          python3 $DEPLOY_PATH/Doner_backend/deploy.py
+          python3 ~/flask/Doner_backend/deploy.py
 
           echo "Deployment complete!"
         EOF
