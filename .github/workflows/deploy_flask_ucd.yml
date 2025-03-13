@@ -63,7 +63,6 @@ jobs:
 
       - name: Create Pull Request to merge into main
         run: |
-          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment."
-          gh pr merge --head unprotected --base main --auto
+          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --auto
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
