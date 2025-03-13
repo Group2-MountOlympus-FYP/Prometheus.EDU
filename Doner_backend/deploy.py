@@ -49,24 +49,9 @@ def activate_virtualenv():
 def manage_flask_with_supervisor():
     print("Managing Flask app with Supervisor...")
 
-    # 检查 Supervisor 是否已安装
-    if subprocess.call(['which', 'supervisorctl'], stdout=subprocess.PIPE, stderr=subprocess.PIPE) != 0:
-        print("Supervisor is not installed. Installing it now...")
-        subprocess.check_call(['sudo', 'apt', 'install', 'supervisor', '-y'])
-
-    # 检查 Flask 应用是否已经在 Supervisor 中运行
     # 假设 Supervisor 配置文件名为 'doner.conf'
     program_name = 'doner'  # Supervisor 中配置的程序名
-
-    try:
-        # 查看程序状态
-        subprocess.check_call(['sudo', 'supervisorctl', 'status', program_name], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        print(f"{program_name} is already running, restarting...")
-        subprocess.check_call(['sudo', 'supervisorctl', 'restart', program_name])
-    except subprocess.CalledProcessError:
-        print(f"{program_name} is not running, starting it...")
-        # 如果程序未启动，则启动它
-        subprocess.check_call(['sudo', 'supervisorctl', 'start', program_name])
+    subprocess.check_call(['sudo', 'supervisorctl', 'restart', program_name])
 
 if __name__ == "__main__":
     if platform.system() == 'Linux':
