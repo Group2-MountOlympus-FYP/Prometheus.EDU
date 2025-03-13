@@ -60,12 +60,6 @@ jobs:
           git config --global user.name "github-actions"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      - name: Commit changes to unprotected branch
-        run: |
-          git checkout unprotected
-          git add .
-          git commit -m "Automated deployment commit"
-          git push origin unprotected
 
       - name: Create Pull Request to merge into main
         run: |
