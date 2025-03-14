@@ -19,7 +19,7 @@ load_dotenv()
 
 athena_bp = Blueprint('athena', __name__)
 
-ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY'),
+ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
                       directory='./doner/study_materials',
                       model='gemini-2.0-flash')
 
