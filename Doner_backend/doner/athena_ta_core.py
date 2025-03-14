@@ -184,7 +184,7 @@ class TA_Client:
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()
-    api_key = os.getenv('GOOGLE_API_KEY')
+    api_key = os.getenv('GOOGLE_API_KEY', '')
 
     print("RAG Module Activated.\n")
     print("Type 'exit' or 'quit' to terminate the program.\n")
@@ -200,7 +200,7 @@ if __name__ == "__main__":
         try:
             start_time = time.time()
 
-            ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY'),
+            ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
                                   directory='study_materials',
                                   model='gemini-2.0-flash')
 
