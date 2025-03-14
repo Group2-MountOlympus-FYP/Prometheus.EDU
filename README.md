@@ -1,4 +1,4 @@
-# Prometheus.EDU 🔥
+# Prometheus.EDU 🔥: Igniting the Flame of Knowledge for the Underserved
 
 COMP3032J Final Year Project.
 
