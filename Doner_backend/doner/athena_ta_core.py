@@ -87,6 +87,10 @@ class TA_Client:
 
 
     def initialize_system(self):
+        if self.api_key == '':
+            print("API Key Not Set. AthenaTutor Not Available.\n Peylix is watching you.")
+            return
+
         if TA_Client.embeddings is None:
             TA_Client.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=self.api_key)
             print("Embeddings initialized.")
@@ -108,7 +112,7 @@ class TA_Client:
                 TA_Client.vector_store.save_local('vector_store.faiss')
                 print('Vector store saved.')
             else:
-                raise Exception("Vector store creation failed. Please check the input documents and embeddings. Peylix is Watching You.")
+                raise Exception("Vector store creation failed. Please check the input documents and embeddings.")
 
 
         if self.model == "gemini-2.0-flash":
