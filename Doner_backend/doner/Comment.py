@@ -14,7 +14,7 @@ post_likes = db.Table('post_likes',
 
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
-    id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
