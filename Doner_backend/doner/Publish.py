@@ -81,9 +81,10 @@ def publish():
     content = request.form.get('content')
     files = request.files.getlist('images')
     tags_raw = request.form.get('tags')
-    tags = [int(tag.strip()) for tag in tags_raw.split(',') if tag.strip().isdigit()]
     new_post = Post(title=title, content=content, composer_id=session['id'])
-    new_post.tags = Tag.query.filter(Tag.id.in_(tags)).all()
+    if tags_raw:
+        tags = [int(tag.strip()) for tag in tags_raw.split(',') if tag.strip().isdigit()]
+        new_post.tags = Tag.query.filter(Tag.id.in_(tags)).all()
     images_to_add = []
 
     for file in files:
