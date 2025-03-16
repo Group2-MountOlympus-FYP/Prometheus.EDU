@@ -1,0 +1,90 @@
+.editor-container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.editor-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.editor-toolbar button {
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editor-toolbar button:hover {
+    background-color: #e0e0e0;
+}
+
+.editor-toolbar button.active {
+    background-color: #1890ff;
+    color: #fff;
+    border-color: #1890ff;
+}
+
+.editor-content {
+    min-height: 200px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.editor-content p {
+    margin: 0 0 8px;
+}
+
+.editor-content h1 {
+    font-size: 24px;
+    margin: 12px 0;
+}
+
+.editor-content h2 {
+    font-size: 20px;
+    margin: 10px 0;
+}
+
+.editor-content ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+.editor-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+}
+
+.editor-output {
+    margin-top: 20px;
+}
+
+.editor-output textarea {
+    width: 100%;
+    height: 150px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: monospace;
+}
+  
