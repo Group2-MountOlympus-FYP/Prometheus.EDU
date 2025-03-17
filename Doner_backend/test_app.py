@@ -17,5 +17,4 @@ def test_flask_startup(client):
 
 def test_apidocs(client):
     response = client.get('/apidocs/')
-    print("test_apidocs")
     assert response.status_code == 200  # 确保返回 200 状态码
