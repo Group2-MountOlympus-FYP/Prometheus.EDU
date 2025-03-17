@@ -7,6 +7,8 @@
 </div>
 <h1 align="center">Prometheus.EDU🔥: Igniting the Flame of Knowledge for the Underserved</h1>
 
+A comprehensive online education platform by **Mount Olympus**.
+
 ## Problem Statement
 
 Despite ongoing global efforts, many young people still face significant barriers to quality education—ranging from geographical restrictions and gender-based prohibitions to poverty and inadequate local infrastructure. **Agape**, in pursuit of its mission to deliver educational equity, has discovered that existing platforms either do not cater to the specific constraints of these learners or lack the interactive support and guidance necessary for sustained learning success.
