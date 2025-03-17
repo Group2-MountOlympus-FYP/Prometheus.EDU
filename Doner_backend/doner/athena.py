@@ -196,7 +196,8 @@ def build_pdf(report_text: str) -> BytesIO:
         step_heading = f"<b>Step {idx}:</b> " if len(paragraphs) > 1 else ""
 
         # Combine the heading with the paragraph text
-        text_with_heading = f"{step_heading}{para.replace('\n', '<br/>')}"
+        replaced_para = para.replace('\n', '<br/>')
+        text_with_heading = f"{step_heading}{replaced_para}"
 
         # Create a Paragraph object with your custom style
         flowables.append(Paragraph(text_with_heading, custom_body_style))
