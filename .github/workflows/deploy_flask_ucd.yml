@@ -1,0 +1,69 @@
+name: Deploy Flask App to UCD Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - unprotected
+    paths:
+      - 'Doner_backend/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      env:
+        SSH_PRIVATE_KEY_UCD: ${{ secrets.SSH_PRIVATE_KEY_UCD }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY_UCD" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H csi420-01-vm2.ucd.ie >> ~/.ssh/known_hosts
+
+    - name: Deploy to Server
+      env:
+        SSH_HOST: csi420-01-vm2.ucd.ie
+        SSH_USER: student
+      run: |
+        echo "Deploying to server..."
+        # Connect to the server and perform the deployment
+        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          set -e
+
+          # Go to the deploy directory
+          cd ~/Prometheus.EDU
+
+          # Pull the latest changes from the repository
+          git pull 
+        
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
+
+          echo "Deployment complete!"
+        EOF
+    environment: UCD
+
+  create-pr:
+    runs-on: ubuntu-latest
+    needs: deploy  # 确保部署步骤完成后再执行
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Configure Git user
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+
+      - name: Create Pull Request to merge into main
+        run: |
+          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --label "automerge"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+

@@ -51,15 +51,12 @@ from .Image import Image
         '200': {
             'description': '成功返回课程列表',
             'schema': {
-                'type': 'object',
-                'properties': {
                     "type": "array",
                     "items": {"$ref": "static/definitions.yml#/Course"}
 
                 }
             }
         }
-    }
 })
 def get_all_courses():
     status = request.args.get('status')
@@ -91,11 +88,8 @@ def get_all_courses():
         '200': {
             'description': '成功返回课程详细信息',
             'schema': {
-                'type': 'object',
-                'properties': {
                     "$ref": "static/definitions.yml#/Course"
                 }
-            }
         },
         '404': {
             'description': '课程未找到'

@@ -1,27 +1,28 @@
 .bg{
     width: 100%;
 }
-.text{
+.register-text{
     text-align: right;
-    width: 25%;
+    width: 30%;
+    padding: 2vw 0.6vw 0.2vw 7vw
+}
+.register-inputbox{
+    padding: 2vw 2vw 0.2vw 0.6vw
 }
 .register-input{
     text-align: left;
-    width: 88%;
-    border: 1.3px solid #3498db;
+    width: 70%;
+    border: 1.3px solid #3C4077;
     border-radius: 4px;
     padding: 2px 5px;
 }
 .register-input:focus{
     text-align: left;
-    width: 88%;
-    border: 2px solid #3498db;
+    width: 70%;
+    border: 1.7px solid #3C4077;
     border-radius: 4px;
     padding: 2px 5px;
     outline: none;
-}
-.register-item td{
-    padding: 15px 0;
 }
 .username-warnning{
     margin-left: 20px;
@@ -50,45 +51,49 @@
     text-align: center;
     font-weight: bolder;
     font-size: 28px;
-    padding: 25px 0;
+    padding: 15px 0 5px;
 }
 #register-footer{
     text-align: center;
-    padding-bottom: 14px;
+    padding: 1.2vw 0 1vw;
+}
+#register-footer span{
+    text-align: center;
+    padding: 0.2vw 0 1vw;
 }
 #register-footer button:disabled{
     text-align: center;
     padding: 2px 12px 2.5px 12px;
-    background-color: #9ccded;
+    background-color: darkgray;
     color: white;
-    border: 1px solid #9ccded;
+    border: 1px solid darkgray;
     border-radius: 4px;
     margin: 16px 0;
 }
 #register-footer button{
     text-align: center;
     padding: 2px 12px 2.5px 12px;
-    background-color: #3498db;
+    background-color: #3C4077;
     color: white;
-    border: 1px solid #3498db;
+    border: 1px solid #3C4077;
     border-radius: 4px;
     margin: 16px 0;
 }
 #register-footer button:hover{
     text-align: center;
     padding: 2px 12px 2.5px 12px;
-    background-color: #176ea7;
+    background-color: #171C56;
     color: white;
-    border: 1px solid #176ea7;
+    border: 1px solid #171C56;
     border-radius: 4px;
     margin: 16px 0;
 }
 #register-footer button:active{
     text-align: center;
     padding: 2px 12px 2.5px 12px;
-    background-color: #6ab0df;
+    background-color: #777CB9;
     color: white;
-    border: 1px solid #176ea7;
+    border: 1px solid #3C4077;
     border-radius: 4px;
     margin: 16px 0;
 }

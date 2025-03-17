@@ -37,7 +37,7 @@ class Enrollment(db.Model):
 class Course(ReplyTarget):
     __tablename__ = 'course'
     # 继承自 ReplyTarget 的 id 作为主键
-    id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
 
     # 课程名称（必填）
     course_name = db.Column(db.String(100), nullable=False)

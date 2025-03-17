@@ -8,53 +8,7 @@ from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import RetrievalQA
-from langchain.embeddings.base import Embeddings
-from typing import List
-import requests
-
-# Create embeddings with Ollama and vector store
-class OllamaEmbeddings(Embeddings):
-    """
-    Custom Embeddings class to interact with Ollama's API.
-    """
-
-    def __init__(self, model: str = "embedding-model-name", api_url: str = "http://localhost:11434"):
-        """
-        Initialize with the model name and Ollama API URL.
-        """
-        self.model = model
-        self.api_url = api_url
-
-    def embed_documents(self, texts: List[str]) -> List[List[float]]:
-        """
-        Embed multiple documents by sending them to Ollama's API.
-        """
-        embeddings = []
-        for text in texts:
-            embedding = self.embed_query(text)
-            embeddings.append(embedding)
-        return embeddings
-
-    def embed_query(self, text: str) -> List[float]:
-        """
-        Embed a single query/document.
-        """
-        payload = {
-            "model": self.model,
-            "input": text
-        }
-        response = requests.post(f"{self.api_url}/v1/embeddings", json=payload)
-        if response.status_code != 200:
-            raise ValueError(f"Error fetching embedding from Ollama: {response.text}")
-        data = response.json()
-        return data["data"][0]["embedding"]
-
-    @property
-    def embedding_dimension(self) -> int:
-        """
-        Return the dimension of the embeddings.
-        """
-        return 768
+from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 
 
 class TA_Client:
@@ -68,8 +22,9 @@ class TA_Client:
         documents = []
 
         for root, _, files in os.walk(directory):
+            print("Reading from folder:", root)
             for filename in files:
-                if not filename.endswith(('.html', '.htm', '.md', 'pdf')):
+                if not filename.endswith(('.html', '.htm', '.md', '.pdf', 'DS_Store')):
                     print(f"Unexpected file format: {filename}")
                     print("File format should be '.html', '.htm', '.md', or '.pdf'")
 
@@ -89,6 +44,7 @@ class TA_Client:
                         text = ""
                         for page in reader.pages:
                             text += page.extract_text() or ""
+                        documents.append(text)
                 except Exception as e:
                     print(f"Error processing file {filepath}: {str(e)}")
                     continue
@@ -123,7 +79,7 @@ class TA_Client:
 
 
 
-    def __init__(self, api_key: str, directory: str, model: str = "gpt-4o"):
+    def __init__(self, api_key: str, directory: str, model: str):
         self.api_key = api_key
         self.documents = self.load_files(directory)
         self.model = model
@@ -131,14 +87,18 @@ class TA_Client:
 
 
     def initialize_system(self):
+        if self.api_key == '':
+            print("API Key Not Set. AthenaTutor Not Available.\n Peylix is watching you.")
+            return
+
         if TA_Client.embeddings is None:
-            embeddings = OllamaEmbeddings(model="bge-m3")
+            TA_Client.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=self.api_key)
             print("Embeddings initialized.")
 
 
         if os.path.exists('vector_store.faiss'):
             TA_Client.vector_store = FAISS.load_local('vector_store.faiss',
-                                            embeddings=embeddings,
+                                            embeddings=TA_Client.embeddings,
                                             allow_dangerous_deserialization=True)
             print('Vector store loaded.')
         else:
@@ -152,8 +112,13 @@ class TA_Client:
                 TA_Client.vector_store.save_local('vector_store.faiss')
                 print('Vector store saved.')
             else:
-                raise Exception("Vector store creation failed. Please check the input documents and embeddings. Peylix is Watching You.")
+                raise Exception("Vector store creation failed. Please check the input documents and embeddings.")
 
+
+        if self.model == "gemini-2.0-flash":
+            TA_Client.llm = ChatGoogleGenerativeAI(model=self.model, temperature=0.6, google_api_key=self.api_key)
+        else:
+            raise Exception("LLM Provider Not Supported. Peylix is Watching You.")
 
         # Establish RAG pipeline
         prompt_template = """
@@ -178,87 +143,100 @@ class TA_Client:
             chain_type_kwargs={"prompt": prompt}
         )
 
-        # prompt = ChatPromptTemplate.from_template(prompt_template)
 
-        # def format_docs(docs):
-            # return "\n\n".join(doc.page_content for doc in docs)
+    def generate_report(self, query: str) -> str:
+        """
+        Generate a step-by-step report (in plain text) based on the user query.
+        Internally uses the same RAG pipeline, but we prepend instructions
+        so that the final answer is more like a detailed, step-by-step guide.
+        """
+        # You can tailor these instructions as needed
+        system_instructions = (
+            '''
+            You are an AI Teaching Assistant. The user wants a PDF report that 
+            explains step-by-step how to approach the problem or question. 
+            Please provide a thorough, numbered list of steps or instructions,
+            followed by a concise summary at the end.
+            '''
+        )
 
-        # # Create a stuff chain with the custom prompt
-        # combine_documents_chain = create_stuff_documents_chain(
-        #     llm=llm,
-        #     prompt=prompt,
-        # )
+        # Combine your system instructions with the user query
+        augmented_query = f"{system_instructions}\n\nUser Query: {query}"
 
-        # qa_chain = (
-        #     {
-        #         "context": vector_store.as_retriever() | format_docs,
-        #         "question": RunnablePassthrough(),
-        #     }
-        #     | prompt
-        #     | llm
-        #     # | StrOutputParser()
-        # )
+        # Use the same RAG pipeline, but with the augmented query
+        answer = TA_Client.qa_chain.invoke(augmented_query)
+        return answer
+
+
+
 
     def generate(self, query: str):
         answer = TA_Client.qa_chain.invoke(query)
         return answer
 
+
     def generate_without_rag(self, query: str):
         answer = TA_Client.llm.invoke(query)
         return answer
+
 
     def retrieve_documents_only(self, query: str):
         retrieved_docs = TA_Client.vector_store.as_retriever().invoke(query)
         return retrieved_docs
 
 
-# if __name__ == "__main__":
-#     print("RAG Module Activated.\n")
-#     print("Type 'exit' or 'quit' to terminate the program.\n")
-#
-#
-#     while True:
-#         query = input("Enter your code-related query: ")
-#         if query.lower() in ['exit', 'quit']:
-#             print("Goodbye!")
-#             break
-#
-#         try:
-#             start_time = time.time()
-#
-#             ta_client = TA_Client(api_key='',
-#                                   directory='docs',
-#                                   model='gpt-4o')
-#
-#             answer = ta_client.generate(query)
-#             retrieved_docs = ta_client.retrieve_documents_only(query)
-#
-#             end_time = time.time()
-#
-#             total_time = end_time - start_time
-#
-#             print("\nGenerated Code:\n")
-#             print(answer['result'])
-#             print("\n" + "=" * 50 + "\n")
-#
-#             print(f"total time: {total_time}")
-#
-#             current_time = datetime.datetime.now().strftime('%m%d%H%M%S')
-#             with open(f'generated_code_{current_time}.txt',
-#                       'w', encoding='utf-8') as file:
-#                 file.write(f"User Query: {query}\n")
-#
-#                 file.write("\nRetrieved Documents:\n")
-#
-#                 for idx, doc in enumerate(retrieved_docs, 1):
-#                     file.write(f"\nDocument {idx}:\n")
-#                     file.write(doc.page_content)
-#                     file.write("\n" + "-" * 40 + "\n")
-#
-#                 file.write("\nGenerated Code:\n")
-#                 file.write(answer['result'])
-#                 file.write("\n" + "=" * 50 + "\n")
-#         except Exception as e:
-#             print(f"An error occurred: {e}")
-#             print("\n" + "=" * 50 + "\n")
+if __name__ == "__main__":
+    from dotenv import load_dotenv
+    load_dotenv()
+    api_key = os.getenv('GOOGLE_API_KEY', '')
+
+    print("RAG Module Activated.\n")
+    print("Type 'exit' or 'quit' to terminate the program.\n")
+    
+    print(f"Your API Key is {api_key}.\n")
+
+    while True:
+        query = input("Enter your query: ")
+        if query.lower() in ['exit', 'quit']:
+            print("Goodbye!")
+            break
+
+        try:
+            start_time = time.time()
+
+            ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
+                                  directory='study_materials',
+                                  model='gemini-2.0-flash')
+
+            answer = ta_client.generate(query)
+            retrieved_docs = ta_client.retrieve_documents_only(query)
+
+            end_time = time.time()
+
+            total_time = end_time - start_time
+
+            print("\nGenerated Answer:\n")
+            print(answer['result'])
+            print("\n" + "=" * 50 + "\n")
+
+            print(f"total time: {total_time}")
+
+            current_time = datetime.datetime.now().strftime('%m%d%H%M%S')
+            with open(f'generated_answer{current_time}.txt',
+                      'w', encoding='utf-8') as file:
+                file.write(f"User Query: {query}\n")
+
+                file.write("\nRetrieved Documents:\n")
+
+                for idx, doc in enumerate(retrieved_docs, 1):
+                    file.write(f"\nDocument {idx}:\n")
+                    file.write(doc.page_content)
+                    file.write("\n" + "-" * 40 + "\n")
+
+                file.write("\nGenerated Answer:\n")
+                file.write(answer['result'])
+                file.write("\n" + "=" * 50 + "\n")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            print("\n" + "=" * 50 + "\n")
 

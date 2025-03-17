@@ -5,7 +5,7 @@ from .Comment import Comment
 
 class Post(ReplyTarget):
     __tablename__ = 'post'
-    id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     composer_id= db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

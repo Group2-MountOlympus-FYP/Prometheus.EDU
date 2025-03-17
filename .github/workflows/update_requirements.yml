@@ -1,0 +1,42 @@
+name: Update Flask App Requirements on UCD Server
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - unprotected
+    paths:
+      - 'Doner_backend/requirements.txt'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v3
+
+    - name: Set up SSH
+      env:
+        SSH_PRIVATE_KEY_UCD: ${{ secrets.SSH_PRIVATE_KEY_UCD }}
+      run: |
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY_UCD" > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        ssh-keyscan -H csi420-01-vm2.ucd.ie >> ~/.ssh/known_hosts
+
+    - name: Deploy to Server
+      env:
+        SSH_HOST: csi420-01-vm2.ucd.ie
+        SSH_USER: student
+      run: |
+        echo "Deploying to server..."
+        # Connect to the server and perform the deployment
+        ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
+          set -e
+
+          # Go to the deploy directory
+          cd ~/Prometheus.EDU
+          python3 Doner_backend/deploy.py
+          echo "Deployment complete!"
+        EOF

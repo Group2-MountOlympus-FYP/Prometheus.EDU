@@ -6,6 +6,7 @@ from flasgger import swag_from
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_wtf import FlaskForm
+from markupsafe import Markup
 from wtforms import PasswordField
 from wtforms.validators import InputRequired
 
@@ -290,7 +291,7 @@ def setRoot(app):
 
     @app.route('/delete_user/<int:user_id>', methods=['POST'])
     @log_activity(action='delete_user',target_type='post',target_id_func=lambda user_id: user_id)
-    # @login_required
+    @login_required
     def delete_user(user_id):
         user = User.query.get(user_id)
         if not user:
@@ -396,6 +397,38 @@ def setRoot(app):
             db.session.rollback()
             return jsonify({"message": "Failed to update user status", "error": str(e)}), 500
 
+    @app.route('/delete_post/<int:post_id>', methods=['POST'])
+    @log_activity(action='delete_post', target_type='post', target_id_func=lambda post_id: post_id)
+    @login_required
+    def delete_post(post_id):
+        post = Post.query.get(post_id)
+        if not post:
+            return jsonify({"message": "Post not found"}), 404
+
+        try:
+            post.deleted = True
+            db.session.commit()
+            return jsonify({"message": "Post marked as deleted"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": "Failed to delete post", "error": str(e)}), 500
+
+    @app.route('/delete_comment/<int:comment_id>', methods=['POST'])
+    @log_activity(action='delete_comment', target_type='post', target_id_func=lambda comment_id: comment_id)
+    @login_required
+    def delete_comment(comment_id):
+        comment = Comment.query.get(comment_id)
+        if not comment:
+            return jsonify({"message": "Comment not found"}), 404
+
+        try:
+            comment.deleted = True
+            db.session.commit()
+            return jsonify({"message": "Comment marked as deleted"}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"message": "Failed to delete comment", "error": str(e)}), 500
+
 
 class AdminModelView(ModelView):
     def is_accessible(self):
@@ -426,49 +459,67 @@ class MyAdminIndexView(AdminIndexView):
 
 
 class UserAdminModelView(ModelView):
-    form_columns = ['status']
 
+    # 2. 隐藏 password_hash，避免泄露密码
+    column_exclude_list = ['password_hash']
+
+    # 3. 只允许显示部分字段，避免数据库关系字段带来复杂查询
+    column_list = ['id', 'username', 'nickname', 'birthdate', 'gender', 'avatar', 'status', 'deleted']
+
+    # 4. 格式化 status 字段，使其显示 Enum 的名称
+    column_formatters = {
+        'status': lambda v, c, m, p: m.status.name,  # 显示 `NORMAL` 而不是 `UserStatus.NORMAL`
+        'avatar': lambda v, c, m, p: Markup(
+            f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
+    }
+
+    # 5. 让 `status` 作为 `SelectField` 让管理员修改
+    form_args = {
+        'status': {
+            'choices': [(status, status.name) for status in UserStatus],  # 生成选项
+            'coerce': lambda x: UserStatus[x]  # 保证转换为 `UserStatus`
+        }
+    }
+
+    # 6. 处理删除用户（调用后端 API 删除）
     def delete_model(self, model):
         try:
             session_cookie = {"session": request.cookies.get("session")}
             url = url_for('delete_user', user_id=model.id, _external=True)
             response = requests.post(url, cookies=session_cookie)
-            if response.status_code == 200:
-                return True
-            else:
-                return False
+            return response.status_code == 200  # 仅当返回 200 时删除成功
         except Exception as e:
             print("Error", e)
             return False
 
-    def edit_form(self, obj=None):
-        """
-        自定义表单，确保 `status` 字段是下拉框，并且只能选择 `UserStatus` 中的值
-        """
-        form = super().edit_form(obj)
-        if hasattr(form, 'status'):
-            form.status.choices = [(status.name, status.name) for status in UserStatus]  # 让 choices 匹配 Enum
+class PostAdminModelView(ModelView):
+    def delete_model(self, model):
+        """向 delete_post 路由发送请求进行逻辑删除"""
+        try:
 
-        return form
+            session_cookie = {"session": request.cookies.get("session")}
+            url = url_for('delete_post', post_id=model.id, _external=True)
+            response = requests.post(url, cookies=session_cookie)
+            return response.status_code == 200  # 仅当返回 200 时视为删除成功
 
-    def on_model_change(self, form, model, is_created):
-        """
-        拦截 `Flask-Admin` 的表单提交，请求 `change_user_status` 进行修改
-        """
+        except Exception as e:
+            print("Error:", e)
+            return False
+
+
+class CommentAdminModelView(ModelView):
+    def delete_model(self, model):
+        """向 delete_comment 路由发送请求进行逻辑删除"""
         try:
             session_cookie = {"session": request.cookies.get("session")}
-            url = url_for('change_user_status', user_id=model.id, _external=True)
-            payload = {"status": model.status.name}  # 传递 status 字符串
-
-            response = requests.post(url, json=payload, cookies=session_cookie)
-
-            if response.status_code != 200:
-                raise ValueError(f"Failed to update user status: {response.json().get('message')}")
-
-            return True
+            url = url_for('delete_comment', comment_id=model.id, _external=True)
+            response = requests.post(url, cookies=session_cookie)
+            return response.status_code == 200
         except Exception as e:
-            print(f"Error updating user status: {e}")
-            raise ValueError(f"Error updating user status: {e}")
+            print("Error:", e)
+            return False
+
+
 
 
 def init_admin(app):
@@ -477,7 +528,7 @@ def init_admin(app):
     # 保护 Flask-Admin 只能被管理员访问
     admin.add_view(ModelView(ActivityLog, db.session))
     admin.add_view(UserAdminModelView(User, db.session))
-    admin.add_view(ModelView(Post, db.session, endpoint="admin_post"))
-    admin.add_view(ModelView(Comment, db.session))
+    admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
+    admin.add_view(CommentAdminModelView(Comment, db.session))
     admin.add_view(ModelView(Course, db.session, endpoint="admin_course"))
     admin.add_view(ModelView(Tag, db.session))
