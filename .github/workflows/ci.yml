@@ -5,8 +5,6 @@ on:
   push:
     branches-ignore:
       - main
-    paths:
-      - 'Doner_backend/**'
 
 
 jobs:
