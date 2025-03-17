@@ -3,8 +3,8 @@ name: Deploy Next.js to UCD
 on:
   workflow_dispatch:
   push:
-    branches:
-      - unprotected
+    branches-ignore:
+      - main
     paths-ignore:
       - 'Doner_backend/**'
 

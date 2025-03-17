@@ -3,8 +3,8 @@ name: Deploy Flask App to UCD Server
 on:
   workflow_dispatch:
   push:
-    branches:
-      - unprotected
+    branches-ignore:
+      - main
     paths:
       - 'Doner_backend/**'
 
@@ -66,4 +66,5 @@ jobs:
           gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --label "automerge"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 
