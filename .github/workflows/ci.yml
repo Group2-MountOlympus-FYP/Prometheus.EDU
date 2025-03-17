@@ -1,9 +1,10 @@
 name: Flask CI Pipeline
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - unprotected
+    branches-ignore:
+      - main
     paths:
       - 'Doner_backend/**'
 
