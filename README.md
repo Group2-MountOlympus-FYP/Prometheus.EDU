@@ -7,7 +7,7 @@
 </div>
 <h1 align="center">Prometheus.EDU🔥: Igniting the Flame of Knowledge for the Underserved</h1>
 
-A comprehensive online education platform by **Mount Olympus**.
+A comprehensive online education platform developed by **Mount Olympus**.
 
 ## Problem Statement
 
