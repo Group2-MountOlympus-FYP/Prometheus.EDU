@@ -14,6 +14,7 @@ export function setLanguage(lang: Language){
 export function getLanguage():Language{
   const language = getLocalStorage('language')
   if(language !== null){
+    //console.log(language)
     return language as Language
   }
   //console.error('language wrong!')
