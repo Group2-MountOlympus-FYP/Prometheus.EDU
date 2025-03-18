@@ -142,7 +142,6 @@ def build_pdf(report_text: str) -> BytesIO:
     buffer = BytesIO()
 
     # 2. Configure a SimpleDocTemplate
-    #    Adjust margins and pagesize as desired
     doc = SimpleDocTemplate(
         buffer,
         pagesize=LETTER,
@@ -160,8 +159,6 @@ def build_pdf(report_text: str) -> BytesIO:
     heading_style = styles["Heading2"]
     body_style = styles["BodyText"]
 
-    # Optionally, create a custom ParagraphStyle
-    # e.g., a justified style with extra spacing
     custom_body_style = ParagraphStyle(
         name="CustomBody",
         parent=body_style,
@@ -178,21 +175,16 @@ def build_pdf(report_text: str) -> BytesIO:
     # -- Title
     #   Centered by default in "Title", or you can override alignment here
     title_style.alignment = TA_CENTER
-    flowables.append(Paragraph("TA Report", title_style))
+    flowables.append(Paragraph("AthenaTutor Report", title_style))
     flowables.append(Spacer(1, 20))  # Spacer(width, height)
 
-    # -- Optional: Add a subheading if you want
     flowables.append(Paragraph("Detailed Step-by-Step Instructions", heading_style))
     flowables.append(Spacer(1, 12))
 
     # -- Now, split the report text into paragraphs
-    #    If your text has natural paragraph breaks, you can split by "\n\n"
-    #    or keep it simpler and do line-by-line.
     paragraphs = report_text.strip().split("\n\n")  # Split by double newlines
 
     for idx, para in enumerate(paragraphs, start=1):
-        # Add a heading or bullet for each paragraph if you want enumerated steps
-        # e.g., "Step 1:", "Step 2:"
         step_heading = f"<b>Step {idx}:</b> " if len(paragraphs) > 1 else ""
 
         # Combine the heading with the paragraph text.
@@ -202,9 +194,6 @@ def build_pdf(report_text: str) -> BytesIO:
         # Create a Paragraph object with your custom style
         flowables.append(Paragraph(text_with_heading, custom_body_style))
         flowables.append(Spacer(1, 12))
-
-        # Optionally insert a page break after each step if the text is lengthy
-        # flowables.append(PageBreak())
 
     # 5. Build the PDF
     doc.build(flowables)
