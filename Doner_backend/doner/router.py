@@ -5,12 +5,12 @@ import sqlalchemy
 from flasgger import swag_from
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.form import Select2Widget, Select2Field
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from wtforms import PasswordField
-from wtforms.validators import InputRequired
+from wtforms import PasswordField, StringField, TextAreaField, IntegerField, SubmitField, SelectField
+from wtforms.validators import InputRequired, DataRequired
 
-from .User import *
 from .decorator import *
 from .extensions import db
 from .schemas import *
@@ -457,28 +457,18 @@ class MyAdminIndexView(AdminIndexView):
                 return super().index()
         return super().index()
 
+class BaseAdminView(ModelView):
+    can_edit = False
+    can_create = False
 
 class UserAdminModelView(ModelView):
-
-    # 2. 隐藏 password_hash，避免泄露密码
-    column_exclude_list = ['password_hash']
-
-    # 3. 只允许显示部分字段，避免数据库关系字段带来复杂查询
-    column_list = ['id', 'username', 'nickname', 'birthdate', 'gender', 'avatar', 'status', 'deleted']
-
-    # 4. 格式化 status 字段，使其显示 Enum 的名称
+    column_exclude_list = ('password_hash',)
+    column_display_pk = True  # 显示主键，避免自动解析外键
+    form_columns = ('id','username','birthdate','gender','nickname','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
     column_formatters = {
-        'status': lambda v, c, m, p: m.status.name,  # 显示 `NORMAL` 而不是 `UserStatus.NORMAL`
         'avatar': lambda v, c, m, p: Markup(
             f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
-    }
-
-    # 5. 让 `status` 作为 `SelectField` 让管理员修改
-    form_args = {
-        'status': {
-            'choices': [(status, status.name) for status in UserStatus],  # 生成选项
-            'coerce': lambda x: UserStatus[x]  # 保证转换为 `UserStatus`
-        }
     }
 
     # 6. 处理删除用户（调用后端 API 删除）
@@ -492,7 +482,10 @@ class UserAdminModelView(ModelView):
             print("Error", e)
             return False
 
-class PostAdminModelView(ModelView):
+
+class PostAdminModelView(BaseAdminView):
+    column_searchable_list = ('id', 'title', 'content', 'composer_id')
+
     def delete_model(self, model):
         """向 delete_post 路由发送请求进行逻辑删除"""
         try:
@@ -507,7 +500,8 @@ class PostAdminModelView(ModelView):
             return False
 
 
-class CommentAdminModelView(ModelView):
+class CommentAdminModelView(BaseAdminView):
+    column_searchable_list = ('user_id', 'content')
     def delete_model(self, model):
         """向 delete_comment 路由发送请求进行逻辑删除"""
         try:
@@ -519,16 +513,19 @@ class CommentAdminModelView(ModelView):
             print("Error:", e)
             return False
 
-
+class ActivityLogView(BaseAdminView):
+    column_searchable_list = ('user_id', 'action', 'target_type')
+    column_list = ('id', 'user_id', 'action', 'target_type', 'target_id', 'timestamp')  # 只列出具体字段
+    form_excluded_columns = ('user',)
 
 
 def init_admin(app):
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())
 
     # 保护 Flask-Admin 只能被管理员访问
-    admin.add_view(ModelView(ActivityLog, db.session))
+    admin.add_view(ActivityLogView(ActivityLog, db.session))
     admin.add_view(UserAdminModelView(User, db.session))
     admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
     admin.add_view(CommentAdminModelView(Comment, db.session))
-    admin.add_view(ModelView(Course, db.session, endpoint="admin_course"))
-    admin.add_view(ModelView(Tag, db.session))
+    admin.add_view(BaseAdminView(Course, db.session, endpoint="admin_course"))
+    admin.add_view(BaseAdminView(Tag, db.session))
