@@ -58,6 +58,9 @@ class Course(ReplyTarget):
     teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     teacher = db.relationship('User', backref='courses')
 
+    student_count = db.Column(db.Integer, nullable=False, default=0)
+    institution = db.Column(db.String(100), nullable=False)
+
     # 自关联：指向更低等级的课程（例如前置课程）
     lower_level_course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
     lower_level_course = db.relationship(

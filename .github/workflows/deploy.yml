@@ -2,11 +2,11 @@ name: Deploy Next.js to vhboyr.com
 
 on:
   workflow_dispatch:
-  push:
-    branches-ignore:
-      - main
-    paths-ignore:
-      - 'Doner_backend/**'
+#  push:
+#    branches-ignore:
+#      - main
+#    paths-ignore:
+#      - 'Doner_backend/**'
 
 jobs:
   deploy:
