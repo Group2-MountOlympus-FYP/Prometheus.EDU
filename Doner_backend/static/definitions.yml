@@ -120,6 +120,10 @@ Course:
       type: string
     status:
       type: string
+    student_count:
+      type: integer
+    institution:
+      type: string
 Tag:
   type: object
   properties:
