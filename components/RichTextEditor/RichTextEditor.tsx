@@ -97,7 +97,6 @@ export function RichTextEditor() {
   
     return (
       <div className="editor-container">
-        <h2 className="editor-title">富文本编辑器</h2>
   
         {/* 工具栏 */}
         <div className="editor-toolbar">
