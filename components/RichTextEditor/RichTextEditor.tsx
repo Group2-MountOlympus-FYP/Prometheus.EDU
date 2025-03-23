@@ -1,11 +1,28 @@
 'use client'
 
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from "@tiptap/starter-kit";
 import Image from '@tiptap/extension-image'
 import Mention from '@tiptap/extension-mention'
+import BulletList from "@tiptap/extension-bullet-list";
+import OrderedList from "@tiptap/extension-ordered-list";
+import ListItem from "@tiptap/extension-list-item";
+import Paragraph from "@tiptap/extension-paragraph";
 import './RichTextEditor.css'
+import tippy, { Instance as TippyInstance } from 'tippy.js'
+import 'tippy.js/dist/tippy.css'
+
+interface UserItem{
+  id: string,
+  label: string,
+}
+
+const users: UserItem[] = [
+  { id: '1', label: '张三' },
+  { id: '2', label: '李四' },
+  { id: '3', label: '王五' },
+]
 
 export function RichTextEditor() {
 
@@ -13,10 +30,18 @@ export function RichTextEditor() {
         extensions: [
           StarterKit,
           Image,
+          BulletList, OrderedList, ListItem, Paragraph,
           Mention.configure({
             HTMLAttributes:{
                 class: 'mention',
-            }
+            },
+            renderHTML({node}){
+              return `👤 ${node.attrs.label}`
+            },
+            suggestion: suggestion,
+            renderText({ node }){
+              return  `👤 ${node.attrs.label}`
+            },
           }),
         ],
         content: '<p>开始写点什么吧...</p>',
@@ -81,6 +106,7 @@ export function RichTextEditor() {
           <button onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()} className={editor?.isActive('heading', { level: 1 }) ? 'active' : ''}>标题1</button>
           <button onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} className={editor?.isActive('heading', { level: 2 }) ? 'active' : ''}>标题2</button>
           <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={editor?.isActive('bulletList') ? 'active' : ''}>无序列表</button>
+          <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={editor?.isActive('orderedList') ? 'is-active' : ''}>Toggle ordered list</button>
         </div>
   
         {/* 编辑器主体 */}
@@ -107,4 +133,82 @@ const uploadImage = async (file: File): Promise<string> => {
           resolve('https://via.placeholder.com/400x300?text=Uploaded+Image')
         }, 1000)
       })
+}
+
+
+const suggestion = {
+  char: '@',
+  items: ({ query }: { query: string }) => {
+    //异步请求
+    return users
+      .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
+      .slice(0, 5)
+  },
+  render: () => {
+    let component: HTMLDivElement
+    let popup: TippyInstance
+
+    return {
+      onStart: (props: any) => {
+        component = document.createElement('div')
+        component.className = 'mention-list'
+        
+        props.items.forEach((item: any, index: number) => {
+          const option = document.createElement('div')
+          option.className = 'mention-item'
+          option.textContent = item.label
+
+          option.addEventListener('click', () => {
+            props.command(item)
+          })
+
+          component.appendChild(option)
+        })
+
+        popup = tippy('body', {
+          getReferenceClientRect: props.clientRect,
+          appendTo: () => document.body,
+          content: component,
+          showOnCreate: true,
+          interactive: true,
+          trigger: 'manual',
+          placement: 'bottom-start',
+        })[0]
+      },
+
+      onUpdate(props: any) {
+        while (component.firstChild) {
+          component.removeChild(component.firstChild)
+        }
+
+        props.items.forEach((item: any) => {
+          const option = document.createElement('div')
+          option.className = 'mention-item'
+          option.textContent = item.label
+
+          option.addEventListener('click', () => {
+            props.command(item)
+          })
+
+          component.appendChild(option)
+        })
+
+        popup.setProps({
+          getReferenceClientRect: props.clientRect,
+        })
+      },
+
+      onKeyDown(props: any) {
+        if (props.event.key === 'Escape') {
+          popup?.hide()
+          return true
+        }
+        return false
+      },
+
+      onExit() {
+        popup?.destroy()
+      },
+    }
+  },
 }

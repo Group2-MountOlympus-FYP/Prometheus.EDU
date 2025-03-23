@@ -87,4 +87,18 @@
     resize: vertical;
     font-family: monospace;
 }
+.mention{
+    color: rgb(98, 66, 255);
+}
+.mention-item {
+    cursor: pointer;
+    padding-left: 0.5rem; /* 8px */
+    padding-right: 0.5rem; /* 8px */
+    padding-top: 0.25rem;  /* 4px */
+    padding-bottom: 0.25rem; /* 4px */
+  }
+  
+.mention-item:hover {
+background-color: #494949; /* gray-100 color */
+}
   
