@@ -3,8 +3,8 @@ name: Update Flask App Requirements on UCD Server
 on:
   workflow_dispatch:
   push:
-    branches:
-      - unprotected
+    branches-ignore:
+      - main
     paths:
       - 'Doner_backend/requirements.txt'
 

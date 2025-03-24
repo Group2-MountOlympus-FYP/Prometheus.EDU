@@ -2,7 +2,7 @@ import datetime
 import os
 import time
 from bs4 import BeautifulSoup
-from PyPDF2 import PdfReader
+from pypdf import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.schema import Document

@@ -132,14 +132,12 @@ def save_dict_as_yaml(name, schema_dict):
     with open(save_path, "w") as file:
         file.write(schema_yaml)
 
-
-if __name__ == "__main__":
-    save_dict_as_yaml("definitions", {
-        "Post": get_schema_dict(PostSchema),
-        "User": get_schema_dict(UserSchema),
-        "ActivityLog": get_schema_dict(ActivityLogSchema),
-        "Image": get_schema_dict(ImageSchema),
-        "Comment": get_schema_dict(CommentSchema),
-        "Course": get_schema_dict(CourseSchema),
-        "Tag": get_schema_dict(TagSchema)
-    })
+save_dict_as_yaml("definitions", {
+    "Post": get_schema_dict(PostSchema),
+    "User": get_schema_dict(UserSchema),
+    "ActivityLog": get_schema_dict(ActivityLogSchema),
+    "Image": get_schema_dict(ImageSchema),
+    "Comment": get_schema_dict(CommentSchema),
+    "Course": get_schema_dict(CourseSchema),
+    "Tag": get_schema_dict(TagSchema)
+})

@@ -3,10 +3,8 @@ name: Deploy Flask App to UCD Server
 on:
   workflow_dispatch:
   push:
-    branches:
-      - unprotected
-    paths:
-      - 'Doner_backend/**'
+    branches-ignore:
+      - main
 
 jobs:
   deploy:
@@ -34,12 +32,23 @@ jobs:
         # Connect to the server and perform the deployment
         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
           set -e
+        
+          # 确保远程环境加载完整
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
           # Go to the deploy directory
           cd ~/Prometheus.EDU
 
           # Pull the latest changes from the repository
           git pull 
+        
+          # 安装其他依赖
+          npm install
+          # 构建项目
+          npm run build
+        
+          pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env
         
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
@@ -63,7 +72,8 @@ jobs:
 
       - name: Create Pull Request to merge into main
         run: |
-          gh pr create --base main --head unprotected --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --label "automerge"
+          gh pr create --base main --head "$current_branch" --title "Automated PR for deployment" --body "This PR was automatically created after the successful deployment." --label "automerge"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
 

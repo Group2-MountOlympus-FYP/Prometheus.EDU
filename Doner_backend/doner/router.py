@@ -5,12 +5,12 @@ import sqlalchemy
 from flasgger import swag_from
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
+from flask_admin.form import Select2Widget, Select2Field
 from flask_wtf import FlaskForm
 from markupsafe import Markup
-from wtforms import PasswordField
-from wtforms.validators import InputRequired
+from wtforms import PasswordField, StringField, TextAreaField, IntegerField, SubmitField, SelectField
+from wtforms.validators import InputRequired, DataRequired
 
-from .User import *
 from .decorator import *
 from .extensions import db
 from .schemas import *
@@ -289,6 +289,100 @@ def setRoot(app):
             return "用户名重复", 401
         return "个人信息更新成功"
 
+    @app.route('/user/search-users', methods=['GET'])
+    @login_required
+    @log_activity(action='search-users', target_type='get', target_id_func=None)
+    @swag_from({
+        "tags": ["User"],
+        "summary": "搜索用户",
+        "description": "根据用户名首字母搜索用户，并支持分页。",
+        "parameters": [
+            {
+                "name": "initial",
+                "in": "formData",
+                "type": "string",
+                "required": True,
+                "description": "用户名的首字母"
+            },
+            {
+                "name": "per_page",
+                "in": "formData",
+                "type": "integer",
+                "required": False,
+                "default": 10,
+                "description": "每页返回的用户数量，默认值为 10"
+            }
+        ],
+        "responses": {
+            "200": {
+                "description": "成功返回匹配的用户列表",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "users": {
+                            "type": "object",
+                            "properties": {
+                                "username": {
+                                    "type": "string",
+                                    "description": "用户名"
+                                },
+                                "user_id": {
+                                    "type": "integer",
+                                    "description": "用户 ID"
+                                }
+                            }
+                        }
+                    },
+                    "example": {
+                        "users": [
+                            {
+                            "username": "王洋",
+                            "user_id": 13
+                            }
+                        ]
+                    }
+                }
+            },
+            "400": {
+                "description": "请求参数错误",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "type": "string",
+                            "example": "initial 参数不能为空"
+                        }
+                    }
+                }
+            },
+            "401": {
+                "description": "未授权，用户未登录",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    }
+                }
+            }
+        }
+    })
+    def search_users():
+        initial = request.form.get('initial', '', type=str)
+        per_page = request.form.get('per_page', 10, type=int)
+
+        if not initial:
+            return jsonify({"error": "initial 参数不能为空"}), 400
+
+        query = User.query.filter(User.username.startswith(initial), User.deleted == False)
+        users = query.limit(per_page).all()
+
+        result = {"users": [{"username": user.username, "user_id": user.id} for user in users]}
+
+        return jsonify(result)
+
     @app.route('/delete_user/<int:user_id>', methods=['POST'])
     @log_activity(action='delete_user',target_type='post',target_id_func=lambda user_id: user_id)
     @login_required
@@ -457,28 +551,18 @@ class MyAdminIndexView(AdminIndexView):
                 return super().index()
         return super().index()
 
+class BaseAdminView(ModelView):
+    can_edit = False
+    can_create = False
 
 class UserAdminModelView(ModelView):
-
-    # 2. 隐藏 password_hash，避免泄露密码
-    column_exclude_list = ['password_hash']
-
-    # 3. 只允许显示部分字段，避免数据库关系字段带来复杂查询
-    column_list = ['id', 'username', 'nickname', 'birthdate', 'gender', 'avatar', 'status', 'deleted']
-
-    # 4. 格式化 status 字段，使其显示 Enum 的名称
+    column_exclude_list = ('password_hash',)
+    column_display_pk = True  # 显示主键，避免自动解析外键
+    form_columns = ('id','username','birthdate','gender','nickname','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
     column_formatters = {
-        'status': lambda v, c, m, p: m.status.name,  # 显示 `NORMAL` 而不是 `UserStatus.NORMAL`
         'avatar': lambda v, c, m, p: Markup(
             f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
-    }
-
-    # 5. 让 `status` 作为 `SelectField` 让管理员修改
-    form_args = {
-        'status': {
-            'choices': [(status, status.name) for status in UserStatus],  # 生成选项
-            'coerce': lambda x: UserStatus[x]  # 保证转换为 `UserStatus`
-        }
     }
 
     # 6. 处理删除用户（调用后端 API 删除）
@@ -492,7 +576,10 @@ class UserAdminModelView(ModelView):
             print("Error", e)
             return False
 
-class PostAdminModelView(ModelView):
+
+class PostAdminModelView(BaseAdminView):
+    column_searchable_list = ('id', 'title', 'content', 'composer_id')
+
     def delete_model(self, model):
         """向 delete_post 路由发送请求进行逻辑删除"""
         try:
@@ -507,7 +594,8 @@ class PostAdminModelView(ModelView):
             return False
 
 
-class CommentAdminModelView(ModelView):
+class CommentAdminModelView(BaseAdminView):
+    column_searchable_list = ('user_id', 'content')
     def delete_model(self, model):
         """向 delete_comment 路由发送请求进行逻辑删除"""
         try:
@@ -519,16 +607,19 @@ class CommentAdminModelView(ModelView):
             print("Error:", e)
             return False
 
-
+class ActivityLogView(BaseAdminView):
+    column_searchable_list = ('user_id', 'action', 'target_type')
+    column_list = ('id', 'user_id', 'action', 'target_type', 'target_id', 'timestamp')  # 只列出具体字段
+    form_excluded_columns = ('user',)
 
 
 def init_admin(app):
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())
 
     # 保护 Flask-Admin 只能被管理员访问
-    admin.add_view(ModelView(ActivityLog, db.session))
+    admin.add_view(ActivityLogView(ActivityLog, db.session))
     admin.add_view(UserAdminModelView(User, db.session))
     admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
     admin.add_view(CommentAdminModelView(Comment, db.session))
-    admin.add_view(ModelView(Course, db.session, endpoint="admin_course"))
-    admin.add_view(ModelView(Tag, db.session))
+    admin.add_view(BaseAdminView(Course, db.session, endpoint="admin_course"))
+    admin.add_view(BaseAdminView(Tag, db.session))

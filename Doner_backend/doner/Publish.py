@@ -402,3 +402,13 @@ def add_tag():
         return jsonify({"tag_id": tag.id})
     except sqlalchemy.exc.IntegrityError:
         return "Tag already exists", 400
+
+
+@post_bp.route('/add_image', methods=['POST'])
+def add_image():
+    file = request.files.get('image')
+    if file and file.filename:
+        image = Image.save_image(file, None)
+        return image.url
+    else:
+        return "Image Not Found", 404
