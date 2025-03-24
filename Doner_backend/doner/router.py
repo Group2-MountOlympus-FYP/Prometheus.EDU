@@ -290,8 +290,8 @@ def setRoot(app):
         return "个人信息更新成功"
 
     @app.route('/user/search-users', methods=['GET'])
-    # @login_required
-    # @log_activity(action='search-users', target_type='get', target_id_func=None)
+    @login_required
+    @log_activity(action='search-users', target_type='get', target_id_func=None)
     @swag_from({
         "tags": ["User"],
         "summary": "搜索用户",
