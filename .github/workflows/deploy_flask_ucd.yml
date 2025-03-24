@@ -32,6 +32,10 @@ jobs:
         # Connect to the server and perform the deployment
         ssh -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST << 'EOF'
           set -e
+        
+          # 确保远程环境加载完整
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 
           # Go to the deploy directory
           cd ~/Prometheus.EDU
