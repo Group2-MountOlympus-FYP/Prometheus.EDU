@@ -115,6 +115,12 @@ Run the backend of this project and visit http://127.0.0.1:5000/admin
    pip install -r requirements.txt --no-deps # if you encounter dependency conflict.
    ```
 
+3. Migrate DB
+    ```shell
+    flask db migrate
+    flask db upgrade
+    ```
+
 ### For AthenaTutor Module
 
 在运行前，需要在 `Doner_backend/doner` 路径下创建 `.env`，并在其中添加 Google API Key
