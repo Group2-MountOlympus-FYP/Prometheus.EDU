@@ -6,3 +6,22 @@
     font-size: larger;
     font-weight: bold;
 }
+
+@keyframes button-move-to-corner {
+    0%{
+        transform: translate(0, 0) translateY(30vh);
+    }
+    100%{
+        transform: translate(0,0) translateY(0);
+    }
+}
+
+#right-corner{
+    position: fixed;
+    right: 3rem;
+    bottom: 1rem;
+    animation: button-move-to-corner 0.3s ease-in-out;
+}
+#normal{
+    position: relative;
+}

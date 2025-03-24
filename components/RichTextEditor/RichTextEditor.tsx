@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import { forwardRef, useEffect, useImperativeHandle, useState } from "react"
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from "@tiptap/starter-kit";
 import Image from '@tiptap/extension-image'
@@ -24,7 +24,7 @@ const users: UserItem[] = [
   { id: '3', label: '王五' },
 ]
 
-export function RichTextEditor() {
+export const RichTextEditor = forwardRef((props, ref) => {
 
     const editor = useEditor({
         extensions: [
@@ -94,6 +94,12 @@ export function RichTextEditor() {
             dom.removeEventListener('paste', handlePaste)
         }
     }, [editor])
+
+    useImperativeHandle(ref, () => ({
+      getText: () => {
+        return editor?.getHTML()
+      }
+    }))
   
     return (
       <div className="editor-container">
@@ -121,7 +127,7 @@ export function RichTextEditor() {
         </div>
       </div>
     )
-}
+})
 
 const uploadImage = async (file: File): Promise<string> => {
     console.log('uploading image')
