@@ -290,8 +290,8 @@ def setRoot(app):
         return "个人信息更新成功"
 
     @app.route('/user/search-users', methods=['GET'])
-    @login_required
-    @log_activity(action='search-users', target_type='get', target_id_func=None)
+    # @login_required
+    # @log_activity(action='search-users', target_type='get', target_id_func=None)
     @swag_from({
         "tags": ["User"],
         "summary": "搜索用户",
@@ -370,8 +370,8 @@ def setRoot(app):
         }
     })
     def search_users():
-        initial = request.form.get('initial', '', type=str)
-        per_page = request.form.get('per_page', 10, type=int)
+        initial = request.args.get('initial', '', type=str)
+        per_page = request.args.get('per_page', 10, type=int)
 
         if not initial:
             return jsonify({"error": "initial 参数不能为空"}), 400
