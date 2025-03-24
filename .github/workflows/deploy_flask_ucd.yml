@@ -39,6 +39,13 @@ jobs:
           # Pull the latest changes from the repository
           git pull 
         
+          # 安装其他依赖
+          npm install
+          # 构建项目
+          npm run build
+        
+          pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env
+        
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"

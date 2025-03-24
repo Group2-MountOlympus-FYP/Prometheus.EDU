@@ -30,7 +30,7 @@ def fileUpload(file):
 class Image(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     url = db.Column(db.Text, nullable=False)
-    target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), nullable=False)
+    target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'))
     # 在 Image 中定义 target 关系，表示每个 Image 仅对应一个 ReplyTarget
     target = relationship('ReplyTarget', back_populates='images')
 
@@ -39,3 +39,4 @@ class Image(db.Model):
         image = cls(url=fileUpload(file), target=target)
         db.session.add(image)
         db.session.commit()
+        return image
