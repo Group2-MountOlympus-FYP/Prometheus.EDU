@@ -54,10 +54,6 @@ class Course(ReplyTarget):
     # 课程状态（必填，可选值：'删除'、'普通'、'vip'，默认 '普通'）
     status = db.Column(db.Enum(CourseStatus), default=CourseStatus.NORMAL)
 
-    # 教师：外键指向用户表，表示该课程的讲师（必填）
-    teacher_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    teacher = db.relationship('User', backref='courses')
-
     student_count = db.Column(db.Integer, nullable=False, default=0)
     institution = db.Column(db.String(100), nullable=False)
 
@@ -80,6 +76,8 @@ class Course(ReplyTarget):
         post_update=True,
         backref='lower_level_courses'
     )
+
+    lectures = db.relationship('Lecture', backref='course',foreign_keys='Lecture.id')
 
     __mapper_args__ = {
         'polymorphic_identity': 'course',
@@ -123,11 +121,12 @@ class Course(ReplyTarget):
         return cls.query.get(course_id)
 
     @classmethod
-    def create_course(cls, course_name, description, level=CourseLevel.LEVEL_1,
-                      status=CourseStatus.NORMAL, teacher_id=None, lower_level_course_id=None,
+    def create_course(cls, course_name, description, institution ,level=CourseLevel.LEVEL_1,
+                      status=CourseStatus.NORMAL,lower_level_course_id=None,
                       higher_level_course_id=None):
         """
         创建一个新课程
+        :param institution:
         :param course_name: 课程名称
         :param description: 课程简介
         :param rating: 课程评分
@@ -141,9 +140,9 @@ class Course(ReplyTarget):
         course = cls(
             course_name=course_name,
             description=description,
+            institution=institution,
             level=level,
             status=status,
-            teacher_id=teacher_id,
             lower_level_course_id=lower_level_course_id,
             higher_level_course_id=higher_level_course_id
         )

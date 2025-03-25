@@ -110,7 +110,8 @@ def setRoot(app):
         "description": "User's profile and posts",
     })
     @login_required
-    @log_activity(action='getLikeInfo', target_type='get', target_id_func=lambda: get_current_user().id if get_current_user() else None)
+    @log_activity(action='getLikeInfo', target_type='get',
+                  target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def my_likes():
         user = get_current_user()
         posts = user.liked_posts  # 获取该用户赞过的帖子
@@ -139,7 +140,8 @@ def setRoot(app):
         "description": "获取用户收藏的内容列表"
     })
     @login_required
-    @log_activity(action='getCollectInfo', target_type='get', target_id_func=lambda: get_current_user().id if get_current_user() else None)
+    @log_activity(action='getCollectInfo', target_type='get',
+                  target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def my_collections():
         user = get_current_user()
         posts = user.favorited_posts  # 用户收藏
@@ -180,7 +182,8 @@ def setRoot(app):
             }
         ]
     })
-    @log_activity(action='changeAvatar', target_type='post', target_id_func=lambda: get_current_user().id if get_current_user() else None)
+    @log_activity(action='changeAvatar', target_type='post',
+                  target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def change_avatar():
         file = request.files.get('file')
         user = get_current_user()
@@ -257,7 +260,8 @@ def setRoot(app):
             }
         ]
     })
-    @log_activity(action='changeProfile', target_type='post', target_id_func=lambda: get_current_user().id if get_current_user() else None)
+    @log_activity(action='changeProfile', target_type='post',
+                  target_id_func=lambda: get_current_user().id if get_current_user() else None)
     def change_profile():
         user = get_current_user()
         data = request.form
@@ -278,6 +282,8 @@ def setRoot(app):
                         setattr(user, field, True)
                     elif v in ['false', '0', 'no']:
                         setattr(user, field, False)
+                elif field == 'status':
+                    setattr(user, field, UserStatus[value.strip().upper()])
                 else:
                     setattr(user, field, value.strip())
             update_fields_recursively(fields[1:])
@@ -384,7 +390,7 @@ def setRoot(app):
         return jsonify(result)
 
     @app.route('/delete_user/<int:user_id>', methods=['POST'])
-    @log_activity(action='delete_user',target_type='post',target_id_func=lambda user_id: user_id)
+    @log_activity(action='delete_user', target_type='post', target_id_func=lambda user_id: user_id)
     @login_required
     def delete_user(user_id):
         user = User.query.get(user_id)
@@ -551,15 +557,17 @@ class MyAdminIndexView(AdminIndexView):
                 return super().index()
         return super().index()
 
+
 class BaseAdminView(ModelView):
     can_edit = False
     can_create = False
 
+
 class UserAdminModelView(ModelView):
     column_exclude_list = ('password_hash',)
     column_display_pk = True  # 显示主键，避免自动解析外键
-    form_columns = ('id','username','birthdate','gender','nickname','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
-    column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
+    form_columns = ('id', 'username', 'birthdate', 'gender', 'nickname', 'deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    column_searchable_list = ('id', 'username', 'birthdate', 'gender', 'nickname', 'deleted')
     column_formatters = {
         'avatar': lambda v, c, m, p: Markup(
             f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
@@ -596,6 +604,7 @@ class PostAdminModelView(BaseAdminView):
 
 class CommentAdminModelView(BaseAdminView):
     column_searchable_list = ('user_id', 'content')
+
     def delete_model(self, model):
         """向 delete_comment 路由发送请求进行逻辑删除"""
         try:
@@ -606,6 +615,7 @@ class CommentAdminModelView(BaseAdminView):
         except Exception as e:
             print("Error:", e)
             return False
+
 
 class ActivityLogView(BaseAdminView):
     column_searchable_list = ('user_id', 'action', 'target_type')

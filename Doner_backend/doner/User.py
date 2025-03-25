@@ -25,7 +25,7 @@ followers = db.Table('followers',
                      )
 
 
-class UserStatus(Enum):
+class UserStatus(str,Enum):
     NORMAL = auto()
     VIP = auto()
     BANNED = auto()
@@ -54,6 +54,7 @@ class User(db.Model):
     nickname = db.Column(db.String(80), default='default nickname')
     status = db.Column(db.Enum(UserStatus), default=UserStatus.NORMAL)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
+    teach = db.relationship("Lecture", backref="teacher")
 
     def addUser(self):
         db.session.add(self)
