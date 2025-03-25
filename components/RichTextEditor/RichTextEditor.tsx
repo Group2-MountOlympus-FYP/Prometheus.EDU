@@ -9,9 +9,14 @@ import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
 import ListItem from "@tiptap/extension-list-item";
 import Paragraph from "@tiptap/extension-paragraph";
+import Underline from '@tiptap/extension-underline'
 import './RichTextEditor.css'
 import tippy, { Instance as TippyInstance } from 'tippy.js'
 import 'tippy.js/dist/tippy.css'
+import Blockquote from "@tiptap/extension-blockquote";
+import { TfiList } from "react-icons/tfi";
+import { TfiListOl } from "react-icons/tfi";
+import CodeBlock from "@tiptap/extension-code-block";
 
 interface UserItem{
   id: string,
@@ -30,7 +35,17 @@ export const RichTextEditor = forwardRef((props, ref) => {
         extensions: [
           StarterKit,
           Image,
-          BulletList, OrderedList, ListItem, Paragraph,
+          BulletList, OrderedList, ListItem, Paragraph, Underline, 
+          CodeBlock.configure({
+            HTMLAttributes:{
+              class: 'code-block'
+            }
+          }),
+          Blockquote.configure({
+            HTMLAttributes:{
+              class: 'quote'
+            }
+          }),
           Mention.configure({
             HTMLAttributes:{
                 class: 'mention',
@@ -55,6 +70,17 @@ export const RichTextEditor = forwardRef((props, ref) => {
     
         // 2. 插入图片
         editor.chain().focus().setImage({ src: url }).run()
+    }
+
+    //手动插入mention并且@Athena
+    const mentionAthena = () => {
+      editor?.commands.insertContent({
+        type:'mention',
+        attrs:{
+          label: 'Athena',
+          id: -1
+        }
+      })
     }
 
     useEffect(() => {
@@ -106,32 +132,28 @@ export const RichTextEditor = forwardRef((props, ref) => {
   
         {/* 工具栏 */}
         <div className="editor-toolbar">
-          <button onClick={() => editor?.chain().focus().toggleBold().run()} className={editor?.isActive('bold') ? 'active' : ''}>加粗</button>
-          <button onClick={() => editor?.chain().focus().toggleItalic().run()} className={editor?.isActive('italic') ? 'active' : ''}>斜体</button>
-          <button onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()} className={editor?.isActive('heading', { level: 1 }) ? 'active' : ''}>标题1</button>
-          <button onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} className={editor?.isActive('heading', { level: 2 }) ? 'active' : ''}>标题2</button>
-          <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={editor?.isActive('bulletList') ? 'active' : ''}>无序列表</button>
-          <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={editor?.isActive('orderedList') ? 'is-active' : ''}>Toggle ordered list</button>
+          <button onClick={() => editor?.chain().focus().toggleBlockquote().run()} className={editor?.isActive('blockquote') ? 'is-active' : ''}><b>"</b></button>
+          <button onClick={() => editor?.chain().focus().toggleBold().run()} className={editor?.isActive('bold') ? 'active' : ''}><b>B</b></button>
+          <button onClick={() => editor?.chain().focus().toggleItalic().run()} className={editor?.isActive('italic') ? 'active' : ''}><i>I</i></button>
+          <button onClick={() => editor?.chain().focus().toggleUnderline().run()} className={editor?.isActive('underline') ? 'active' : ''}><u>U</u></button>
+          <button onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()} className={editor?.isActive('heading', { level: 1 }) ? 'active' : ''}>H1</button>
+          <button onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()} className={editor?.isActive('heading', { level: 2 }) ? 'active' : ''}>H2</button>
+          <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={editor?.isActive('bulletList') ? 'active' : ''}><TfiList></TfiList></button>
+          <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={editor?.isActive('orderedList') ? 'is-active' : ''}><TfiListOl></TfiListOl></button>
+          <button onClick={() => editor?.chain().focus().toggleCodeBlock().run()} className={editor?.isActive('codeBlock') ? 'is-active' : ''}>{"</>"}</button>
+          <button onClick={mentionAthena}>@Athena</button>
         </div>
   
         {/* 编辑器主体 */}
         <EditorContent editor={editor} className="editor-content" />
   
-        {/* 底部内容查看 */}
-        <div className="editor-output">
-          <h3>编辑器 HTML 输出</h3>
-          <textarea
-            value={editor?.getHTML() || ''}
-            readOnly
-          />
-        </div>
       </div>
     )
 })
 
 const uploadImage = async (file: File): Promise<string> => {
     console.log('uploading image')
-    //具体逻辑，这个接口最好转移到/api里
+    //具体逻辑
 
     return new Promise((resolve) => {
         setTimeout(() => {
@@ -140,14 +162,44 @@ const uploadImage = async (file: File): Promise<string> => {
       })
 }
 
+/*
+* mention触发时进行异步请求，搜索相关用户，每次输入字符都会触发
+*/
+const fetchUsers = async (query: string) => {
+  //创建搜索变量
+  const data = new URLSearchParams({
+    initial: query,
+    per_page: '5',
+  })
+  try{
+    const url = `/user/search-users?${data.toString()}`
+    const response = await fetch(url)
+    
+    if(!response.ok){
+      throw new Error("Fetch user error!")
+    }
 
+    const userData = response.json()
+    //处理用户数据
+    return userData
+
+  }catch(error){
+    console.error(error)
+  }
+  
+}
+
+//mention组件的建议功能，用户输入字符后触发异步请求
 const suggestion = {
   char: '@',
-  items: ({ query }: { query: string }) => {
+  items: async ({ query }: { query: string }) => {
     //异步请求
+    const users = await fetchUsers(query)
+
     return users
-      .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
-      .slice(0, 5)
+    // return users
+    //   .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
+    //   .slice(0, 5)
   },
   render: () => {
     let component: HTMLDivElement
