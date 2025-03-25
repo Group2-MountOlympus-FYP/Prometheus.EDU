@@ -1,5 +1,5 @@
 .editor-container {
-    max-width: 700px;
+    width: 100%;
     margin: 0 auto;
     padding: 16px;
     font-family: Arial, sans-serif;
@@ -86,5 +86,43 @@
     border-radius: 4px;
     resize: vertical;
     font-family: monospace;
+}
+.mention{
+    color: rgb(98, 66, 255);
+}
+.mention-item {
+    cursor: pointer;
+    padding-left: 0.5rem; /* 8px */
+    padding-right: 0.5rem; /* 8px */
+    padding-top: 0.25rem;  /* 4px */
+    padding-bottom: 0.25rem; /* 4px */
+  }
+  
+.mention-item:hover {
+background-color: #494949; /* gray-100 color */
+}
+
+.quote{
+    border-left: 4px solid #ccc; /* 左边竖线 */
+    padding-left: 16px;          /* 内边距 */
+    margin: 16px 0;              /* 上下外边距 */
+    color: #555;                 /* 字体颜色 */
+    font-style: italic;          /* 斜体 */
+    background-color: #f9f9f9;   /* 背景色 */
+    border-radius: 4px; 
+}
+.code-block{
+    background-color: #f5f5f5;   /* 背景色 */
+  color: #333;                /* 字体颜色 */
+  padding: 16px;              /* 内边距 */
+  border-radius: 8px;         /* 圆角 */
+  font-size: 14px;            /* 字体大小 */
+  font-family: 'Fira Code', monospace; /* 等宽字体 */
+  overflow-x: auto;           /* 超出自动滚动 */
+  line-height: 1.6;           /* 行高 */
+  white-space: pre-wrap;      /* 自动换行（按需） */
+  margin: 16px 0;
+  font-family: 'Fira Code', monospace;
+  color: #d6336c; 
 }
   

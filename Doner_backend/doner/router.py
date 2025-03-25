@@ -295,6 +295,100 @@ def setRoot(app):
             return "用户名重复", 401
         return "个人信息更新成功"
 
+    @app.route('/user/search-users', methods=['GET'])
+    @login_required
+    @log_activity(action='search-users', target_type='get', target_id_func=None)
+    @swag_from({
+        "tags": ["User"],
+        "summary": "搜索用户",
+        "description": "根据用户名首字母搜索用户，并支持分页。",
+        "parameters": [
+            {
+                "name": "initial",
+                "in": "formData",
+                "type": "string",
+                "required": True,
+                "description": "用户名的首字母"
+            },
+            {
+                "name": "per_page",
+                "in": "formData",
+                "type": "integer",
+                "required": False,
+                "default": 10,
+                "description": "每页返回的用户数量，默认值为 10"
+            }
+        ],
+        "responses": {
+            "200": {
+                "description": "成功返回匹配的用户列表",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "users": {
+                            "type": "object",
+                            "properties": {
+                                "username": {
+                                    "type": "string",
+                                    "description": "用户名"
+                                },
+                                "user_id": {
+                                    "type": "integer",
+                                    "description": "用户 ID"
+                                }
+                            }
+                        }
+                    },
+                    "example": {
+                        "users": [
+                            {
+                            "username": "王洋",
+                            "user_id": 13
+                            }
+                        ]
+                    }
+                }
+            },
+            "400": {
+                "description": "请求参数错误",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "type": "string",
+                            "example": "initial 参数不能为空"
+                        }
+                    }
+                }
+            },
+            "401": {
+                "description": "未授权，用户未登录",
+                "schema": {
+                    "type": "object",
+                    "properties": {
+                        "error": {
+                            "type": "string",
+                            "example": "Unauthorized"
+                        }
+                    }
+                }
+            }
+        }
+    })
+    def search_users():
+        initial = request.args.get('initial', '', type=str)
+        per_page = request.args.get('per_page', 10, type=int)
+
+        if not initial:
+            return jsonify({"error": "initial 参数不能为空"}), 400
+
+        query = User.query.filter(User.username.startswith(initial), User.deleted == False)
+        users = query.limit(per_page).all()
+
+        result = {"users": [{"username": user.username, "user_id": user.id} for user in users]}
+
+        return jsonify(result)
+
     @app.route('/delete_user/<int:user_id>', methods=['POST'])
     @log_activity(action='delete_user', target_type='post', target_id_func=lambda user_id: user_id)
     @login_required
