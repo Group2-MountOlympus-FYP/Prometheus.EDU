@@ -32,8 +32,8 @@ export default function Header() {
     ))
 
     return (
-        <header style={{height:"8vh", paddingTop: '1vh'}}>
-            <div style={{marginLeft: '10vw', marginBottom: '1vh', marginRight: '10vw'}} className={classes.inner}>
+        <header style={{minHeight:"8vh", paddingTop: '1vh', marginBottom: '1vh', maxHeight: '10vh'}}>
+            <div style={{marginLeft: '10vw', marginRight: '10vw'}} className={classes.inner}>
                 <Group gap="xl" justify="space-between" style={{ width: "100%" }}>
                     <Group>
                         <Avatar src='/carbon-ella-logo.png'></Avatar>
