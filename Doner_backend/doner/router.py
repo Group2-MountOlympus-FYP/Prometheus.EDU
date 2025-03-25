@@ -370,8 +370,8 @@ def setRoot(app):
         }
     })
     def search_users():
-        initial = request.form.get('initial', '', type=str)
-        per_page = request.form.get('per_page', 10, type=int)
+        initial = request.args.get('initial', '', type=str)
+        per_page = request.args.get('per_page', 10, type=int)
 
         if not initial:
             return jsonify({"error": "initial 参数不能为空"}), 400
