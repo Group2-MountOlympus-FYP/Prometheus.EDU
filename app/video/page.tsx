@@ -3,13 +3,14 @@ import { useEffect, useState, useRef } from "react"
 import { useDisclosure } from "@mantine/hooks";
 import { Grid, Skeleton, Container, Button, Tabs } from '@mantine/core';
 import { WritingPostPanel } from "@/components/WritingPost/WritingPostPanel";
+import { PostsOverview } from "@/components/PostsOverview/PostsOverview";
 import './page.css'
 
 interface videoProps{
     url: string,
 }
 
-export default function video(props:videoProps){
+export default function Course(props:videoProps){
     //用于判断组件是否离开屏幕
     const videoRef = useRef<HTMLDivElement>(null)
     const [isVideoLeaveWindow, setIsVideoLeaveWindow] = useState(false)
@@ -77,11 +78,20 @@ export default function video(props:videoProps){
         <div>
             <div hidden={postsLoading}>
                 <Tabs color='#3C4077' variant="pills" defaultValue={"posts"} className="tabs">
-                    <Tabs.List>
+                    <Tabs.List className="tabs-list">
                         <Tabs.Tab value="posts">Posts</Tabs.Tab>
                         <Tabs.Tab value="Matrials">Materials</Tabs.Tab>
                         <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
                     </Tabs.List>
+                    <Tabs.Panel value="posts">
+                        <PostsOverview/>
+                    </Tabs.Panel>
+                    <Tabs.Panel value="Matrials">
+                        Materials
+                    </Tabs.Panel>
+                    <Tabs.Panel value="Assignments">
+                        Assignments
+                    </Tabs.Panel>
                 </Tabs>
                 <div>
                     <WritingPostPanel opened={opened} onClose={close}></WritingPostPanel>
