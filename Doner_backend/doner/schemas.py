@@ -10,6 +10,7 @@ from .Post import Post
 from .Comment import Comment
 from .ActivityLog import ActivityLog
 from .Image import Image
+from .Lecture import Lecture, Resource
 import yaml
 import os
 
