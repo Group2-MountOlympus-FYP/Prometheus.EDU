@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState, useRef } from "react"
 import { useDisclosure } from "@mantine/hooks";
-import { Grid, Skeleton, Container, Button } from '@mantine/core';
+import { Grid, Skeleton, Container, Button, Tabs } from '@mantine/core';
 import { WritingPostPanel } from "@/components/WritingPost/WritingPostPanel";
 import './page.css'
 
@@ -63,6 +63,9 @@ export default function video(props:videoProps){
         <Grid className="video-grid" ref={videoRef}>
             <Grid.Col span={8}>
                 <VideoPlayer></VideoPlayer>
+                <div>
+                    <p>This is the description of the video</p>
+                </div>
             </Grid.Col>
             <Grid.Col span={4}>
                 <div>
@@ -73,9 +76,13 @@ export default function video(props:videoProps){
         </Grid>
         <div>
             <div hidden={postsLoading}>
-                <div>
-                    posts
-                </div>
+                <Tabs color='#3C4077' variant="pills" defaultValue={"posts"} className="tabs">
+                    <Tabs.List>
+                        <Tabs.Tab value="posts">Posts</Tabs.Tab>
+                        <Tabs.Tab value="Matrials">Materials</Tabs.Tab>
+                        <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
+                    </Tabs.List>
+                </Tabs>
                 <div>
                     <WritingPostPanel opened={opened} onClose={close}></WritingPostPanel>
                     <Button onClick={open} id={`${isVideoLeaveWindow ? "normal" : "right-corner"}`} className="post-button">Open to write post</Button>
@@ -112,7 +119,7 @@ function VideoPlayer(props:videoPlayerProps){
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center' }}>
-            <video controls width="80%" style={{margin:'auto', textAlign:'center'}}>
+            <video controls width="100%" style={{margin:'auto', textAlign:'center'}}>
             <source src={baseURL+videoUrl} type={videoType} />
             Your browser does not support the video tag.
             </video>
