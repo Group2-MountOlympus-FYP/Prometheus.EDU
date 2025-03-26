@@ -25,3 +25,11 @@
 #normal{
     position: relative;
 }
+
+.tabs{
+    margin-left: 1rem;
+    margin-top: 2rem;
+}
+.tabs-list{
+    margin-bottom: 4vh;
+}
