@@ -1,7 +1,7 @@
 'use client'
 
 import { Paper, Text, Grid, Avatar } from "@mantine/core"
-import style from './PostsOverview.module.css'
+import style from './Posts.module.css'
 
 interface PostOverviewProps {
     title?: string,
