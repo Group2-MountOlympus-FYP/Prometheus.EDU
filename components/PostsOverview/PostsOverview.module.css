@@ -4,3 +4,35 @@
 .authorName{
     cursor: pointer;
 }
+.paper{
+    border: '1px solid';
+    border-color: #777cb9
+}
+.badge {
+    display: inline-flex;
+    align-items: center;
+    background-color: #777cb9; /* 紫色背景 */
+    color: white;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: bold;
+    position: relative;
+}
+
+.badge::before {
+    content: "";
+    position: absolute;
+    left: -11px;
+    top: 50%;
+    transform: translateY(-50%);
+    border-width: 6px;
+    border-style: solid;
+    border-color: transparent #777cb9 transparent transparent;
+}
+
+.replyBadgeGrid{
+    justify-content: flex-end;
+    display: flex;
+}
+  

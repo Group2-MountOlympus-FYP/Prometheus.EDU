@@ -6,7 +6,7 @@ import style from './PostsOverview.module.css'
 interface PostOverviewProps {
     title?: string,
     publishDate?: string,
-    replyNum?: string,
+    replyNum?: number,
     postId?: number,
     author?: string,
     authorId?: number,
@@ -29,20 +29,40 @@ export function PostsOverview(props: PostOverviewProps){
                     <tbody>
                         <tr style={{height: "3vh"}}>
                             <td>
-                                <Text onClick={toAtuhorProfile} className={style.authorName}>{props.author}Author</Text>
+                                <Text onClick={toAtuhorProfile} className={style.authorName}>{props.author}</Text>
                             </td>
                         </tr>
                         <tr>
                             <td>
-                            <Paper shadow="xs" withBorder p={10}>
-                                <Text size="xl">{props.title}Title</Text>
+                            <Paper shadow="xs" withBorder p={10} className={style.paper}>
+                                <Grid>
+                                    <Grid.Col span={11}>
+                                        <Text size="xl">{props.title}</Text>
+                                    </Grid.Col>
+                                    <Grid.Col span={1} className={style.replyBadgeGrid}>
+                                        <div hidden={!props.replyNum}>
+                                            <ReplyBadge replyNum={props.replyNum}></ReplyBadge>
+                                        </div>
+                                    </Grid.Col>
+                                </Grid>
                             </Paper>
-                            <Text size="s" c={"gray"} style={{paddingRight:"1vw", textAlign:'right'}}>Date</Text>
+                            <Text size="s" c={"gray"} style={{paddingRight:"1vw", textAlign:'right'}}>{props.publishDate}</Text>
                             </td>
                         </tr>
                     </tbody>
                 </table>
             </Grid.Col>
         </Grid>
+    )
+}
+
+interface replyProps{
+    replyNum?: number
+}
+const ReplyBadge = (props: replyProps) => {
+    return (
+        <div className={style.badge}>
+            <span className={style.badgeText}>{props.replyNum}</span>
+        </div>
     )
 }
