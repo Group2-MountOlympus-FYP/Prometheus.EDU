@@ -3,6 +3,7 @@ from flasgger import swag_from
 from .Course import *
 from .decorator import teacher_required
 from .schemas import CourseSchema
+
 course_bp = Blueprint('course', __name__)
 from .Image import Image
 
@@ -51,12 +52,12 @@ from .Image import Image
         '200': {
             'description': '成功返回课程列表',
             'schema': {
-                    "type": "array",
-                    "items": {"$ref": "static/definitions.yml#/Course"}
+                "type": "array",
+                "items": {"$ref": "static/definitions.yml#/Course"}
 
-                }
             }
         }
+    }
 })
 def get_all_courses():
     status = request.args.get('status')
@@ -88,8 +89,8 @@ def get_all_courses():
         '200': {
             'description': '成功返回课程详细信息',
             'schema': {
-                    "$ref": "static/definitions.yml#/Course"
-                }
+                "$ref": "static/definitions.yml#/Course"
+            }
         },
         '404': {
             'description': '课程未找到'
@@ -102,64 +103,67 @@ def get_course_by_id(course_id):
         return {'message': '课程未找到'}, 404
     return jsonify(CourseSchema().dump(course))
 
-course_input=[
-        {
-            'name': 'course_name',
-            'in': 'body',
-            'type': 'string',
-            'required': True,
-            'description': '课程名称'
-        },
-        {
-            "name": "main_picture",
-            "in": "body",
-            "type": "file",
-            "description": "课程主图"
-        },
-        {
-            'name': 'description',
-            'in': 'body',
-            'type': 'string',
-            'required': True,
-            'description': '课程简介'
-        },
-        {
-            'name': 'level',
-            'in': 'body',
-            'type': 'integer',
-            'default': 1,
-            'description': '课程等级'
-        },
-        {
-            'name': 'status',
-            'in': 'body',
-            'type': 'string',
-            'enum': ['DELETED', 'NORMAL', 'VIP'],
-            'default': 'NORMAL',
-            'description': '课程状态'
-        },
-        {
-            'name': 'teacher_id',
-            'in': 'body',
-            'type': 'integer',
-            'required': True,
-            'description': '教师ID'
-        },
-        {
-            'name': 'lower_level_course_id',
-            'in': 'body',
-            'type': 'integer',
-            'description': '低级课程的id'
-        }
-        ,
-        {
-            'name': 'higher_level_course_id',
-            'in': 'body',
-            'type': 'integer',
-            'description': '高级课程的id'
-        }
 
-    ]
+course_input = [
+    {
+        'name': 'course_name',
+        'in': 'body',
+        'type': 'string',
+        'required': True,
+        'description': '课程名称'
+    },
+    {
+        "name": "main_picture",
+        "in": "body",
+        "type": "file",
+        "description": "课程主图"
+    },
+    {
+        'name': 'description',
+        'in': 'body',
+        'type': 'string',
+        'required': True,
+        'description': '课程简介'
+    },
+    {
+        'name': 'level',
+        'in': 'body',
+        'type': 'integer',
+        'default': 1,
+        'description': '课程等级'
+    },
+    {
+        'name': 'status',
+        'in': 'body',
+        'type': 'string',
+        'enum': ['DELETED', 'NORMAL', 'VIP'],
+        'default': 'NORMAL',
+        'description': '课程状态'
+    },
+    {
+        'name': 'teacher_id',
+        'in': 'body',
+        'type': 'integer',
+        'required': True,
+        'description': '教师ID'
+    },
+    {
+        'name': 'lower_level_course_id',
+        'in': 'body',
+        'type': 'integer',
+        'description': '低级课程的id'
+    }
+    ,
+    {
+        'name': 'higher_level_course_id',
+        'in': 'body',
+        'type': 'integer',
+        'description': '高级课程的id'
+    }
+
+]
+
+
 # 创建课程接口
 @course_bp.route('/create', methods=['POST'])
 @teacher_required
@@ -178,21 +182,20 @@ course_input=[
     }
 })
 def create_course():
-    data = request.get_json()
+    data = request.form
     course_name = data.get('course_name')
     description = data.get('description')
-    level = data.get('level', CourseLevel.LEVEL_1)
-    status = data.get('status', CourseStatus.NORMAL)
-    teacher_id = data.get('teacher_id')
+    level = CourseLevel.__members__.get(data.get('level', ''), CourseLevel.LEVEL_1)
+    status = CourseStatus.__members__.get(data.get('status', ''), CourseStatus.NORMAL)
     lower_level_course_id = data.get('lower_level_course_id')
     higher_level_course_id = data.get('higher_level_course_id')
     file = request.files.get('main_picture')
-
-    course = Course.create_course(course_name, description, level, status, teacher_id, lower_level_course_id,
+    institution = request.form.get('institution', "No institution")
+    course = Course.create_course(course_name, description, institution, level, status, lower_level_course_id,
                                   higher_level_course_id)
     Image.save_image(file, course)
 
-    return course.id, 201
+    return {"id": course.id}, 201
 
 
 # 更新课程接口
