@@ -81,7 +81,8 @@ def publish():
     content = request.form.get('content')
     files = request.files.getlist('images')
     tags_raw = request.form.get('tags')
-    new_post = Post(title=title, content=content, composer_id=session['id'])
+    lecture_id = request.form.get('lecture_id')
+    new_post = Post(title=title, content=content, author_id=session['id'], lecture_id=lecture_id)
     if tags_raw:
         tags = [int(tag.strip()) for tag in tags_raw.split(',') if tag.strip().isdigit()]
         new_post.tags = Tag.query.filter(Tag.id.in_(tags)).all()
@@ -89,7 +90,7 @@ def publish():
 
     for file in files:
         if file and file.filename:
-            images_to_add.append(Image.saveFile(file, new_post))
+            images_to_add.append(Image.save_image(file, new_post))
 
     new_post.addPost(images_to_add)
     ActivityLog.log_post(session['id'], new_post.id)

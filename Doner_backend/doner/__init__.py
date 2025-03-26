@@ -20,6 +20,12 @@ import os
 
 def create_app():
     app = Flask(__name__, static_folder='../static')
+
+    # 确保 'static/resource' 文件夹存在
+    os.makedirs(os.path.join('static', 'resource'), exist_ok=True)
+
+    # 确保 'static/video' 文件夹存在
+    os.makedirs(os.path.join('static', 'video'), exist_ok=True)
     app.debug = True
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
