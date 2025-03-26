@@ -558,11 +558,21 @@ class BaseAdminView(ModelView):
 class UserAdminModelView(ModelView):
     column_exclude_list = ('password_hash',)
     column_display_pk = True  # 显示主键，避免自动解析外键
-    form_columns = ('id','username','birthdate','gender','nickname','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    form_columns = ('id','username','birthdate','gender','nickname', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
     column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
     column_formatters = {
         'avatar': lambda v, c, m, p: Markup(
             f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
+    }
+    # 定义 status 字段的选择项
+    form_overrides = {
+        'status': SelectField
+    }
+    form_args = {
+        'status': {
+            'choices': [(status.name, status.name) for status in UserStatus],  # Enum 转换为 (值, 显示名)
+            'widget': Select2Widget()
+        }
     }
 
     # 6. 处理删除用户（调用后端 API 删除）
