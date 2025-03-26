@@ -8,7 +8,7 @@ class Post(ReplyTarget):
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    composer_id= db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    lecture_id = db.Column(db.Integer, db.ForeignKey('lecture.id'))
 
 
 
