@@ -1,8 +1,8 @@
-<div align="center" id="madewithlua">
+<div align="center" id="project-logo">
   <img
     src="https://github.com/Group2-MountOlympus-FYP/Prometheus.EDU/blob/main/prometheus-edu-logo.png"
-    width="125"
-    height="125"
+    width="140"
+    height="140"
   />
 </div>
 <h1 align="center">Prometheus.EDU🔥: Igniting the Flame of Knowledge for the Underserved</h1>
