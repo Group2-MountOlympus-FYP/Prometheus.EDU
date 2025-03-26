@@ -1,4 +1,4 @@
-from flask import jsonify
+from flask import session
 from .extensions import db ,shared_sequence
 from datetime import datetime
 
@@ -26,6 +26,7 @@ class ReplyTarget(db.Model):
     images = db.relationship('Image', back_populates='target')
     deleted = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     __mapper_args__ = {
         'polymorphic_identity': 'reply_target',
         'polymorphic_on': type

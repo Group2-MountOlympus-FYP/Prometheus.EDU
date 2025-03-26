@@ -39,7 +39,7 @@ class User(db.Model):
     birthdate = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     password_hash = db.Column(db.String(120), nullable=False)
-    posts = db.relationship('Post', backref='composer')
+    content = db.relationship('ReplyTarget', backref='author')
     avatar = db.Column(db.String(120), nullable=False,
                        default='https://ik.imagekit.io/vhboyr/agent-halloween-japanese-man-ninja-svgrepo-com_w4qyshQea.svg')
     favorited_posts = db.relationship('Post', secondary=favorites, lazy='dynamic',
@@ -54,7 +54,6 @@ class User(db.Model):
     nickname = db.Column(db.String(80), default='default nickname')
     status = db.Column(db.Enum(UserStatus), default=UserStatus.NORMAL)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
-    teach = db.relationship("Lecture", backref="teacher")
 
     def addUser(self):
         db.session.add(self)

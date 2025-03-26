@@ -16,9 +16,7 @@ class Comment(ReplyTarget):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    user = db.relationship('User', backref='comments')
     post = db.relationship('Post', foreign_keys=[post_id])
     liked_by = db.relationship('User', secondary=post_likes, backref=db.backref('liked_comments', lazy='dynamic'))
 
@@ -61,7 +59,7 @@ class Comment(ReplyTarget):
 
     @staticmethod
     def commnet_on_post(post_id,comment_text,user_id):
-        comment=Comment(content=comment_text,post_id=post_id,user_id=user_id)
+        comment=Comment(content=comment_text,post_id=post_id,author_id=user_id)
         db.session.add(comment) 
         db.session.commit()
         ActivityLog.log_comment(user_id,comment.id)
