@@ -34,5 +34,6 @@
 .replyBadgeGrid{
     justify-content: flex-end;
     display: flex;
+    margin: auto;
 }
   

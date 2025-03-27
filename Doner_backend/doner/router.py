@@ -639,7 +639,7 @@ def init_admin(app):
     # 保护 Flask-Admin 只能被管理员访问
     admin.add_view(ActivityLogView(ActivityLog, db.session))
     admin.add_view(UserAdminModelView(User, db.session))
-    admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
-    admin.add_view(CommentAdminModelView(Comment, db.session))
+    # admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
+    # admin.add_view(CommentAdminModelView(Comment, db.session))
     admin.add_view(BaseAdminView(Course, db.session, endpoint="admin_course"))
     admin.add_view(BaseAdminView(Tag, db.session))

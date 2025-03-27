@@ -33,3 +33,17 @@ export async function uploadImage(){
     })
     return response
 }
+
+export async function getPostsByLectureId(lectureId: number, page:number, perPage:number){
+    const data = new URLSearchParams({
+        lecture_id: lectureId.toString(),
+        page: page.toString(),
+        per_page: perPage.toString(),
+    })
+    const url = `/course/get_lecture_detail/${data.toString}`
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin'
+    })
+    return response
+}

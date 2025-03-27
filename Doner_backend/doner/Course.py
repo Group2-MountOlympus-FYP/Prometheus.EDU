@@ -33,6 +33,10 @@ class Enrollment(db.Model):
     # 学生在课程中的进度，表示为百分比（0 到 100）
     progress = db.Column(db.Integer, nullable=False, default=0)  # 默认 0 表示未开始
 
+    def enroll(self):
+        db.session.add(self)
+        db.session.commit()
+
 
 class Course(ReplyTarget):
     __tablename__ = 'course'
@@ -77,8 +81,6 @@ class Course(ReplyTarget):
         backref='lower_level_courses'
     )
 
-    lectures = db.relationship('Lecture', backref='course',foreign_keys='Lecture.id')
-
     __mapper_args__ = {
         'polymorphic_identity': 'course',
     }
@@ -112,20 +114,12 @@ class Course(ReplyTarget):
         return query.paginate(page=page, per_page=per_page, error_out=False)
 
     @classmethod
-    def get_course_by_id(cls, course_id):
-        """
-        通过课程 ID 获取课程详细信息
-        :param course_id: 课程的 ID
-        :return: 课程对象或 None
-        """
-        return cls.query.get(course_id)
-
-    @classmethod
-    def create_course(cls, course_name, description, institution ,level=CourseLevel.LEVEL_1,
-                      status=CourseStatus.NORMAL,lower_level_course_id=None,
+    def create_course(cls, author_id, course_name, description, institution, level=CourseLevel.LEVEL_1,
+                      status=CourseStatus.NORMAL, lower_level_course_id=None,
                       higher_level_course_id=None):
         """
         创建一个新课程
+        :param author_id:
         :param institution:
         :param course_name: 课程名称
         :param description: 课程简介
@@ -138,6 +132,7 @@ class Course(ReplyTarget):
         :return: 新创建的课程对象
         """
         course = cls(
+            author_id=author_id,
             course_name=course_name,
             description=description,
             institution=institution,
@@ -150,11 +145,12 @@ class Course(ReplyTarget):
         db.session.commit()
         return course
 
-    def update_course(self, course_name=None, description=None, rating=None, level=None,
+    def update_course(self, course_name=None, description=None, institution=None, rating=None, level=None,
                       status=None, teacher_id=None, lower_level_course_id=None,
                       higher_level_course_id=None):
         """
         更新课程信息
+        :param institution:
         :param course_name: 课程名称
         :param description: 课程简介
         :param rating: 课程评分
@@ -171,12 +167,14 @@ class Course(ReplyTarget):
             self.description = description
         if rating is not None:
             self.rating = rating
+        if institution:
+            self.institution = institution
         if level:
             self.level = level
         if status:
             self.status = status
         if teacher_id:
-            self.teacher_id = teacher_id
+            self.author_id = teacher_id
         if lower_level_course_id:
             self.lower_level_course_id = lower_level_course_id
         if higher_level_course_id:
