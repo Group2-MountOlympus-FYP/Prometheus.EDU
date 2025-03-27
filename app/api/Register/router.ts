@@ -1,5 +1,5 @@
 export async function CheckUsernameExist(username:string){
-    const url = '/login/verify-username'
+    const url = '/backend/login/verify-username'
     const formData = new URLSearchParams()
     const data = {
         username: username
@@ -25,7 +25,7 @@ export async function CheckUsernameExist(username:string){
 }
 
 export async function RegisterUser(username:string, password:string, gender:string, birthDate: string, csrf_token:any){
-    const url = '/login/register'
+    const url = '/backend/login/register'
     const formData = new URLSearchParams()
     const data = {
         'username': username,
