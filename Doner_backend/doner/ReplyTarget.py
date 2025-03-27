@@ -29,5 +29,5 @@ class ReplyTarget(db.Model):
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     __mapper_args__ = {
         'polymorphic_identity': 'reply_target',
-        'polymorphic_on': type
+        'polymorphic_on': 'type'
     }
