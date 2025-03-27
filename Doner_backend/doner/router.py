@@ -596,7 +596,7 @@ class UserAdminModelView(ModelView):
 
 
 class PostAdminModelView(BaseAdminView):
-    column_searchable_list = ('id', 'title', 'content', 'composer_id')
+    column_searchable_list = ('id', 'title', 'content')
 
     def delete_model(self, model):
         """向 delete_post 路由发送请求进行逻辑删除"""
@@ -613,7 +613,7 @@ class PostAdminModelView(BaseAdminView):
 
 
 class CommentAdminModelView(BaseAdminView):
-    column_searchable_list = ('user_id', 'content')
+    column_searchable_list = ('content',)
 
     def delete_model(self, model):
         """向 delete_comment 路由发送请求进行逻辑删除"""
@@ -639,7 +639,9 @@ def init_admin(app):
     # 保护 Flask-Admin 只能被管理员访问
     admin.add_view(ActivityLogView(ActivityLog, db.session))
     admin.add_view(UserAdminModelView(User, db.session))
-    # admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
-    # admin.add_view(CommentAdminModelView(Comment, db.session))
+    admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
+    admin.add_view(CommentAdminModelView(Comment, db.session))
     admin.add_view(BaseAdminView(Course, db.session, endpoint="admin_course"))
-    admin.add_view(BaseAdminView(Tag, db.session))
+    admin.add_view(BaseAdminView(Enrollment, db.session))
+    admin.add_view(BaseAdminView(Lecture, db.session))
+    admin.add_view(BaseAdminView(Resource, db.session))
