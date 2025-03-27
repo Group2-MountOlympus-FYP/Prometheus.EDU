@@ -1,42 +1,66 @@
 'use client'
-import { useState, useEffect } from "react"
-import { setLanguage, getLanguage } from "@/app/language"
-import { ActionIcon } from "@mantine/core"
-import Flag from 'react-world-flags'
-import { reloadWindow } from "@/app/api/General"
+import { useState, useEffect } from "react";
+import { setLanguage, getLanguage } from "@/app/language";
+import { ActionIcon, Group, Image, Menu, UnstyledButton } from "@mantine/core";
+import { IconChevronDown } from "@tabler/icons-react";
+import { reloadWindow } from "@/app/api/General"; 
+import classes from "./LanguageSwitcher.module.css";
 
-export function LanguageSwitcher(){
-    const [showEN, setShowEN] = useState(true)
-    
-    const handleLanguageSwitch = () => {
-        if(getLanguage() == 'zh'){
-            setLanguage('en')
-        }else{
-            setLanguage('zh')
-        }
-        //console.log(getLanguage())
-        reloadWindow()
-    }
+const data = [
+  { label: "English", code: "GB", lang: "en", image: "/lang/gb.png" },
+  { label: "Chinese", code: "CN", lang: "zh", image: "/lang/cn.png" },
+];
 
-    useEffect(() => {
-        //页面加载的钩子设定语言切换按钮
-        if(getLanguage() == 'zh'){
-            setShowEN(false)
-        }
-        else{
-            setShowEN(true)
-        }
-    }, [])
+export function LanguageSwitcher() {
+  const [opened, setOpened] = useState(false);
+  const [selected, setSelected] = useState(data[0]);
 
-    return (
-        <div>
-            <ActionIcon 
-            onClick={handleLanguageSwitch}
-            variant="default"
-            aria-label="Toggle Switch Language"
-            style={{width: 50, height: 50, padding: 3}}>
-                <Flag code={showEN ? "GB" : "CN"} className="flag" />
-            </ActionIcon>
-        </div>
-    )
+  // 在组件加载时，根据 getLanguage() 设置默认选中的语言
+  useEffect(() => {
+    const currentLang = getLanguage();
+    const selectedLang = data.find((item) => item.lang === currentLang) || data[0];
+    setSelected(selectedLang);
+  }, []);
+
+  // 处理语言切换
+  const handleLanguageChange = (item: any) => {
+    console.log(item.lang)
+    setSelected(item.lang); // 更新选中的语言
+    setLanguage(item.lang); // 切换语言
+    reloadWindow();
+  };
+
+  const items = data.map((item) => (
+    <Menu.Item
+      leftSection={<Image src={item.image} width={18} height={18} />}
+      onClick={() => handleLanguageChange(item)}
+      key={item.label}
+    >
+      {item.label}
+    </Menu.Item>
+  ));
+
+  return (
+    <div className={classes.buttonBox}>
+    <Menu
+      onOpen={() => setOpened(true)}
+      onClose={() => setOpened(false)}
+      radius="md"
+      width="target"
+      withinPortal = {false}
+    >
+
+      <Menu.Target>
+        <UnstyledButton className={classes.control} data-expanded={opened || undefined}>
+          <Group gap="xs">
+            <Image className={classes.circle} src={selected.image} alt={`${selected.label} Flag`} width={22} height={22} />
+            <span className={classes.label}>{selected.label}</span>
+          </Group>
+          <IconChevronDown size={16} className={classes.icon} stroke={1.5} />
+        </UnstyledButton>
+      </Menu.Target>
+      <Menu.Dropdown>{items}</Menu.Dropdown>
+    </Menu>
+    </div>
+  );
 }

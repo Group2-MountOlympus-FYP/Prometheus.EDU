@@ -5,7 +5,7 @@
     width: "100%";
     background-color: "#333";
     color: "#fff";
-    padding: 0px 20px 0px 20px;
+    padding: 0px 60px 0px 20px;
     display: "flex";
     justify-content: "space-between";
     align-items: "center";
@@ -24,7 +24,7 @@
 .buttons{
     text-align: center;
     display: "flex";
-    gap: "10px";
+    width: 100px;
 }
 .buttons button{
     padding: 2px 12px 2.5px 12px;
@@ -39,15 +39,17 @@
     background-color: "#4CAF50";
     color: "#fff";
     border: "none";
-    padding: "8px 12px";
+    padding: 8px 12px;
     cursor: "pointer";
     border-radius: "4px";
+    width: 4.5rem;
 }
 .decline{
     background-color: "#f44336";
     color: "#fff";
     border: "none";
-    padding: "8px 12px";
+    padding: 8px 12px;
     cursor: "pointer";
     border-radius: "4px";
+    width: 5rem;
 }

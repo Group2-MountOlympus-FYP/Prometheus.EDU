@@ -36,7 +36,7 @@ export function CookieConsent(){
         <table>
             <tbody>
             <tr>
-                <td rowSpan={2}>
+                <td>
                     <p className={style.text}>
                         {getText('cookieDesc')}{" "}
                         <a href="/privacy" className={style.link}>
