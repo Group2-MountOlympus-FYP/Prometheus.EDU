@@ -27,6 +27,7 @@ jobs:
       env:
         SSH_HOST: csi420-01-vm2.ucd.ie
         SSH_USER: student
+        BRANCH_NAME: ${{ github.ref_name }}
       run: |
         echo "Deploying to server..."
         # Connect to the server and perform the deployment
@@ -41,7 +42,9 @@ jobs:
           cd ~/Prometheus.EDU
 
           # Pull the latest changes from the repository
-          git pull 
+          git fetch origin
+          git checkout $BRANCH_NAME
+          git pull origin $BRANCH_NAME
         
           # 安装其他依赖
           npm install
