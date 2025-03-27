@@ -16,7 +16,9 @@ interface PostOverviewProps {
 export function PostsOverview(props: PostOverviewProps){
     
     const toAtuhorProfile = () => {
-
+        if(props.authorId){
+            
+        }
     }
 
     return (

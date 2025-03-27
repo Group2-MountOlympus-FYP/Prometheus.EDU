@@ -8,7 +8,7 @@ import style from './Posts.module.css'
 interface postsPaginationProps{
     lecture_id?:number
 }
-interface Post{
+interface PostInResponse{
     id: number;
     created_at: string;
     title: string;
@@ -17,10 +17,20 @@ interface Post{
     author_avatar_path: string;
     comments: object[];
 }
+interface Post{
+    postId: number;
+    publishDate: string;
+    title: string;
+    authorId: number;
+    author: string;
+    avatarPath: string;
+    replyNum: number;
+}
+
 export function PostsWithPagination(props:postsPaginationProps){
     const [activePage, setActivePage] = useState(1)
     const [totalPages, setTotalPages] = useState(1)
-    const [posts, setPosts] = useState([])
+    const [posts, setPosts] = useState<Post[]>([])
     const postsData = [
         {
             title: 'This is first post of this website',
@@ -53,7 +63,7 @@ export function PostsWithPagination(props:postsPaginationProps){
                         setTotalPages(data.total_page)
                         //将接收到的数据映射到数组中
                         //只保留需要的数据，剩下的数据全部丢弃
-                        const extratedData = data.posts.map((post: Post) => ({
+                        const extratedData = data.posts.map((post: PostInResponse) => ({
                             postId: post.id,
                             publishDate: post.created_at,
                             title: post.title,
@@ -82,7 +92,7 @@ export function PostsWithPagination(props:postsPaginationProps){
     return (
         <div>
             {
-                postsData.map((post, key) => (
+                posts.map((post, key) => (
                     <PostsOverview 
                     title={post.title} 
                     publishDate={post.publishDate}
