@@ -1,22 +1,16 @@
-'use client'
+"use client"
 import { useEffect, useState, useRef } from "react"
 import { useDisclosure } from "@mantine/hooks";
 import { Grid, Skeleton, Container, Button, Tabs, Pagination } from '@mantine/core';
 import { WritingPostPanel } from "@/components/WritingPost/WritingPostPanel";
-import { PostsOverview } from "@/components/PostsOverview/PostsOverview";
 import { PostsWithPagination } from "@/components/PostsOverview/PostsWithPagination";
+import { useSearchParams } from "next/navigation";
 import './page.css'
-
 import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 
-
-interface videoProps{
-    url: string,
-}
-
-export default function Course(props:videoProps){
+export default function Course(){
     //用于判断组件是否离开屏幕
     const videoRef = useRef<HTMLDivElement>(null)
     const [isVideoLeaveWindow, setIsVideoLeaveWindow] = useState(false)
@@ -26,6 +20,9 @@ export default function Course(props:videoProps){
     const [titleLoading, setTitleLoading] = useState(true)
     const [videoSelectorLoading, setVideoSelectorLoading] = useState(true)
     const [postsLoading, setPostsLoading] = useState(false)
+
+    const searchParams = useSearchParams()
+    const lectureId = Number(searchParams.get('lecture_id'))
 
     useEffect(() => {
         //为视频挂上ref
@@ -89,7 +86,7 @@ export default function Course(props:videoProps){
                         <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
                     </Tabs.List>
                     <Tabs.Panel value="posts">
-                        <PostsWithPagination/>
+                        <PostsWithPagination lecture_id={lectureId}/>
                     </Tabs.Panel>
                     <Tabs.Panel value="Matrials">
                         Materials
