@@ -61,11 +61,11 @@ class Post(ReplyTarget):
         return len(self.favorited_by.all())
     
     def get_all_comments(self):
-        return Comment.query.filter_by(post_id=self.id).all()
+        return Comment.query.filter_by(parent_target_id=self.id).all()
     
     @property
     def comments(self):
-        return Comment.query.filter_by(post_id=self.id).all()
+        return Comment.query.filter_by(parent_target_id=self.id).all()
     
     @property
     def comments_count(self):
