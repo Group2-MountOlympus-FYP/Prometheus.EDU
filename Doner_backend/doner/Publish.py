@@ -280,7 +280,7 @@ def follow():
 def comment():
     target_id = request.form['target_id']
     comment_text = request.form['comment']
-    comment = Comment.commnet_on_post(target_id, comment_text, session['id'])
+    comment = Comment.comment(target_id, comment_text, session['id'])
     return CommentSchema().dump(comment)
 
 

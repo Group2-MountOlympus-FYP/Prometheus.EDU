@@ -127,7 +127,7 @@ Comment:
       type: integer
     content:
       type: string
-    post_id:
+    parent_target_id:
       type: integer
 Course:
   type: object
