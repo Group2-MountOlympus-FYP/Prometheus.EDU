@@ -3,13 +3,14 @@ from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
 from marshmallow.fields import Integer, String, Float, Boolean, List, Dict
 
-from .Course import Course
+from .Course import Course, Enrollment
 from .ReplyTarget import Tag
 from .User import User
 from .Post import Post
 from .Comment import Comment
 from .ActivityLog import ActivityLog
 from .Image import Image
+from .Lecture import Lecture, Resource
 import yaml
 import os
 
@@ -37,12 +38,24 @@ class PostSchema(SQLAlchemyAutoSchema):
     comments = Nested(CommentSchema, many=True)
 
 
+class LightCourseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Course
+
+
+class EnrollmentSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Enrollment
+        include_relationships = True
+    course = Nested(LightCourseSchema)
+
+
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
+        include_relationships = True
 
-    # 使用 Nested 来序列化关联的 posts，many=True 表示有多个
-    posts = Nested(PostSchema, many=True)
+    enrollments = Nested(EnrollmentSchema, many=True)
 
 
 class ActivityLogSchema(SQLAlchemyAutoSchema):
@@ -52,14 +65,33 @@ class ActivityLogSchema(SQLAlchemyAutoSchema):
         load_instance = True
 
 
-class CourseSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Course
-
-
 class TagSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Tag
+
+
+class ResourceSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Resource
+        include_relationships = True
+
+
+class LectureSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Lecture
+        include_relationships = True
+
+    resources = Nested(ResourceSchema, many=True)
+    posts = Nested(PostSchema, many=True)
+    author = Nested(UserSchema, exclude=["password_hash"])
+
+
+class CourseSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = Course
+        include_relationships = True
+
+    lectures = Nested(LectureSchema, many=True)
 
 
 # 定义一个映射表，key 是字段类型，value 是对应的 JSON 类型字符串
@@ -133,13 +165,12 @@ def save_dict_as_yaml(name, schema_dict):
         file.write(schema_yaml)
 
 
-if __name__ == "__main__":
-    save_dict_as_yaml("definitions", {
-        "Post": get_schema_dict(PostSchema),
-        "User": get_schema_dict(UserSchema),
-        "ActivityLog": get_schema_dict(ActivityLogSchema),
-        "Image": get_schema_dict(ImageSchema),
-        "Comment": get_schema_dict(CommentSchema),
-        "Course": get_schema_dict(CourseSchema),
-        "Tag": get_schema_dict(TagSchema)
-    })
+save_dict_as_yaml("definitions", {
+    "Post": get_schema_dict(PostSchema),
+    "User": get_schema_dict(UserSchema),
+    "ActivityLog": get_schema_dict(ActivityLogSchema),
+    "Image": get_schema_dict(ImageSchema),
+    "Comment": get_schema_dict(CommentSchema),
+    "Course": get_schema_dict(CourseSchema),
+    "Tag": get_schema_dict(TagSchema)
+})

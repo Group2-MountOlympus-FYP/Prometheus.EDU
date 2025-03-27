@@ -9,6 +9,8 @@ Post:
       type: array
       items:
         $ref: '#/Comment'
+    lecture:
+      type: string
     tags:
       type: array
       items:
@@ -25,7 +27,7 @@ Post:
       type: string
     content:
       type: string
-    composer:
+    author:
       type: string
     favorited_by:
       type: array
@@ -38,10 +40,26 @@ Post:
 User:
   type: object
   properties:
-    posts:
+    enrollments:
       type: array
       items:
-        $ref: '#/Post'
+        $ref: '#/Enrollment'
+    content:
+      type: array
+      items:
+        $ref: '#/Content'
+    favorited_posts:
+      type: array
+      items:
+        $ref: '#/Favorited_post'
+    followed:
+      type: array
+      items:
+        $ref: '#/Followed'
+    liked_posts:
+      type: array
+      items:
+        $ref: '#/Liked_post'
     id:
       type: integer
     username:
@@ -60,6 +78,18 @@ User:
       type: string
     deleted:
       type: boolean
+    activities:
+      type: array
+      items:
+        $ref: '#/Activitie'
+    liked_comments:
+      type: array
+      items:
+        $ref: '#/Liked_comment'
+    followers:
+      type: array
+      items:
+        $ref: '#/Follower'
 ActivityLog:
   type: object
   properties:
@@ -93,15 +123,31 @@ Comment:
       type: boolean
     created_at:
       type: string
+    author_id:
+      type: integer
     content:
       type: string
-    user_id:
-      type: integer
-    post_id:
+    parent_target_id:
       type: integer
 Course:
   type: object
   properties:
+    lectures:
+      type: array
+      items:
+        $ref: '#/Lecture'
+    lower_level_course:
+      type: string
+    higher_level_course:
+      type: string
+    tags:
+      type: array
+      items:
+        $ref: '#/Tag'
+    images:
+      type: array
+      items:
+        $ref: '#/Image'
     id:
       type: integer
     type:
@@ -120,6 +166,24 @@ Course:
       type: string
     status:
       type: string
+    student_count:
+      type: integer
+    institution:
+      type: string
+    author:
+      type: string
+    enrollments:
+      type: array
+      items:
+        $ref: '#/Enrollment'
+    higher_level_courses:
+      type: array
+      items:
+        $ref: '#/Higher_level_course'
+    lower_level_courses:
+      type: array
+      items:
+        $ref: '#/Lower_level_course'
 Tag:
   type: object
   properties:

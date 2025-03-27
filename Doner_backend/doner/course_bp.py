@@ -1,8 +1,13 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from flasgger import swag_from
+from sqlalchemy.exc import IntegrityError
+
 from .Course import *
-from .decorator import teacher_required
-from .schemas import CourseSchema
+from .Lecture import Lecture
+from .User import User
+from .decorator import teacher_required, login_required
+from .schemas import CourseSchema, LectureSchema, EnrollmentSchema
+
 course_bp = Blueprint('course', __name__)
 from .Image import Image
 
@@ -51,12 +56,12 @@ from .Image import Image
         '200': {
             'description': '成功返回课程列表',
             'schema': {
-                    "type": "array",
-                    "items": {"$ref": "static/definitions.yml#/Course"}
+                "type": "array",
+                "items": {"$ref": "static/definitions.yml#/Course"}
 
-                }
             }
         }
+    }
 })
 def get_all_courses():
     status = request.args.get('status')
@@ -88,8 +93,8 @@ def get_all_courses():
         '200': {
             'description': '成功返回课程详细信息',
             'schema': {
-                    "$ref": "static/definitions.yml#/Course"
-                }
+                "$ref": "static/definitions.yml#/Course"
+            }
         },
         '404': {
             'description': '课程未找到'
@@ -97,69 +102,78 @@ def get_all_courses():
     }
 })
 def get_course_by_id(course_id):
-    course = Course.get_course_by_id(course_id)
-    if not course:
-        return {'message': '课程未找到'}, 404
-    return jsonify(CourseSchema().dump(course))
+    course = Course.query.get_or_404(course_id)
+    course_dict = CourseSchema().dump(course)
 
-course_input=[
-        {
-            'name': 'course_name',
-            'in': 'body',
-            'type': 'string',
-            'required': True,
-            'description': '课程名称'
-        },
-        {
-            "name": "main_picture",
-            "in": "body",
-            "type": "file",
-            "description": "课程主图"
-        },
-        {
-            'name': 'description',
-            'in': 'body',
-            'type': 'string',
-            'required': True,
-            'description': '课程简介'
-        },
-        {
-            'name': 'level',
-            'in': 'body',
-            'type': 'integer',
-            'default': 1,
-            'description': '课程等级'
-        },
-        {
-            'name': 'status',
-            'in': 'body',
-            'type': 'string',
-            'enum': ['DELETED', 'NORMAL', 'VIP'],
-            'default': 'NORMAL',
-            'description': '课程状态'
-        },
-        {
-            'name': 'teacher_id',
-            'in': 'body',
-            'type': 'integer',
-            'required': True,
-            'description': '教师ID'
-        },
-        {
-            'name': 'lower_level_course_id',
-            'in': 'body',
-            'type': 'integer',
-            'description': '低级课程的id'
-        }
-        ,
-        {
-            'name': 'higher_level_course_id',
-            'in': 'body',
-            'type': 'integer',
-            'description': '高级课程的id'
-        }
+    course_dict['lecture_nums'] = len(course_dict['lectures'])
 
-    ]
+    # 提取不重复的作者
+    authors = {lecture["author"]["id"]: lecture["author"] for lecture in course_dict["lectures"]}
+    course_dict["teachers"] = list(authors.values())  # 只保留字典中的值并转换为列表
+
+    return jsonify(course_dict)
+
+
+course_input = [
+    {
+        'name': 'course_name',
+        'in': 'body',
+        'type': 'string',
+        'required': True,
+        'description': '课程名称'
+    },
+    {
+        "name": "main_picture",
+        "in": "body",
+        "type": "file",
+        "description": "课程主图"
+    },
+    {
+        'name': 'description',
+        'in': 'body',
+        'type': 'string',
+        'required': True,
+        'description': '课程简介'
+    },
+    {
+        'name': 'level',
+        'in': 'body',
+        'type': 'integer',
+        'default': 1,
+        'description': '课程等级'
+    },
+    {
+        'name': 'status',
+        'in': 'body',
+        'type': 'string',
+        'enum': ['DELETED', 'NORMAL', 'VIP'],
+        'default': 'NORMAL',
+        'description': '课程状态'
+    },
+    {
+        'name': 'teacher_id',
+        'in': 'body',
+        'type': 'integer',
+        'required': True,
+        'description': '教师ID'
+    },
+    {
+        'name': 'lower_level_course_id',
+        'in': 'body',
+        'type': 'integer',
+        'description': '低级课程的id'
+    }
+    ,
+    {
+        'name': 'higher_level_course_id',
+        'in': 'body',
+        'type': 'integer',
+        'description': '高级课程的id'
+    }
+
+]
+
+
 # 创建课程接口
 @course_bp.route('/create', methods=['POST'])
 @teacher_required
@@ -178,21 +192,21 @@ course_input=[
     }
 })
 def create_course():
-    data = request.get_json()
+    data = request.form
     course_name = data.get('course_name')
     description = data.get('description')
-    level = data.get('level', CourseLevel.LEVEL_1)
-    status = data.get('status', CourseStatus.NORMAL)
-    teacher_id = data.get('teacher_id')
+    level = CourseLevel.__members__.get(data.get('level', ''), CourseLevel.LEVEL_1)
+    status = CourseStatus.__members__.get(data.get('status', ''), CourseStatus.NORMAL)
     lower_level_course_id = data.get('lower_level_course_id')
     higher_level_course_id = data.get('higher_level_course_id')
     file = request.files.get('main_picture')
-
-    course = Course.create_course(course_name, description, level, status, teacher_id, lower_level_course_id,
+    institution = request.form.get('institution', "No institution")
+    course = Course.create_course(session['id'], course_name, description, institution, level, status,
+                                  lower_level_course_id,
                                   higher_level_course_id)
     Image.save_image(file, course)
 
-    return course.id, 201
+    return {"id": course.id}, 201
 
 
 # 更新课程接口
@@ -216,20 +230,24 @@ def create_course():
     }
 })
 def update_course(course_id):
-    data = request.get_json()
+    data = request.form
     course = Course.get_course_by_id(course_id)
     if not course:
         return {'message': '课程未找到'}, 404
 
-    course.update_course(
-        course_name=data.get('course_name'),
-        description=data.get('description'),
-        level=data.get('level'),
-        status=data.get('status'),
-        teacher_id=data.get('teacher_id'),
-        lower_level_course_id=data.get('lower_level_course_id'),
-        higher_level_course_id=data.get('higher_level_course_id')
-    )
+    course_name = data.get('course_name')
+    description = data.get('description')
+    level = CourseLevel.__members__.get(data.get('level', ''))
+    status = CourseStatus.__members__.get(data.get('status', ''))
+    lower_level_course_id = data.get('lower_level_course_id')
+    higher_level_course_id = data.get('higher_level_course_id')
+    file = request.files.get('main_picture')
+    institution = request.form.get('institution')
+    course = course.update_course(course_name, description, institution, level, status, lower_level_course_id,
+                                  higher_level_course_id)
+
+    if file:
+        Image.save_image(file, course)
 
     return jsonify(CourseSchema().dump(course))
 
@@ -263,3 +281,46 @@ def delete_course(course_id):
     if not result:
         return {'message': '课程未找到'}, 404
     return {'message': '课程已删除'}, 200
+
+
+@course_bp.route('/<int:course_id>/add_lecture', methods=['POST'])
+@teacher_required
+def add_lecture(course_id):
+    result = Course.query.get_or_404(course_id)
+    data = request.form
+    video = request.files.get('video')
+    files = request.files.getlist('resources')
+    name = data.get('name')
+    description = data.get('description')
+    lecture = Lecture.create(name, description, result.id, video, session['id'], files)
+
+    return jsonify(LectureSchema().dump(lecture))
+
+
+@course_bp.route('/get_lecture_detail', methods=['GET'])
+def get_lecture_detail():
+    lecture_id = request.args.get('lecture_id')
+    lecture = Lecture.query.get_or_404(lecture_id)
+    lecture_dict = LectureSchema().dump(lecture)
+    lecture_dict['teacher'] = lecture_dict.pop('author')
+    return jsonify(lecture_dict)
+
+
+@course_bp.route('/<int:course_id>/enroll')
+@login_required
+def enroll(course_id):
+    course = Course.query.get_or_404(course_id)
+    enrollment = Enrollment(course_id=course.id, student_id=session['id'])
+    try:
+        enrollment.enroll()
+    except IntegrityError:
+        return "Already Enrolled", 400
+    return jsonify(EnrollmentSchema().dump(enrollment))
+
+
+@course_bp.route('/my_course')
+@login_required
+def enrolled_courses():
+    user = User.query.get_or_404(session['id'])
+    enroll_dict = jsonify(EnrollmentSchema().dump(user.enrollments, many=True))
+    return enroll_dict

@@ -16,21 +16,21 @@ class Comment(ReplyTarget):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     content = db.Column(db.Text, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
-    user = db.relationship('User', backref='comments')
-    post = db.relationship('Post', foreign_keys=[post_id])
+    parent_target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'))
+    parent_target = db.relationship('ReplyTarget', foreign_keys=[parent_target_id])
     liked_by = db.relationship('User', secondary=post_likes, backref=db.backref('liked_comments', lazy='dynamic'))
 
 
     __mapper_args__ = {
         'polymorphic_identity': 'comment',
+        'polymorphic_on': ReplyTarget.type,
+        'inherit_condition': (id == ReplyTarget.id)
     }
 
     @property
     def parent_type(self):
         # 获取与此评论关联的 ReplyTarget
-        parent_target = ReplyTarget.query.get(self.post_id)
+        parent_target = ReplyTarget.query.get(self.target_id)
         if parent_target:
             return parent_target.type
         return None
@@ -38,12 +38,12 @@ class Comment(ReplyTarget):
     @property
     def parent_comment(self):
         # 获取与此评论关联的 ReplyTarget
-        parent_target = ReplyTarget.query.get(self.post_id)
+        parent_target = ReplyTarget.query.get(self.target_id)
         if parent_target:
             # 检查 parent_target 的类型
             if parent_target.type == 'comment':
                 # 返回 Comment 对象
-                return Comment.query.get(self.post_id)
+                return Comment.query.get(self.target_id)
         return None    
     @property
     def author_avatar_url(self):
@@ -51,17 +51,21 @@ class Comment(ReplyTarget):
 
     @property
     def child_comments_count(self):
-        # 返回 post_id 等于当前评论 id 的 Comment 对象的数量
-        return Comment.query.filter_by(post_id=self.id).count()
+        # 返回 target_id 等于当前评论 id 的 Comment 对象的数量
+        return Comment.query.filter_by(target_id=self.id).count()
     
     @property
     def child_comments(self):
-        # 查找所有 post_id 等于当前评论 id 的 Comment 对象
-        return Comment.query.filter_by(post_id=self.id).all()
+        # 查找所有 target_id 等于当前评论 id 的 Comment 对象
+        return Comment.query.filter_by(target_id=self.id).all()
+
+    @property
+    def is_assignment(self):
+        return
 
     @staticmethod
-    def commnet_on_post(post_id,comment_text,user_id):
-        comment=Comment(content=comment_text,post_id=post_id,user_id=user_id)
+    def comment(target_id, comment_text, user_id):
+        comment=Comment(content=comment_text,target_id=target_id,author_id=user_id)
         db.session.add(comment) 
         db.session.commit()
         ActivityLog.log_comment(user_id,comment.id)
