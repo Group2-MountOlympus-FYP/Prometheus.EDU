@@ -16,7 +16,7 @@ const VideoInfoComponent: React.FC<VideoInfoComponentProps> = ({ lectureId = 120
     const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
 
     useEffect(() => {
-        getLectureDetailsById(120, 1, 10)
+      getLectureDetailsById(lectureId, 1, 10)
             .then((data) => {
                 console.log("返回数据：", data);
                 const info: VideoInfo = {
