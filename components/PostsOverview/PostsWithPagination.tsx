@@ -2,7 +2,7 @@
 import { PostsOverview } from "./PostsOverview"
 import { Pagination } from "@mantine/core"
 import { useState, useEffect } from "react"
-import { getPostsById } from "@/app/api/Course/router"
+import { getPostsById } from "@/app/api/Lecture/router"
 import style from './Posts.module.css'
 
 interface postsPaginationProps{
