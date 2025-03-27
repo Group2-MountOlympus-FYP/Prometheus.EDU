@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import { useEffect, useState, useRef } from "react"
 import { useDisclosure } from "@mantine/hooks";
 import { Grid, Skeleton, Container, Button, Tabs, Pagination } from '@mantine/core';
