@@ -7,6 +7,11 @@ import { PostsOverview } from "@/components/PostsOverview/PostsOverview";
 import { PostsWithPagination } from "@/components/PostsOverview/PostsWithPagination";
 import './page.css'
 
+import VideoHeader from './components/video_page_header';
+import VideoList from './components/video_list';
+import VideoIntro from './components/video_introduction';
+
+
 interface videoProps{
     url: string,
 }
@@ -55,25 +60,24 @@ export default function Course(props:videoProps){
     return (
         <Container size={"fluid"}>
         <div style={{width:'100%', display:'block'}}>
-            <div hidden={titleLoading}>
-                <span style={{display:'block'}} className="video-title">Title</span>
-                <span style={{display:'block'}}>subtitle and informations</span>
+            <div>
+                <VideoHeader></VideoHeader>
             </div>
-            <Skeleton animate={true} height={"100px"} hidden={!titleLoading}></Skeleton>
+
         </div>
         
         <Grid className="video-grid" ref={videoRef}>
             <Grid.Col span={8}>
                 <VideoPlayer></VideoPlayer>
                 <div>
-                    <p>This is the description of the video</p>
+                    <VideoIntro></VideoIntro>
                 </div>
             </Grid.Col>
             <Grid.Col span={4}>
                 <div>
-                    <VideoSelector onLoadComplete={() => setVideoSelectorLoading(false)}></VideoSelector>
+                    <VideoList></VideoList>
                 </div>
-                <Skeleton radius="md" animate={true} height="300px" hidden={!videoSelectorLoading}></Skeleton>
+
             </Grid.Col>
         </Grid>
         <div>
