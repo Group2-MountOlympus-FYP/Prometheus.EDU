@@ -9,6 +9,7 @@ class Post(ReplyTarget):
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
     lecture_id = db.Column(db.Integer, db.ForeignKey('lecture.id'))
+    lecture = db.relationship('Lecture',  backref='posts', foreign_keys=lecture_id)
 
 
 
