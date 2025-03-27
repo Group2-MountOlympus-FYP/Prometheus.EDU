@@ -566,11 +566,21 @@ class BaseAdminView(ModelView):
 class UserAdminModelView(ModelView):
     column_exclude_list = ('password_hash',)
     column_display_pk = True  # 显示主键，避免自动解析外键
-    form_columns = ('id', 'username', 'birthdate', 'gender', 'nickname', 'deleted')  # 只显示 ID 作为表单字段（避免所有字段）
-    column_searchable_list = ('id', 'username', 'birthdate', 'gender', 'nickname', 'deleted')
+    form_columns = ('id','username','birthdate','gender','nickname', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
     column_formatters = {
         'avatar': lambda v, c, m, p: Markup(
             f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
+    }
+    # 定义 status 字段的选择项
+    form_overrides = {
+        'status': SelectField
+    }
+    form_args = {
+        'status': {
+            'choices': [(status.name, status.name) for status in UserStatus],  # Enum 转换为 (值, 显示名)
+            'widget': Select2Widget()
+        }
     }
 
     # 6. 处理删除用户（调用后端 API 删除）
@@ -586,7 +596,7 @@ class UserAdminModelView(ModelView):
 
 
 class PostAdminModelView(BaseAdminView):
-    column_searchable_list = ('id', 'title', 'content', 'composer_id')
+    column_searchable_list = ('id', 'title', 'content')
 
     def delete_model(self, model):
         """向 delete_post 路由发送请求进行逻辑删除"""
@@ -603,7 +613,7 @@ class PostAdminModelView(BaseAdminView):
 
 
 class CommentAdminModelView(BaseAdminView):
-    column_searchable_list = ('user_id', 'content')
+    column_searchable_list = ('content',)
 
     def delete_model(self, model):
         """向 delete_comment 路由发送请求进行逻辑删除"""
@@ -629,7 +639,9 @@ def init_admin(app):
     # 保护 Flask-Admin 只能被管理员访问
     admin.add_view(ActivityLogView(ActivityLog, db.session))
     admin.add_view(UserAdminModelView(User, db.session))
-    # admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
-    # admin.add_view(CommentAdminModelView(Comment, db.session))
+    admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
+    admin.add_view(CommentAdminModelView(Comment, db.session))
     admin.add_view(BaseAdminView(Course, db.session, endpoint="admin_course"))
-    admin.add_view(BaseAdminView(Tag, db.session))
+    admin.add_view(BaseAdminView(Enrollment, db.session))
+    admin.add_view(BaseAdminView(Lecture, db.session))
+    admin.add_view(BaseAdminView(Resource, db.session))

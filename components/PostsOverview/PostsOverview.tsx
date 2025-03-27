@@ -1,7 +1,7 @@
 'use client'
 
 import { Paper, Text, Grid, Avatar } from "@mantine/core"
-import style from './PostsOverview.module.css'
+import style from './Posts.module.css'
 
 interface PostOverviewProps {
     title?: string,
@@ -16,7 +16,9 @@ interface PostOverviewProps {
 export function PostsOverview(props: PostOverviewProps){
     
     const toAtuhorProfile = () => {
-
+        if(props.authorId){
+            
+        }
     }
 
     return (

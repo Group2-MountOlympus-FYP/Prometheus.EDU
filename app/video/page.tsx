@@ -1,16 +1,16 @@
-'use client'
+"use client"
 import { useEffect, useState, useRef } from "react"
 import { useDisclosure } from "@mantine/hooks";
-import { Grid, Skeleton, Container, Button, Tabs } from '@mantine/core';
+import { Grid, Skeleton, Container, Button, Tabs, Pagination } from '@mantine/core';
 import { WritingPostPanel } from "@/components/WritingPost/WritingPostPanel";
-import { PostsOverview } from "@/components/PostsOverview/PostsOverview";
+import { PostsWithPagination } from "@/components/PostsOverview/PostsWithPagination";
+import { useSearchParams } from "next/navigation";
 import './page.css'
+import VideoHeader from './components/video_page_header';
+import VideoList from './components/video_list';
+import VideoIntro from './components/video_introduction';
 
-interface videoProps{
-    url: string,
-}
-
-export default function Course(props:videoProps){
+export default function Course(){
     //用于判断组件是否离开屏幕
     const videoRef = useRef<HTMLDivElement>(null)
     const [isVideoLeaveWindow, setIsVideoLeaveWindow] = useState(false)
@@ -21,26 +21,8 @@ export default function Course(props:videoProps){
     const [videoSelectorLoading, setVideoSelectorLoading] = useState(true)
     const [postsLoading, setPostsLoading] = useState(false)
 
-    const postsData = [
-        {
-            title: 'This is first post of this website',
-            publishDate: '2025-3-26 11:04',
-            replyNum: 27,
-            postId: 1,
-            author: 'Bollix',
-            authorId: 1,
-            avatarPath: ''
-        },
-        {
-            title: 'This is second post of this website',
-            publishDate: '2025-3-26 11:06',
-            replyNum: 0,
-            postId: 2,
-            author: 'Merlla',
-            authorId: 2,
-            avatarPath: ''
-        }
-    ]
+    const searchParams = useSearchParams()
+    const lectureId = Number(searchParams.get('lecture_id'))
 
     useEffect(() => {
         //为视频挂上ref
@@ -75,25 +57,24 @@ export default function Course(props:videoProps){
     return (
         <Container size={"fluid"}>
         <div style={{width:'100%', display:'block'}}>
-            <div hidden={titleLoading}>
-                <span style={{display:'block'}} className="video-title">Title</span>
-                <span style={{display:'block'}}>subtitle and informations</span>
+            <div>
+                <VideoHeader></VideoHeader>
             </div>
-            <Skeleton animate={true} height={"100px"} hidden={!titleLoading}></Skeleton>
+
         </div>
         
         <Grid className="video-grid" ref={videoRef}>
             <Grid.Col span={8}>
                 <VideoPlayer></VideoPlayer>
                 <div>
-                    <p>This is the description of the video</p>
+                    <VideoIntro></VideoIntro>
                 </div>
             </Grid.Col>
             <Grid.Col span={4}>
                 <div>
-                    <VideoSelector onLoadComplete={() => setVideoSelectorLoading(false)}></VideoSelector>
+                    <VideoList></VideoList>
                 </div>
-                <Skeleton radius="md" animate={true} height="300px" hidden={!videoSelectorLoading}></Skeleton>
+
             </Grid.Col>
         </Grid>
         <div>
@@ -105,19 +86,7 @@ export default function Course(props:videoProps){
                         <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
                     </Tabs.List>
                     <Tabs.Panel value="posts">
-                        {
-                            postsData.map((post, key) => (
-                                <PostsOverview 
-                                title={post.title} 
-                                publishDate={post.publishDate}
-                                replyNum={post.replyNum}
-                                postId={post.postId}
-                                author={post.author}
-                                authorId={post.authorId}
-                                avatarPath={post.avatarPath}
-                                ></PostsOverview>
-                            ))
-                        }
+                        <PostsWithPagination lecture_id={lectureId}/>
                     </Tabs.Panel>
                     <Tabs.Panel value="Matrials">
                         Materials

@@ -172,14 +172,17 @@ const fetchUsers = async (query: string) => {
     per_page: '5',
   })
   try{
+    
     const url = `/user/search-users?${data.toString()}`
-    const response = await fetch(url)
+    const response = await fetch(url, {
+      method: 'GET'
+    })
     
     if(!response.ok){
       throw new Error("Fetch user error!")
     }
 
-    const userData = response.json()
+    const userData = await response.json()
     //处理用户数据
     return userData
 
@@ -194,9 +197,17 @@ const suggestion = {
   char: '@',
   items: async ({ query }: { query: string }) => {
     //异步请求
-    const users = await fetchUsers(query)
+    if(query){
+      const users = await fetchUsers(query)
+      console.log(users.users)
+      return users.users.map((user: { username: any; user_id: any; }) => ({
+        label: user.username,
+        id: user.user_id
+      }))
+    }else{
+      return []
+    }
 
-    return users
     // return users
     //   .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
     //   .slice(0, 5)
@@ -209,8 +220,9 @@ const suggestion = {
       onStart: (props: any) => {
         component = document.createElement('div')
         component.className = 'mention-list'
-        
+
         props.items.forEach((item: any, index: number) => {
+          console.log(item)
           const option = document.createElement('div')
           option.className = 'mention-item'
           option.textContent = item.label

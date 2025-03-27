@@ -33,6 +33,9 @@ export function WritingPostPanel({ opened, onClose }: WritingPostPanelProps){
         console.log(richText?.current?.getText());
         
         const response = await publishPost('title', content?content:'', [''], [])
+        if(response.ok){
+            alert('post success!')
+        }
     }
 
     return (
