@@ -185,6 +185,22 @@ class TA_Client:
         return retrieved_docs
 
 
+    def review_assignment(self, task_requirements: str, submitted_content: str):
+        system_instructions = (
+            '''
+            You are asked to review the assignment submitted by a student. The
+            requirements of the assignment and student's answer is provided bellow.
+            Please provide your feedback for the student.
+            '''
+        )
+
+        augmented_query = f"{system_instructions}\n\nAssignment Requirements:\n{task_requirements}\n\nStudent's Answer:\n{submitted_content}\n"
+
+        answer = TA_Client.qa_chain.invoke(augmented_query)
+        return answer
+
+
+
 if __name__ == "__main__":
     from dotenv import load_dotenv
     load_dotenv()

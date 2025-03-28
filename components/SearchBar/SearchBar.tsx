@@ -11,7 +11,7 @@ export function SearchBar(props: TextInputProps) {
       rightSectionWidth={42}
       leftSection={<IconSearch size={18} stroke={1.5} />}
       rightSection={
-        <ActionIcon size={32} radius="xl" color={'blue'} variant="filled">
+        <ActionIcon size={32} radius="xl" color={'#434884'} variant="filled">
           <IconArrowRight size={18} stroke={1.5} />
         </ActionIcon>
       }
