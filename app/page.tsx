@@ -7,10 +7,12 @@ import { Group, SimpleGrid } from '@mantine/core';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
+import Link from 'next/link';
+
 
 export default function HomePage() {
   const allCourses: CourseCardInfo[] = [
-    { url: 'placeholder.png', name: 'Program Design', category: 'Computer Science', institute: "Beijing University of Technology" },
+    { courseId: 115, url: 'placeholder.png', name: 'Program Design', category: 'Computer Science', institute: "Beijing University of Technology" },
     { url: 'placeholder.png', name: 'Python', category: 'Computer Science', institute: "Beijing University of Technology" },
     { url: 'placeholder.png', name: 'Java', category: 'Computer Science', institute: "Beijing University of Technology" },
     { url: 'placeholder.png', name: 'C++', category: 'Computer Science', institute: "Beijing University of Technology" },
@@ -52,7 +54,9 @@ export default function HomePage() {
       {/* 课程列表 */}
       <div className={classes.courseList}>
         {filteredCourses.map((course, index) => (
-          <CourseCard key={index} {...course} />
+          <Link href={`/course/${course.courseId}`} key={index} style={{ textDecoration: 'none' }} className={classes.courseLink}>
+            <CourseCard {...course} />
+          </Link>
         ))}
       </div>
 
