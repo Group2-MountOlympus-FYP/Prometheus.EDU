@@ -1,6 +1,7 @@
 'use client'
 
 import { Paper, Text, Grid, Avatar } from "@mantine/core"
+import { useRouter } from "next/navigation"
 import style from './Posts.module.css'
 
 interface PostOverviewProps {
@@ -14,11 +15,16 @@ interface PostOverviewProps {
 }
 
 export function PostsOverview(props: PostOverviewProps){
-    
+    const router = useRouter()
+
     const toAtuhorProfile = () => {
         if(props.authorId){
             
         }
+    }
+
+    const toPostDetail = () => {
+        router.push(`/post/${props.postId}`)
     }
 
     return (
@@ -39,7 +45,7 @@ export function PostsOverview(props: PostOverviewProps){
                             <Paper shadow="xs" withBorder p={10} className={style.paper}>
                                 <Grid>
                                     <Grid.Col span={11}>
-                                        <Text size="xl">{props.title}</Text>
+                                        <Text size="xl" className={style.title} onClick={toPostDetail}>{props.title}</Text>
                                     </Grid.Col>
                                     <Grid.Col span={1} className={style.replyBadgeGrid}>
                                         <div hidden={!props.replyNum}>

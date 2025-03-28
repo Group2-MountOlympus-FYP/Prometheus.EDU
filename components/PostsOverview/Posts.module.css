@@ -43,4 +43,11 @@
 .pagination{
     justify-content: center;
 }
+.title{
+    cursor: pointer;
+    color: #00053b;
+}
+.title:hover{
+    text-decoration: underline;
+}
   
