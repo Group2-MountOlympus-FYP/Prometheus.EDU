@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify, send_file
+from flask import Blueprint, jsonify, send_file, request
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
@@ -31,105 +31,68 @@ class QueryForm(FlaskForm):
 
 @athena_bp.route('/generate', methods=['POST'])
 def generate():
-    """
-    基于 RAG 的生成接口
-    ---
-    tags:
-      - TA Client
-    summary: 基于 RAG 生成答案
-    description: 提供问题查询，返回基于 RAG 的答案。
-    parameters:
-      - name: query
-        in: formData
-        type: string
-        required: true
-        description: 用户查询问题
-    responses:
-      200:
-        description: 成功返回生成的答案
-        schema:
-          type: object
-          properties:
-            result:
-              type: string
-              description: 生成的答案
-    """
+    """基于 RAG 的生成接口"""
+    # 首先检查是否是JSON请求
+    if request.is_json:
+        data = request.get_json()
+        if not data or 'query' not in data or not data['query']:
+            return jsonify({"error": "Invalid form data"}), 400
+        
+        query = data['query']
+        result = ta_client.generate(query)
+        return jsonify({"result": result})
+    
+    # 如果不是JSON，尝试表单数据
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
         result = ta_client.generate(query)
         return jsonify({"result": result})
+    
     return jsonify({"error": "Invalid form data"}), 400
 
 
+# 同样修改其他路由处理函数
 @athena_bp.route('/generate_without_rag', methods=['POST'])
 def generate_without_rag():
-    """
-    不使用 RAG 的生成接口
-    ---
-    tags:
-      - TA Client
-    summary: 直接生成答案，不使用 RAG
-    description: 提供问题查询，返回不依赖 RAG 的答案。
-    parameters:
-      - name: query
-        in: formData
-        type: string
-        required: true
-        description: 用户查询问题
-    responses:
-      200:
-        description: 成功返回生成的答案
-        schema:
-          type: object
-          properties:
-            result:
-              type: string
-              description: 生成的答案
-    """
+    if request.is_json:
+        data = request.get_json()
+        if not data or 'query' not in data or not data['query']:
+            return jsonify({"error": "Invalid form data"}), 400
+        
+        query = data['query']
+        result = ta_client.generate_without_rag(query)
+        return jsonify({"result": result})
+    
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
         result = ta_client.generate_without_rag(query)
         return jsonify({"result": result})
+    
     return jsonify({"error": "Invalid form data"}), 400
 
 
 @athena_bp.route('/retrieve_documents_only', methods=['POST'])
 def retrieve_documents_only():
-    """
-    仅检索相关文档接口
-    ---
-    tags:
-      - TA Client
-    summary: 检索与查询相关的文档
-    description: 提供问题查询，返回相关的文档列表。
-    parameters:
-      - name: query
-        in: formData
-        type: string
-        required: true
-        description: 用户查询问题
-    responses:
-      200:
-        description: 成功返回相关文档
-        schema:
-          type: object
-          properties:
-            documents:
-              type: array
-              items:
-                type: string
-              description: 检索到的文档内容
-    """
+    if request.is_json:
+        data = request.get_json()
+        if not data or 'query' not in data or not data['query']:
+            return jsonify({"error": "Invalid form data"}), 400
+        
+        query = data['query']
+        documents = ta_client.retrieve_documents_only(query)
+        docs_content = [doc.page_content for doc in documents]
+        return jsonify({"documents": docs_content})
+    
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
         documents = ta_client.retrieve_documents_only(query)
         docs_content = [doc.page_content for doc in documents]
         return jsonify({"documents": docs_content})
+    
     return jsonify({"error": "Invalid form data"}), 400
-
 
 
 def build_pdf(report_text: str) -> BytesIO:
@@ -203,45 +166,78 @@ def build_pdf(report_text: str) -> BytesIO:
     return buffer
 
 
+# @athena_bp.route('/generate_report', methods=['POST'])
+# def generate_report():
+#     """
+#     基于 RAG 的生成报告接口 (PDF)
+#     ---
+#     tags:
+#       - TA Client
+#     summary: 基于 RAG 生成带有分步骤说明的 PDF 报告
+#     description: 提供问题查询，返回一个包含详细分步骤说明的 PDF 报告。
+#     parameters:
+#       - name: query
+#         in: formData
+#         type: string
+#         required: true
+#         description: 用户查询问题
+#     responses:
+#       200:
+#         description: 成功返回生成的 PDF 报告
+#         schema:
+#           type: file
+#     """
+#     form = QueryForm()
+#     if not form.validate_on_submit():
+#         return jsonify({"error": "Invalid form data"}), 400
+#
+#     # 1. Extract user query
+#     query = form.query.data.strip()
+#
+#     # 2. Generate the step-by-step report text from your RAG pipeline
+#     report_text = ta_client.generate_report(query)['result']
+#
+#     # 3. Build a nicely formatted PDF
+#     pdf_buffer = build_pdf(report_text)
+#
+#     # 4. Send the PDF back as a file
+#     return send_file(
+#         pdf_buffer,
+#         as_attachment=True,
+#         download_name="ta_report.pdf",
+#         mimetype='application/pdf'
+#     )
+
+
 @athena_bp.route('/generate_report', methods=['POST'])
 def generate_report():
-    """
-    基于 RAG 的生成报告接口 (PDF)
-    ---
-    tags:
-      - TA Client
-    summary: 基于 RAG 生成带有分步骤说明的 PDF 报告
-    description: 提供问题查询，返回一个包含详细分步骤说明的 PDF 报告。
-    parameters:
-      - name: query
-        in: formData
-        type: string
-        required: true
-        description: 用户查询问题
-    responses:
-      200:
-        description: 成功返回生成的 PDF 报告
-        schema:
-          type: file
-    """
+    if request.is_json:
+        data = request.get_json()
+        if not data or 'query' not in data or not data['query']:
+            return jsonify({"error": "Invalid form data"}), 400
+        
+        query = data['query']
+        report_text = ta_client.generate_report(query)['result']
+        pdf_buffer = build_pdf(report_text)
+        
+        return send_file(
+            pdf_buffer,
+            as_attachment=True,
+            download_name="ta_report.pdf",
+            mimetype='application/pdf'
+        )
+    
     form = QueryForm()
     if not form.validate_on_submit():
         return jsonify({"error": "Invalid form data"}), 400
 
-    # 1. Extract user query
     query = form.query.data.strip()
-
-    # 2. Generate the step-by-step report text from your RAG pipeline
     report_text = ta_client.generate_report(query)['result']
-
-    # 3. Build a nicely formatted PDF
     pdf_buffer = build_pdf(report_text)
 
-    # 4. Send the PDF back as a file
     return send_file(
         pdf_buffer,
         as_attachment=True,
         download_name="ta_report.pdf",
         mimetype='application/pdf'
     )
-
