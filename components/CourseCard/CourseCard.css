@@ -1,7 +1,7 @@
 .course-card {
     display: flex;
     align-items: center;
-    width: 50vw;
+    width: 52.5vw;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -18,7 +18,7 @@
 
 .course-info {
     flex: 1;
-    margin-left: 10px;
+    margin-left: 2vw;
 }
 
 .course-name {
