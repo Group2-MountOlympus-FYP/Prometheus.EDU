@@ -21,7 +21,7 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
 
   useEffect(() => {
     setLoading(true);
-    getCourseDetailsById(currentLectureId)
+    getCourseDetailsById(115)
       .then((data) => {
         const rawVideos = data.lectures || data.videos || [];
         const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId);

@@ -10,12 +10,12 @@ import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 
-interface CourseProps {
+interface LectureProps {
   lectureId: number;
 }
 
 
-export default function Course({ lectureId }: CourseProps){
+export default function Lecture({ lectureId }: LectureProps){
 
   //用于判断组件是否离开屏幕
   const videoRef = useRef<HTMLDivElement>(null)
