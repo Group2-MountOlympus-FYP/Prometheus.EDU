@@ -15,7 +15,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         itemIntro1: "provides online video course service for structured learning;",
         itemIntro2: "offers a community forum for peer interaction and support;",
         itemIntro3: "equips an AI-powered chatbot that provides real-time assistance;",
-        intro: "We aims to ensure that learners from diverse backgrounds can access high-quality education and support.",
+        intro: "We aim to ensure that learners from diverse backgrounds can access high-quality education and support.",
       },
       zh: {
         welcome1: "综合在线",
