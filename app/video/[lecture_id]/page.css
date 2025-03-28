@@ -37,3 +37,11 @@
 
     margin-top: 2rem;
 }
+.post-button{
+
+    margin-top: 3rem;
+}
+.post-panel{
+    display: block;
+    justify-self: center;
+}
