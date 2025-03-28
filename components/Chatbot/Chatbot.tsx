@@ -16,7 +16,7 @@ import {
   Tabs,
   Menu,
   ActionIcon,
-  List
+  List,
 } from '@mantine/core';
 import { 
   IconSend, 
@@ -291,7 +291,8 @@ const Chatbot: React.FC = () => {
           <Title order={2} className="chat-title">
             <IconRobot size={24} /> AthenaTutor
           </Title>
-          <Text color="dimmed" size="xs" mb="lg"> powered by Athena Intelligence</Text>
+          <Text c="dimmed" size="xs" mb="lg"> powered by Athena Intelligence</Text>
+
           
           <Tabs
             value={queryMode}
@@ -366,7 +367,7 @@ const Chatbot: React.FC = () => {
                 
                 <Box className="message-content">
                   {message.mode && message.sender === 'user' && (
-                    <Text size="xs" fw={500} color="dimmed" mb={4}>
+                    <Text size="xs" fw={500} c="dimmed" mb={4}>
                       Request mode: {getModeLabel(message.mode)}
                     </Text>
                   )}
@@ -382,7 +383,7 @@ const Chatbot: React.FC = () => {
                   )}
                   
                   <Group position="apart" mt={4}>
-                    <Text size="xs" color="dimmed" className="message-time">
+                    <Text size="xs" c="dimmed" className="message-time">
                       {message.timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
                     </Text>
                     
