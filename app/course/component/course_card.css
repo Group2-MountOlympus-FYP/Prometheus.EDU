@@ -1,17 +1,95 @@
-.course-container {
-    padding: 2rem 0;
+.course-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    width: 1000px;
+    padding: 2rem 12rem;
+    box-sizing: border-box;
+    background-color: #e6e8f5; /* 可选背景色 */
+    border-radius: 16px;
+    gap: 3rem; /* 左右区域间距 */
 }
+
 
 .course-header {
+    width: 100%;
     background-color: #e6e8f4;
-    border-radius: 12px;
+    border-radius: 16px;
     padding: 2rem;
+    align-items: center;
 }
 
+/* Title 样式优化 */
+.course-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Enroll 按钮 */
 .enroll-button {
-    width: fit-content;
+    background-color: #3C4077;
+    color: white;
+    font-size: 1rem;
+    padding: 0.6rem 1.4rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    transition: background-color 0.2s ease;
 }
 
+.enroll-button:hover {
+    background-color: #2e3161;
+}
+
+/* Intro 文本 */
 .course-intro {
+    margin-top: 1.5rem;
     max-width: 90%;
+    line-height: 1.6;
+    color: #444;
+}
+
+/* Tags */
+.mantine-Badge-root {
+    border: 1px solid #3C4077;
+    color: #3C4077;
+    background-color: white;
+    font-weight: 500;
+    padding: 0.3rem 0.8rem;
+    font-size: 0.85rem;
+    border-radius: 999px;
+}
+
+
+.course-image-col {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+
+.course-header-flex {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #e6e8f4;
+    border-radius: 16px;
+    padding: 2rem;
+    gap: 2rem;
+    flex-wrap: wrap; /* ✅ 保证在小屏下换行 */
+}
+
+.course-left {
+    flex: 1 1 60%;
+    min-width: 300px;
+}
+
+
+
+.course_image {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    object-fit: cover;
 }

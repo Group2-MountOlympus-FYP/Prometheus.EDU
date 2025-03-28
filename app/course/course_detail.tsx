@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import {
   Container, Title, Text, Grid, Avatar, Divider, Badge, Group, Stack, Image
 } from '@mantine/core';
-import './course_details.css';
 import VideoList from '../video/[lecture_id]/components/video_list';
 import Teachers_list from '@/app/course/component/teachers_list';
 import CourseHeader from '@/app/course/component/course_card';
