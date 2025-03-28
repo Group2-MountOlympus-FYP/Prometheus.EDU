@@ -14,7 +14,21 @@ from .decorator import login_required
 from flasgger import swag_from
 from .ReplyTarget import Tag
 
+from celery import shared_task
+from .athena_ta_core import ta_client
+
 post_bp = Blueprint('post', __name__)
+
+
+@shared_task
+def notify_review_complete(result):
+    Comment.comment(45, "OOOOO", 134)
+    print(f"任务完成，返回结果是：{result}")
+
+
+@shared_task()
+def review_assignment_async(parent_dict, comment_content):
+    return ta_client.review_assignment(str(parent_dict), comment_content)
 
 
 @post_bp.before_request
@@ -280,7 +294,16 @@ def follow():
 def comment():
     target_id = request.form['target_id']
     comment_text = request.form['comment']
+
     comment = Comment.comment(target_id, comment_text, session['id'])
+    if comment.is_assignment_submission:
+        parent = comment.parent_target
+        parent_dict = {"Title": parent.title, "Content": parent.content}
+
+        ai_reply = ta_client.review_assignment(str(parent_dict), comment.content)
+        print(ai_reply['result'])
+        Comment.comment(comment.id, ai_reply['result'], 134)
+
     return CommentSchema().dump(comment)
 
 

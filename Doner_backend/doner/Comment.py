@@ -1,9 +1,10 @@
 from flask import jsonify
-from .extensions import db,celery
+from .extensions import db
 from .ReplyTarget import ReplyTarget
 from datetime import datetime
 from .ActivityLog import ActivityLog
-from .athena_ta_core import ta_client
+
+
 
 post_likes = db.Table('post_likes',
                       db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
@@ -12,14 +13,7 @@ post_likes = db.Table('post_likes',
                       )
 
 
-@celery.task
-def review_assignment_async(parent_dict, comment_content, comment_id):
-    ai_reply = ta_client.review_assignment(str(parent_dict), comment_content)
 
-    # 创建AI回复评论（假设 author_id=134 是 AI）
-    ai_comment = Comment(content=ai_reply, parent_target_id=comment_id, author_id=134)
-    db.session.add(ai_comment)
-    db.session.commit()
 
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
@@ -66,17 +60,11 @@ class Comment(ReplyTarget):
         return any(tag.name == 'Assigment' for tag in self.parent_target.tags)
 
     @staticmethod
-    def comment(target_id, comment_text, user_id):
-        comment = Comment(content=comment_text, parent_target_id=target_id, author_id=user_id)
+    def comment(target_id, comment_text, author_id):
+        comment = Comment(content=comment_text, parent_target_id=target_id, author_id=author_id)
 
         db.session.add(comment)
         db.session.commit()
-
-        if comment.is_assignment_submission:
-            parent = comment.parent_target
-            parent_dict = {"Title": parent.title, "Content": parent.content}
-            # 异步调用
-            review_assignment_async.delay(parent_dict, comment.content, comment.id)
 
         return comment
 
