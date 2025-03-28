@@ -1,78 +1,143 @@
 /**
- * Chatbot API 路由函数
- */
-
-/**
  * 向RAG系统发送查询请求
  * @param query 用户查询问题
  * @returns API响应
  */
 export async function generateAnswer(query: string) {
-    const formData = new FormData();
-    formData.append('query', query);
-
-    const url = 'http://127.0.0.1:5000/athena/generate';
-    const response = await fetch(url, {
-        credentials: 'same-origin',
-        cache: 'no-cache',
-        method: 'POST',
-        body: formData,
-        headers: {
-        },
-    });
-    return response;
+    
+    // 使用JSON格式而不是form-urlencoded
+    // 许多Flask RESTful API更习惯处理JSON数据
+    const payload = { query };
+    
+    // 尝试适应项目现有的API路径模式
+    const url = `/backend/athena/generate`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'include',
+            cache: 'no-cache',
+        });
+        
+        // 检查响应状态
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            if (errorData.error === "Invalid form data") {
+                throw new Error('提交的表单数据无效，请检查查询内容');
+            }
+            throw new Error(`服务器响应错误: ${response.status} ${response.statusText}`);
+        }
+        
+        return response;
+    } catch (error) {
+        console.error('API 请求失败:', error);
+       
+        // 重新抛出错误
+        if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+            throw new Error('无法连接到后端服务器。请确保 Flask 服务器已启动并运行在 http://localhost:5000');
+        }
+        throw error;
+    }
 }
 
 /**
- * 获取聊天历史记录
- * @param userId 用户ID
- * @param page 页码
- * @param per_page 每页记录数
+ * 获取不使用RAG的生成回答
+ * @param query 用户查询问题
  * @returns API响应
  */
-export async function getChatHistory(userId: string, page: number, per_page: number) {
-    const data = new URLSearchParams({
-        user_id: userId,
-        page: page.toString(),
-        per_page: per_page.toString()
-    });
-
-    const url = `/athena/history?${data.toString()}`;
-    const response = await fetch(url, {
-        credentials: 'same-origin',
-        cache: 'default',
-        method: 'GET',
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    return response;
+export async function generateWithoutRAG(query: string) {
+    // 使用JSON格式
+    const payload = { query };
+    
+    const url = `/backend/athena/generate_without_rag`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'include',
+            cache: 'no-cache',
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('非RAG生成请求失败:', error);
+        throw error;
+    }
 }
 
 /**
- * 获取推荐问题
- * @param count 推荐问题数量
- * @returns API响应
+ * 仅检索相关文档
+ * @param query 用户查询问题
+ * @returns API响应，包含相关文档
  */
-export async function getSuggestedQuestions(count: number = 5) {
-    const data = new URLSearchParams({
-        count: count.toString()
-    });
+export async function retrieveDocumentsOnly(query: string) {
+    // 使用JSON格式
+    const payload = { query };
+    
+    const url = `/backend/athena/retrieve_documents_only`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'include',
+            cache: 'no-cache',
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('文档检索请求失败:', error);
+        throw error;
+    }
+}
 
-    const url = `/athena/suggested_questions?${data.toString()}`;
-    const response = await fetch(url, {
-        credentials: 'same-origin',
-        cache: 'default',
-        method: 'GET',
-        headers: {
-            "Content-Type": "application/json",
-        },
-    });
-    return response;
+/**
+ * 生成PDF报告
+ * @param query 用户查询问题
+ * @returns 返回PDF文件流
+ */
+export async function generateReport(query: string) {
+    // 使用JSON格式
+    const payload = { query };
+    
+    const url = `/backend/athena/generate_report`;
+    
+    try {
+        const response = await fetch(url, {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            mode: 'cors',
+            credentials: 'include',
+            cache: 'no-cache',
+        });
+        
+        return response;
+    } catch (error) {
+        console.error('报告生成请求失败:', error);
+        throw error;
+    }
 }
 
 export default {
     generateAnswer,
-    getChatHistory,
-    getSuggestedQuestions
+    generateWithoutRAG,
+    retrieveDocumentsOnly,
+    generateReport
 };
