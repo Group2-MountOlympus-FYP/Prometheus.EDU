@@ -2,6 +2,7 @@
     width: 10vw;
     height: 4vh;
     border-radius: 8px;
+    background-color: white;
     outline: 1px solid lightgray;
 }
 .control {
