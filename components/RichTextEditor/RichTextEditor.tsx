@@ -67,7 +67,8 @@ export const RichTextEditor = forwardRef((props, ref) => {
 
         try{
           const url = await uploadImage(file)
-          
+          //console.log(url)
+
           if(url){
             if(url){
               // 插入图片
@@ -163,19 +164,21 @@ export const RichTextEditor = forwardRef((props, ref) => {
 })
 
 const uploadImage = async (file: File):Promise<string> => {
-    console.log('uploading image')
+    //console.log('uploading image')
 
     //具体逻辑
     const url = '/backend/post/add_image'
+    const formData = new FormData()
+    formData.append('image', file)
     const response = await fetch(url, {
-      method: 'POST',
-      body: file,
+      method: 'POST', // 确保是 POST 方法
+      body: formData, // 这里一定要传 FormData
     })
     
     if( response.ok ){
-      const resData = await response.json()
-      console.log(resData)
-      return ''
+      const url = await response.text()
+      //console.log(url)
+      return url
     }else{
       return ""
     }
@@ -192,7 +195,7 @@ const fetchUsers = async (query: string) => {
   })
   try{
     
-    const url = `backend/user/search-users?${data.toString()}`
+    const url = `/backend/user/search-users?${data.toString()}`
     const response = await fetch(url, {
       method: 'GET'
     })
@@ -218,7 +221,7 @@ const suggestion = {
     //异步请求
     if(query){
       const users = await fetchUsers(query)
-      console.log(users.users)
+      //console.log(users.users)
       return users.users.map((user: { username: any; user_id: any; }) => ({
         label: user.username,
         id: user.user_id
