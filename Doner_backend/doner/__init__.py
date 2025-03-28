@@ -4,8 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 
 from .decorator import before_request, after_request
 from .login import login_bp
-from .extensions import db
-from .router import setRoot,init_admin
+from .extensions import db, celery_init_app
+from .router import setRoot, init_admin
 from .course_bp import course_bp
 import os.path
 
@@ -14,8 +14,8 @@ from flask_migrate import Migrate
 
 from .athena import athena_bp
 from .Video import video_bp
-
 import os
+
 
 
 def create_app():
@@ -37,7 +37,6 @@ def create_app():
     app.secret_key = 'boyuan'
     migrate = Migrate(app, db)
 
-
     setRoot(app)
     app.register_blueprint(login_bp, url_prefix='/login')
     app.register_blueprint(post_bp, url_prefix='/post')
@@ -49,6 +48,15 @@ def create_app():
     app.before_request(before_request)
     app.after_request(after_request)
 
+    app.config.from_mapping(
+        CELERY=dict(
+            broker_url="redis://:boyr_8170@vhboyr.com:6379",
+            result_backend="redis://:boyr_8170@vhboyr.com:6379",
+            task_ignore_result=True,
+        ),
+    )
+    app.config.from_prefixed_env()
+    celery_init_app(app)
 
     return app
 
@@ -56,4 +64,3 @@ def create_app():
 def register_extensions(app):
     db.init_app(app)
     init_admin(app)
-
