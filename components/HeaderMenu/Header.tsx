@@ -13,9 +13,9 @@ type headerProps = {
 }
 
 const links = [
-    { link: '/', label: 'Collections' },
-    { link: '/', label: 'history' },
-    { link: '/', label: 'message' }
+    { link: '/', label: 'AthenaTutor' },
+    { link: '/', label: 'My Courses' },
+    { link: '/', label: 'Message' }
 ]
 export default function Header() {
     const [isLoginPanelOpen, setIsPanelOpen] = useState(false)
@@ -32,34 +32,36 @@ export default function Header() {
     ))
 
     return (
-        <header style={{minHeight:"8vh", paddingTop: '1vh', marginBottom: '1vh', maxHeight: '10vh'}}>
-            <div style={{marginLeft: '10vw', marginRight: '10vw'}} className={classes.inner}>
-                <Group gap="xl" justify="space-between" style={{ width: "100%" }}>
-                    <Group>
-                        <Avatar src='/carbon-ella-logo.png'></Avatar>
-                    </Group>
-                    <Group style={{ flexGrow: 1, justifyContent: "center" }}>
-                        <SearchBar></SearchBar>
-                    </Group>
-                    <Group>
-                        <LanguageSwitcher></LanguageSwitcher>
-                    </Group>
-                    <Group ml={50} gap={10} visibleFrom="sm" className={classes.links}>
-                        {items}
-                    </Group>
-                    <Group className={classes.links}>
-                        <span onClick={() => {setIsPanelOpen(true);lockOverflow()}}>Login</span>
-                    </Group>
+        <div>
+        <header className={classes.naviBar} style={{width:"100%"}}>
+            <div className={classes.inner}>
+                <div className={classes.logoBox}>
+                    <img src="/carbon-ella-logo.png" className={classes.logo}/>
+                </div>
+                <div className={classes.nameBox}>
+                    <p className={classes.webName}> Prometheus.EDU</p>
+                </div>
+                <div style={{ flexGrow: 2, display: "flex", justifyContent: "center" }}>
+                    <SearchBar></SearchBar>
+                </div>
+                <div style={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
+                    <LanguageSwitcher></LanguageSwitcher>
+                </div>
+                <Group ml={50} gap={10} visibleFrom="sm" className={classes.links}>
+                    {items}
                 </Group>
-                
+                <Group className={classes.links}>
+                    <span onClick={() => {setIsPanelOpen(true);lockOverflow()}}>Login</span>
+                </Group>
             </div>
             <div style={{height: '0', border: 'none' , borderBottom: '1px solid grey'}}></div>
             <div hidden={!isLoginPanelOpen} className={`${classes.overlay} ${isLoginPanelOpen ? 'show' : ''}`}></div>
+        </header>
             <div hidden={!isLoginPanelOpen} className={`${classes.signPanel} ${isLoginPanelOpen ? classes.show : ''}`}>
                 <SignPanel onExitClick={() => {setIsPanelOpen(false);unlockOverflow()}}></SignPanel>
             </div>
-
-        </header>
+        </div>
+        
     )
 
 }

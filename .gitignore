@@ -137,3 +137,6 @@ __pycache__
 
 # For this project
 Doner_backend/donerenv
+
+.idea/
+*.iml

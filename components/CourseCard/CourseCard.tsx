@@ -9,7 +9,7 @@ export type CourseCardInfo = {
     name?: string
 }
 
-export function CourseCard({ playCount = 0, url = 'courseSample.jpg', name = 'Course Name' }: CourseCardInfo) {
+export function CourseCard({ playCount = 0, url = 'courseSample.jpg', name = 'Lecture Name' }: CourseCardInfo) {
     return (
         <div>
             <Card shadow="sm" style={{width:"200px"}}>

@@ -9,6 +9,8 @@ Post:
       type: array
       items:
         $ref: '#/Comment'
+    lecture:
+      type: string
     tags:
       type: array
       items:
@@ -35,8 +37,6 @@ Post:
       type: array
       items:
         type: integer
-    lecture:
-      type: string
 User:
   type: object
   properties:
@@ -127,7 +127,7 @@ Comment:
       type: integer
     content:
       type: string
-    post_id:
+    parent_target_id:
       type: integer
 Course:
   type: object
