@@ -1,0 +1,53 @@
+.buttonBox{
+    width: 10vw;
+    height: 4vh;
+    border-radius: 8px;
+    background-color: white;
+    outline: 1px solid lightgray;
+}
+.control {
+    width: 10vw;
+    height: 4vh;
+    /* z-index: 10000; */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+    border-radius: var(--mantine-radius-md);
+    border: 1px solid darkgrest(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+    transition: background-color 150ms ease;
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+  
+    &[data-expanded] {
+      background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-5));
+    }
+  
+    &:hover {
+      background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-5));
+    }
+  }
+  
+.circle{
+    margin-left: 0.5vw;
+}
+
+.label {
+    position: fixed;
+    /* z-index: 20000; */
+    margin-top: -0.3vh;
+    padding-left: 2.5vw;
+    font-weight: 500;
+    font-size: var(--mantine-font-size-sm);
+  }
+  
+.icon {
+    position: "bottom-start";
+    /* z-index: 100000; */
+    margin-right: 0.5vw;
+    transition: transform 150ms ease;
+    transform: rotate(0deg);
+  
+    [data-expanded] & {
+      transform: rotate(180deg);
+    }
+  }

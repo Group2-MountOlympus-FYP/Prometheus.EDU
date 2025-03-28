@@ -13,7 +13,6 @@ class Lecture(ReplyTarget):
     course = db.relationship('Course', backref='lectures', foreign_keys=course_id)
     video_time = db.Column(db.String, comment="视频时长")
     video_url = db.Column(db.String, nullable=False)
-    posts = db.relationship('Post', backref='lecture', foreign_keys='Post.id')
 
     # 与资源的关联关系：一个讲座对应多个资源
     resources = db.relationship("Resource", backref="lecture")

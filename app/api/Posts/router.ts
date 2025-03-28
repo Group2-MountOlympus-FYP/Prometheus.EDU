@@ -1,5 +1,5 @@
 export async function publishPost(title: string, content: string, tags: string[], mentionList: number[]){
-    const url = '/post/publish'
+    const url = '/backend/post/publish'
     const formData = new URLSearchParams()
     const data = {
         title: title,
@@ -23,7 +23,7 @@ export async function publishPost(title: string, content: string, tags: string[]
 }
 
 export async function uploadImage(){
-    const url = '/post/add_image'
+    const url = '/backend/post/add_image'
     
     const response = await fetch(url, {
         method: 'POST',
@@ -40,10 +40,25 @@ export async function getPostsByLectureId(lectureId: number, page:number, perPag
         page: page.toString(),
         per_page: perPage.toString(),
     })
-    const url = `/course/get_lecture_detail/${data.toString}`
+    const url = `/backend/course/get_lecture_detail/${data.toString}`
     const response = await fetch(url, {
         method: 'GET',
         credentials: 'same-origin'
     })
     return response
+}
+
+export async function getPostDetail(id: number) {
+    const url = `/backend/post/${id}`;
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin'
+    });
+
+    if (!response.ok) {
+        throw new Error(`请求失败: ${response.status}`);
+    }
+
+    const data = await response.json(); // ✅ 解析 JSON 数据
+    return { data, status: response.status }; // ✅ 返回数据和状态码
 }

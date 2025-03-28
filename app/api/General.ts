@@ -1,5 +1,5 @@
 export async function GetCSRF() {
-    const url = '/login/get_csrf';
+    const url = '/backend/login/get_csrf';
     try {
         const response = await fetch(url, {
             method: 'GET',
