@@ -15,11 +15,13 @@ import yaml
 import os
 
 
+
 class CommentSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Comment
-        include_fk = True
-        load_instance = True
+        include_relationships = True
+
+
 
 
 class ImageSchema(SQLAlchemyAutoSchema):
@@ -34,7 +36,7 @@ class PostSchema(SQLAlchemyAutoSchema):
         # include_fk=True 可以让外键也暴露在序列化结果中，比如 user_id
         include_relationships = True
 
-    images = Nested(ImageSchema, many=True)
+    images = Nested(ImageSchema, many=True,)
     comments = Nested(CommentSchema, many=True)
 
 
@@ -47,6 +49,7 @@ class EnrollmentSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Enrollment
         include_relationships = True
+
     course = Nested(LightCourseSchema)
 
 

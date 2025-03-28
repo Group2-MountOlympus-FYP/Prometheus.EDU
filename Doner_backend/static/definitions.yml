@@ -115,6 +115,20 @@ Image:
 Comment:
   type: object
   properties:
+    parent_target:
+      type: string
+    liked_by:
+      type: array
+      items:
+        type: integer
+    tags:
+      type: array
+      items:
+        $ref: '#/Tag'
+    images:
+      type: array
+      items:
+        $ref: '#/Image'
     id:
       type: integer
     type:
@@ -123,12 +137,10 @@ Comment:
       type: boolean
     created_at:
       type: string
-    author_id:
-      type: integer
     content:
       type: string
-    parent_target_id:
-      type: integer
+    author:
+      type: string
 Course:
   type: object
   properties:

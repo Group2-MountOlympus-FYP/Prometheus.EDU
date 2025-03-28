@@ -14,7 +14,21 @@ from .decorator import login_required
 from flasgger import swag_from
 from .ReplyTarget import Tag
 
+from celery import shared_task
+from .athena_ta_core import ta_client
+
 post_bp = Blueprint('post', __name__)
+
+
+@shared_task
+def notify_review_complete(result):
+    Comment.comment(45, "OOOOO", 134)
+    print(f"任务完成，返回结果是：{result}")
+
+
+@shared_task()
+def review_assignment_async(parent_dict, comment_content):
+    return ta_client.review_assignment(str(parent_dict), comment_content)
 
 
 @post_bp.before_request
@@ -280,7 +294,16 @@ def follow():
 def comment():
     target_id = request.form['target_id']
     comment_text = request.form['comment']
-    comment = Comment.commnet_on_post(target_id, comment_text, session['id'])
+
+    comment = Comment.comment(target_id, comment_text, session['id'])
+    if comment.is_assignment_submission:
+        parent = comment.parent_target
+        parent_dict = {"Title": parent.title, "Content": parent.content}
+
+        ai_reply = ta_client.review_assignment(str(parent_dict), comment.content)
+        print(ai_reply['result'])
+        Comment.comment(comment.id, ai_reply['result'], 134)
+
     return CommentSchema().dump(comment)
 
 
@@ -369,6 +392,7 @@ def a_post(id):
     post = Post.query.get(id)
     if not post:
         return "Post Not Found", 404
+
     return jsonify(PostSchema().dump(post))
 
 
@@ -413,3 +437,11 @@ def add_image():
         return image.url
     else:
         return "Image Not Found", 404
+
+
+@post_bp.route('/comment/<int:id>')
+def get_comment(id):
+    comment = Comment.query.get_or_404(id)
+    comment_dict = CommentSchema().dump(comment)
+    comment_dict['child_comment'] = [CommentSchema().dump(child_comment) for child_comment in comment.child_comments]
+    return jsonify(comment_dict)
