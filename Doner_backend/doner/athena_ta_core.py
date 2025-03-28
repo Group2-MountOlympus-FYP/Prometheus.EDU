@@ -22,7 +22,7 @@ class TA_Client:
         documents = []
 
         for root, _, files in os.walk(directory):
-            print("Reading from folder:", root)
+            # print("Reading from folder:", root)
             for filename in files:
                 if not filename.endswith(('.html', '.htm', '.md', '.pdf', 'DS_Store')):
                     print(f"Unexpected file format: {filename}")
@@ -88,7 +88,7 @@ class TA_Client:
 
     def initialize_system(self):
         if self.api_key == '':
-            print("API Key Not Set. AthenaTutor Not Available.\n Peylix is watching you.")
+            print("API Key Not Set. Athena Intelligence Not Available.\n Peylix is watching you 👁️.")
             return
 
         if TA_Client.embeddings is None:

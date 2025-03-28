@@ -35,7 +35,7 @@ export default function HomePage() {
       
       {/* 课程分类 */}
       <div className={classes.categoriesContainer}>
-        <span className={classes.categoriesTitle}>Categories: </span>
+        <span className={classes.categoriesTitle}> Categories </span>
         <div className={classes.categoriesList}>
           {categories.map((category, index) => (
             <button
