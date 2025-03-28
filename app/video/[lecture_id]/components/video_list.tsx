@@ -13,7 +13,7 @@ interface VideoListProps {
   currentLectureId: number;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ currentLectureId }) => {
+const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
   const router = useRouter();
   const [videoList, setVideoList] = useState<VideoInfo[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,7 +21,7 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId }) => {
 
   useEffect(() => {
     setLoading(true);
-    getCourseDetailsById(115)
+    getCourseDetailsById(currentLectureId)
       .then((data) => {
         const rawVideos = data.lectures || data.videos || [];
         const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId);

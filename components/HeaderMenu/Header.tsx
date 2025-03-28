@@ -7,6 +7,8 @@ import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { SignPanel } from "../SignPanel/SignPanel"
 import { useState } from "react"
 import { lockOverflow, unlockOverflow } from "@/app/api/General"
+import Link from 'next/link';
+
 
 type headerProps = {
     onLoginClick?: () => void
@@ -14,22 +16,21 @@ type headerProps = {
 
 const links = [
     { link: '/', label: 'AthenaTutor' },
-    { link: '/', label: 'My Courses' },
+    { link: '/MyCourses', label: 'My Courses' },
     { link: '/', label: 'Message' }
 ]
 export default function Header() {
     const [isLoginPanelOpen, setIsPanelOpen] = useState(false)
 
     const items = links.map((link) => (
-        <a
+      <Link
         key={link.label}
         href={link.link}
-        onClick={(event) => event.preventDefault()}
         className={classes.links}
-        >
-            {link.label}
-        </a>
-    ))
+      >
+          {link.label}
+      </Link>
+    ));
 
     return (
         <div>
