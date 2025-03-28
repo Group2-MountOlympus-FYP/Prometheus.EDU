@@ -102,7 +102,7 @@ export default function Course({ lectureId }: CourseProps){
             </Tabs.Panel>
           </Tabs>
           <div>
-            <WritingPostPanel opened={opened} onClose={close}></WritingPostPanel>
+            <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId}></WritingPostPanel>
             <Button onClick={open} id={`${isVideoLeaveWindow ? "normal" : "right-corner"}`} className="post-button">Open to write post</Button>
           </div>
         </div>

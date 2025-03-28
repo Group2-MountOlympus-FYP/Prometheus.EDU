@@ -1,23 +1,20 @@
-export async function publishPost(title: string, content: string, tags: string[], mentionList: number[]){
+export async function publishPost(title: string, content: string, tags: number[], lecture_id: number){
     const url = '/backend/post/publish'
-    const formData = new URLSearchParams()
-    const data = {
-        title: title,
-        content: content,
-        
-    }
-    for (const [key, value] of Object.entries(data)){
-        formData.append(key,value)
-    }
+    const formData = new FormData()
+    formData.append('title', title)
+    formData.append('content', content)
+    formData.append('tags', JSON.stringify(tags))
+    formData.append('lecture_id', String(lecture_id))
+
+    formData.forEach((value, key) => {
+        console.log(`${key}: ${value}`);
+    });
+
     const response = await fetch(url, {
         method: 'POST',
         cache: 'default',
         credentials: 'same-origin',
         body: formData,
-        headers: {
-            "Content-Type": "multipart/form-data",
-            "Accept": "*/*"
-        },
     })
     return response
 }
