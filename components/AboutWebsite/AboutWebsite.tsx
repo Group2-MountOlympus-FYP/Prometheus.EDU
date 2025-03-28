@@ -1,6 +1,7 @@
 'use client'
 
 import classes from './AboutWebsite.module.css'
+import { GradientText } from "../GradientText/GradientText"
 import { Grid } from '@mantine/core'
 import { getText } from './AboutWebsiteLanguage'
 
@@ -10,18 +11,42 @@ export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
             <div className={classes.bgImg}>
                 <div className={classes.bgLight}></div>
                 <div className={classes.iconImg}></div>
+
                 <div className={classes.intro}>
-                    <span style={{fontWeight:'bolder', fontSize:'38px', display:'block'}}>{getText('welcome')}</span>
-                    {/* <span style={{fontSize:'20px'}}>{getText('intro')}</span> */}
-                    {/* <p>Our website, Prometheus.EDU, is a comprehensive online education platform designed to 
-                        provide equitable learning opportunities for underprivileged and restricted communities. 
-                        Developed in collaboration with the global charity NGO Agape, the platform features three 
-                        key components: NousTube, an online video course service for structured learning; MetisHub, 
-                        a community forum for peer interaction and support; and AthenaTutor, an AI-powered chatbot 
-                        that provides real-time assistance by referencing course materials. Built with modern technologies 
-                        like React, Next.js, Flask, and LangChain, Prometheus.EDU is scalable, user-friendly, and accessible, 
-                        ensuring that learners from diverse backgrounds can access high-quality education and support.</p> */}
+                    <div style={{ 
+                        fontWeight: 'bolder', 
+                        fontSize: '2.5vw', 
+                        color: 'white', 
+                        display: 'flex', 
+                        alignItems: 'center',
+                    }}>
+                        <span>{getText('welcome1')}</span>
+                        <div style={{ paddingLeft: '0.6vw' }}><GradientText /></div>
+                        <span style={{ paddingLeft: '0.6vw' }}>{getText('welcome2')}</span>
+                    </div>
+
+                    <div style={{ fontSize: '1vw', marginTop: '1.5vw', display: 'flex', flexDirection: 'column' }}>
+                        <div style={{ display: 'flex', gap: '0.5vw' }}>
+                            <span style={{ fontWeight: 'bolder', color: '#FFDA65' }}>{getText('item1')}</span>
+                            <span style={{ color: 'white' }}>{getText('itemIntro1')}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5vw' }}>
+                            <span style={{ fontWeight: 'bolder', color: '#FFDA65' }}>{getText('item2')}</span>
+                            <span style={{ color: 'white' }}>{getText('itemIntro2')}</span>
+                        </div>
+
+                        <div style={{ display: 'flex', gap: '0.5vw' }}>
+                            <span style={{ fontWeight: 'bolder', color: '#FFDA65' }}>{getText('item3')}</span>
+                            <span style={{ color: 'white' }}>{getText('itemIntro3')}</span>
+                        </div>
+                    </div>
+
+                    <div style={{ marginTop: '1vw' }}>
+                        <span style={{ fontSize: '1.2vw', color: 'white' }}>{getText('intro')}</span>
+                    </div>
                 </div>
+
             </div>
             <div >
                 

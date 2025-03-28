@@ -36,7 +36,7 @@ export default function Header() {
         <header className={classes.naviBar} style={{width:"100%"}}>
             <div className={classes.inner}>
                 <div className={classes.logoBox}>
-                    <img src="/carbon-ella-logo.png" className={classes.logo}/>
+                    <img src="/website-logo.png" className={classes.logo}/>
                 </div>
                 <div className={classes.nameBox}>
                     <p className={classes.webName}> Prometheus.EDU</p>

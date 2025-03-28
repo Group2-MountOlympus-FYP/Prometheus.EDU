@@ -6,12 +6,28 @@ type Translations = {
 
 const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
-        welcome: "A Comprehensive Online Education Platform",
-        intro: "A Comprehensive Online Education Platform"
+        welcome1: "A Comprehensive Online",
+        welcome2: "Platform",
+        education: "Education",
+        item1: "√ NousTube",
+        item2: "√ MetisHub",
+        item3: "√ AthenaTutor",
+        itemIntro1: "provides online video course service for structured learning;",
+        itemIntro2: "offers a community forum for peer interaction and support;",
+        itemIntro3: "equips an AI-powered chatbot that provides real-time assistance;",
+        intro: "We aims to ensure that learners from diverse backgrounds can access high-quality education and support.",
       },
       zh: {
-        welcome: "综合在线教育平台",
-        intro: "综合在线教育平台"        
+        welcome1: "综合在线",
+        welcome2: "平台",
+        education: "教育",
+        item1: "√ NousTube",
+        item2: "√ MetisHub",
+        item3: "√ AthenaTutor",
+        itemIntro1: "为结构化学习提供在线视频课程服务;",
+        itemIntro2: "为同伴互动和支持提供社区论坛;",
+        itemIntro3: "配备由人工智能驱动的聊天机器人，提供实时帮助；",
+        intro: "我们致力于确保来自不同背景的学习者能够获得高质量的教育和支持。",        
       },
 }
 

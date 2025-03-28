@@ -9,40 +9,57 @@ import classes from './page.module.css'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 
 export default function HomePage() {
-  const courseCardProps: CourseCardInfo[] = [
-    { playCount: 1532, url: 'courseSample.jpg', name: 'COMP3030J' },
-    { playCount: 212, url: 'courseSample.jpg', name: 'COMP1004J' },
-    { playCount: 44555, url: 'courseSample.jpg', name: 'Computer Science' },
-    { playCount: 29347290, url: 'courseSample.jpg', name: 'Python' },
-    { playCount: 1, url: 'courseSample.jpg', name: 'Java' },
-    { playCount: 2423, url: 'courseSample.jpg', name: 'C++' },
-    { playCount: 35354, url: 'courseSample.jpg', name: 'Cook' },
-    { playCount: 384989, url: 'courseSample.jpg', name: 'Cycling' },
-    { playCount: 22, url: 'courseSample.jpg', name: 'React' },
-  ]
+  const allCourses: CourseCardInfo[] = [
+    { url: 'placeholder.png', name: 'Program Design', category: 'Computer Science', institute: "Beijing University of Technology" },
+    { url: 'placeholder.png', name: 'Python', category: 'Computer Science', institute: "Beijing University of Technology" },
+    { url: 'placeholder.png', name: 'Java', category: 'Computer Science', institute: "Beijing University of Technology" },
+    { url: 'placeholder.png', name: 'C++', category: 'Computer Science', institute: "Beijing University of Technology" },
+    { url: 'placeholder.png', name: 'Cooking', category: 'Life', institute: "Beijing University of Technology" },
+    { url: 'placeholder.png', name: 'Cycling', category: 'Sports', institute: "Beijing University of Technology" },
+    { url: 'placeholder.png', name: 'React', category: 'Computer Science', institute: "Beijing University of Technology" },
+  ];
 
-  const categories: string[] = ['CS', 'Sports', 'Life', 'Art', 'Math', 'Language','Others']
+  const categories: string[] = ['All','Computer Science', 'Math', 'Sports', 'Life', 'Art', 'Language', 'Others'];
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+
+  // 筛选课程
+  const filteredCourses = selectedCategory === 'All' 
+    ? allCourses 
+    : allCourses.filter(course => course.category === selectedCategory);
 
   return (
-    <div style={{maxWidth: '100vw'}}>
-      <AboutWebSite style={{maxWidth: '100vw'}}></AboutWebSite>
-      <Group gap={10} className={classes.categoriesGroup}>
+    <div style={{ maxWidth: '100vw' }}>
+      <AboutWebSite style={{ maxWidth: '100vw' }} />
+
+      <div className={classes.courseContainer}>
+      
+      {/* 课程分类 */}
+      <div className={classes.categoriesContainer}>
         <span className={classes.categoriesTitle}>Categories: </span>
-        {
-          categories.map((category, index) => (
-            <button key={index} className={classes.categoriesButton}>{category}</button>
-          ))
-        }
-      </Group>
-      <SimpleGrid cols={6} spacing='lg' style={{margin: '0 2vw 0 2vw'}}>
-        {  
-          courseCardProps.map((course, index) => (
-            <CourseCard key={index} {...course}></CourseCard>
-          ))
-        }
-      </SimpleGrid>
+        <div className={classes.categoriesList}>
+          {categories.map((category, index) => (
+            <button
+              key={index}
+              className={`${classes.categoriesButton} ${selectedCategory === category ? classes.selected : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 课程列表 */}
+      <div className={classes.courseList}>
+        {filteredCourses.map((course, index) => (
+          <CourseCard key={index} {...course} />
+        ))}
+      </div>
+
+      </div>
+
       <div className={classes.cookieConsent}>
-        <CookieConsent/>
+        <CookieConsent />
       </div>
     </div>
   );
