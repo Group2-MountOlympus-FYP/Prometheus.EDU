@@ -54,4 +54,21 @@
     margin-left: 2vw;
     gap: 15px;
 }
-  
+
+.courseLink {
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+    -webkit-tap-highlight-color: transparent; /* 移除移动端高亮 */
+}
+
+.courseLink:focus,
+.courseLink:active,
+.courseLink:focus-visible {
+    outline: none;
+    background: none;
+    box-shadow: none;
+    -webkit-box-shadow: none;
+}
+
+
