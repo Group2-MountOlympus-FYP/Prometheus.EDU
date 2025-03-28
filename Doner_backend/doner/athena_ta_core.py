@@ -240,3 +240,6 @@ if __name__ == "__main__":
             print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
 
+ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
+                      directory='./doner/study_materials',
+                      model='gemini-2.0-flash')

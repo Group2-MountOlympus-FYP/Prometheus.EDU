@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 
 from .decorator import before_request, after_request
 from .login import login_bp
-from .extensions import db
+from .extensions import db,make_celery,celery
 from .router import setRoot,init_admin
 from .course_bp import course_bp
 import os.path
@@ -14,7 +14,7 @@ from flask_migrate import Migrate
 
 from .athena import athena_bp
 from .Video import video_bp
-
+from celery import Celery
 import os
 
 
@@ -56,4 +56,5 @@ def create_app():
 def register_extensions(app):
     db.init_app(app)
     init_admin(app)
+    make_celery(app)
 

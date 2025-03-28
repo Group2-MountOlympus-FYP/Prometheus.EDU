@@ -1,16 +1,25 @@
 from flask import jsonify
-from .extensions import db
+from .extensions import db,celery
 from .ReplyTarget import ReplyTarget
 from datetime import datetime
-from.ActivityLog import ActivityLog
-
+from .ActivityLog import ActivityLog
+from .athena_ta_core import ta_client
 
 post_likes = db.Table('post_likes',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('comment_id', db.Integer, db.ForeignKey('comment.id'), primary_key=True),
-    db.Column('created_at', db.DateTime, default=datetime.utcnow)
-)
+                      db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+                      db.Column('comment_id', db.Integer, db.ForeignKey('comment.id'), primary_key=True),
+                      db.Column('created_at', db.DateTime, default=datetime.utcnow)
+                      )
 
+
+@celery.task
+def review_assignment_async(parent_dict, comment_content, comment_id):
+    ai_reply = ta_client.review_assignment(str(parent_dict), comment_content)
+
+    # 创建AI回复评论（假设 author_id=134 是 AI）
+    ai_comment = Comment(content=ai_reply, parent_target_id=comment_id, author_id=134)
+    db.session.add(ai_comment)
+    db.session.commit()
 
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
@@ -19,7 +28,6 @@ class Comment(ReplyTarget):
     parent_target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'))
     parent_target = db.relationship('ReplyTarget', foreign_keys=[parent_target_id])
     liked_by = db.relationship('User', secondary=post_likes, backref=db.backref('liked_comments', lazy='dynamic'))
-
 
     __mapper_args__ = {
         'polymorphic_identity': 'comment',
@@ -36,16 +44,6 @@ class Comment(ReplyTarget):
         return None
 
     @property
-    def parent_comment(self):
-        # 获取与此评论关联的 ReplyTarget
-        parent_target = ReplyTarget.query.get(self.target_id)
-        if parent_target:
-            # 检查 parent_target 的类型
-            if parent_target.type == 'comment':
-                # 返回 Comment 对象
-                return Comment.query.get(self.target_id)
-        return None    
-    @property
     def author_avatar_url(self):
         return self.user.avatarUrl
 
@@ -53,45 +51,54 @@ class Comment(ReplyTarget):
     def child_comments_count(self):
         # 返回 target_id 等于当前评论 id 的 Comment 对象的数量
         return Comment.query.filter_by(target_id=self.id).count()
-    
+
     @property
     def child_comments(self):
         # 查找所有 target_id 等于当前评论 id 的 Comment 对象
         return Comment.query.filter_by(target_id=self.id).all()
 
     @property
-    def is_assignment(self):
-        return
+    def is_assignment_submission(self):
+        if not self.parent_target:
+            return False
+        if not self.parent_target.type == 'post':
+            return False
+        return any(tag.name == 'Assigment' for tag in self.parent_target.tags)
 
     @staticmethod
     def comment(target_id, comment_text, user_id):
-        comment=Comment(content=comment_text,target_id=target_id,author_id=user_id)
-        db.session.add(comment) 
+        comment = Comment(content=comment_text, parent_target_id=target_id, author_id=user_id)
+
+        db.session.add(comment)
         db.session.commit()
-        ActivityLog.log_comment(user_id,comment.id)
+
+        if comment.is_assignment_submission:
+            parent = comment.parent_target
+            parent_dict = {"Title": parent.title, "Content": parent.content}
+            # 异步调用
+            review_assignment_async.delay(parent_dict, comment.content, comment.id)
+
         return comment
 
-    
-    def toggle_like(self,user):
+    def toggle_like(self, user):
         if not user in self.liked_by:
             self.liked_by.append(user)
             db.session.commit()
-            ActivityLog.log_like(user.id,self.id)
+            ActivityLog.log_like(user.id, self.id)
             return True
         else:
             self.liked_by.remove(user)
             db.session.commit()
-            ActivityLog.log_unLike(user.id,self.id)
+            ActivityLog.log_unLike(user.id, self.id)
             return False
-        
-    def is_like_by_user(self,user):
+
+    def is_like_by_user(self, user):
         return user in self.liked_by
 
     @property
     def get_like_count(self):
-        return len(list(self.liked_by)) # type: ignore
-    
- 
+        return len(list(self.liked_by))  # type: ignore
+
     def dfs_traverse(self):
         # 初始化一个列表来存储子评论
         comments = [self]
@@ -101,12 +108,9 @@ class Comment(ReplyTarget):
             comments.extend(child_comment.dfs_traverse())
 
         return comments
-    
 
-    
     def need_reply_statment(self):
-        parent_comment=self.parent_comment
-        if parent_comment and parent_comment.parent_comment :
-                return "Reply "+parent_comment.user.username+": "
-        return ""    
-  
+        parent_comment = self.parent_comment
+        if parent_comment and parent_comment.parent_comment:
+            return "Reply " + parent_comment.user.username + ": "
+        return ""

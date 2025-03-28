@@ -1,32 +1,22 @@
-from flask import Blueprint, jsonify, send_file
+from flask import Blueprint, jsonify, send_file, request
 from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
 
-from .athena_ta_core import TA_Client
+from .athena_ta_core import ta_client
 
 from dotenv import load_dotenv
 import os
 
 from io import BytesIO
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer 
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer
 from reportlab.lib.pagesizes import LETTER
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 
-
 load_dotenv()
 
 athena_bp = Blueprint('athena', __name__)
-
-ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
-                      directory='./doner/study_materials',
-                      model='gemini-2.0-flash')
-
-
-
-class QueryForm(FlaskForm):
-    query = StringField('Query', validators=[InputRequired()])
 
 
 @athena_bp.route('/generate', methods=['POST'])
@@ -54,9 +44,9 @@ def generate():
               type: string
               description: 生成的答案
     """
-    form = QueryForm()
-    if form.validate_on_submit():
-        query = form.query.data
+
+    query = request.form.get('query')
+    if query:
         result = ta_client.generate(query)
         return jsonify({"result": result})
     return jsonify({"error": "Invalid form data"}), 400
@@ -129,7 +119,6 @@ def retrieve_documents_only():
         docs_content = [doc.page_content for doc in documents]
         return jsonify({"documents": docs_content})
     return jsonify({"error": "Invalid form data"}), 400
-
 
 
 def build_pdf(report_text: str) -> BytesIO:
@@ -244,4 +233,3 @@ def generate_report():
         download_name="ta_report.pdf",
         mimetype='application/pdf'
     )
-
