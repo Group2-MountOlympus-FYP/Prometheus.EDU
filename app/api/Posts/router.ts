@@ -47,3 +47,18 @@ export async function getPostsByLectureId(lectureId: number, page:number, perPag
     })
     return response
 }
+
+export async function getPostDetail(id: number) {
+    const url = `/backend/post/${id}`;
+    const response = await fetch(url, {
+        method: 'GET',
+        credentials: 'same-origin'
+    });
+
+    if (!response.ok) {
+        throw new Error(`请求失败: ${response.status}`);
+    }
+
+    const data = await response.json(); // ✅ 解析 JSON 数据
+    return { data, status: response.status }; // ✅ 返回数据和状态码
+}

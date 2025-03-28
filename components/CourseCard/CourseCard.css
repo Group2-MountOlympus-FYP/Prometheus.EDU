@@ -1,0 +1,45 @@
+.course-card {
+    display: flex;
+    align-items: center;
+    width: 52.5vw;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    padding: 10px;
+}
+
+.course-image {
+    width: 16vw;
+    height: 9vw;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+.course-info {
+    flex: 1;
+    margin-left: 2vw;
+}
+
+.course-name {
+    font-size: 1.5vw;
+    font-weight: bold;
+    margin: 0;
+}
+
+.course-category {
+    font-size: 0.9vw;
+    color: #666;
+    margin: 5px 0;
+}
+
+.institute-name {
+    display: flex;
+    align-items: center;
+    font-size: 1vw;
+    color: #444;
+}
+
+.play-icon {
+    margin-right: 5px;
+}

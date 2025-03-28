@@ -1,23 +1,57 @@
-.categoriesTitle{
+.courseContainer {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    max-width: 70vw;
+    margin: auto;
+    padding-top: 4.5vh;
+}
+  
+.categoriesContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 200px;
+}
+  
+.categoriesTitle {
     font-weight: bold;
+    font-size: 1.5vw;
+    margin-bottom: 10px;
 }
-.categoriesGroup{
-    border-radius: 5px;
-    background-color: rgba(154, 154, 154, 0.3);
-    margin: 1vh 1vw 1vh 1vw;
-    padding: 1vh 1vw 1vh 1vw;
+  
+.categoriesList {
+    display: flex;
+    flex-direction: column;
+    font-weight: bold;
+    font-size: 1vw;
+    gap: 10px;
 }
-.categoriesButton{
+  
+.categoriesButton {
+    padding: 8px 12px;
     border: none;
-    text-decoration: none;
-    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
-    font-size: var(--mantine-font-size-sm);
-    font-weight: 500;text-decoration: none;
     cursor: pointer;
-}
-.cookieConsent{
-    position: fixed;
-    bottom: 0;
-    left: 0;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    transition: 0.3s;
     width: 100%;
+    text-align: center;
 }
+  
+.categoriesButton:hover {
+    background-color: #ddd;
+}
+  
+.selected {
+    background-color: #434884;
+    color: white;
+}
+  
+.courseList {
+    display: flex;
+    flex-direction: column;
+    margin-left: 2vw;
+    gap: 15px;
+}
+  
