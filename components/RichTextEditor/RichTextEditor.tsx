@@ -67,9 +67,10 @@ export const RichTextEditor = forwardRef((props, ref) => {
     
         // 1. 上传图片，返回 URL
         const url = await uploadImage(file)
-    
-        // 2. 插入图片
-        editor.chain().focus().setImage({ src: url }).run()
+        if(url){
+          // 2. 插入图片
+          editor.chain().focus().setImage({ src: url }).run()
+        }
     }
 
     //手动插入mention并且@Athena
@@ -151,15 +152,29 @@ export const RichTextEditor = forwardRef((props, ref) => {
     )
 })
 
-const uploadImage = async (file: File): Promise<string> => {
+const uploadImage = async (file: File) => {
     console.log('uploading image')
-    //具体逻辑
 
-    return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve('https://via.placeholder.com/400x300?text=Uploaded+Image')
-        }, 1000)
-      })
+    //具体逻辑
+    const url = '/backend/post/add_image'
+    const response = await fetch(url, {
+      method: 'GET',
+      body: file,
+    })
+    try{
+      if( response.ok ){
+        const resData = await response.json()
+        console.log(resData)
+        return ''
+      }else{
+        throw new Error('Upload image fail')
+      }
+    }catch(e){
+      console.log(e)
+    }
+    
+    
+    
 }
 
 /*
