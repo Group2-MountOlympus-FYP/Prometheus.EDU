@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # 👈 拉取完整历史，才能 reset
 
     - name: Set up SSH
       env:
