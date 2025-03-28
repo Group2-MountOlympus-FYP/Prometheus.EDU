@@ -392,6 +392,7 @@ def a_post(id):
     post = Post.query.get(id)
     if not post:
         return "Post Not Found", 404
+
     return jsonify(PostSchema().dump(post))
 
 
@@ -436,3 +437,11 @@ def add_image():
         return image.url
     else:
         return "Image Not Found", 404
+
+
+@post_bp.route('/comment/<int:id>')
+def get_comment(id):
+    comment = Comment.query.get_or_404(id)
+    comment_dict = CommentSchema().dump(comment)
+    comment_dict['child_comment'] = [CommentSchema().dump(child_comment) for child_comment in comment.child_comments]
+    return jsonify(comment_dict)

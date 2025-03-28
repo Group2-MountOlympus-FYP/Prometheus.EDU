@@ -43,13 +43,13 @@ class Comment(ReplyTarget):
 
     @property
     def child_comments_count(self):
-        # 返回 target_id 等于当前评论 id 的 Comment 对象的数量
-        return Comment.query.filter_by(target_id=self.id).count()
+        # 返回 parent_target_id 等于当前评论 id 的 Comment 对象的数量
+        return Comment.query.filter_by(parent_target_id=self.id).count()
 
     @property
     def child_comments(self):
-        # 查找所有 target_id 等于当前评论 id 的 Comment 对象
-        return Comment.query.filter_by(target_id=self.id).all()
+        # 查找所有 parent_target_id 等于当前评论 id 的 Comment 对象
+        return Comment.query.filter_by(parent_target_id=self.id).all()
 
     @property
     def is_assignment_submission(self):
