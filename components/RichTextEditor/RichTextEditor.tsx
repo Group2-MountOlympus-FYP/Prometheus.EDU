@@ -173,7 +173,7 @@ const fetchUsers = async (query: string) => {
   })
   try{
     
-    const url = `/user/search-users?${data.toString()}`
+    const url = `backend/user/search-users?${data.toString()}`
     const response = await fetch(url, {
       method: 'GET'
     })
