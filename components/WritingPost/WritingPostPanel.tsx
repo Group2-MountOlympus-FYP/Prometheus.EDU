@@ -6,13 +6,14 @@ import { publishPost } from "@/app/api/Posts/router"
 interface WritingPostPanelProps {
     opened: boolean;
     onClose: () => void;
+    lecture_id: number;
 }
 
 type RichTextEditorRef = {
     getText: () => string
 }
 
-export function WritingPostPanel({ opened, onClose }: WritingPostPanelProps){
+export function WritingPostPanel({ opened, onClose, lecture_id }: WritingPostPanelProps){
     const richText = useRef<RichTextEditorRef>()
     const [title, setTitle] = useState("")
     const [error, setError] = useState("")
@@ -30,12 +31,25 @@ export function WritingPostPanel({ opened, onClose }: WritingPostPanelProps){
         }
 
         const content = richText?.current?.getText()
+        const postTitle = title
         console.log(richText?.current?.getText());
-        
-        const response = await publishPost('title', content?content:'', [''], [])
+        //console.log(`is AI included? ${containsAthenaMention(content)}`)
+        let tags:number[] = []
+        if(containsAthenaMention(content)){
+            tags = [1]
+        }
+        const response = await publishPost(postTitle, content?content:'', tags, lecture_id)
         if(response.ok){
             alert('post success!')
         }
+    }
+
+    const containsAthenaMention = (htmlContent: string | undefined): boolean => {
+        if(htmlContent){
+            const mentionRegex = /<span[^>]*data-type="mention"[^>]*data-id="-1"[^>]*>/g
+            return mentionRegex.test(htmlContent)
+        }
+        return false   
     }
 
     return (

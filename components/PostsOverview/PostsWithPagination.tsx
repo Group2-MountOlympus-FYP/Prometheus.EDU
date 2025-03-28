@@ -2,7 +2,7 @@
 import { PostsOverview } from "./PostsOverview"
 import { Pagination } from "@mantine/core"
 import { useState, useEffect } from "react"
-import { getPostsById } from "@/app/api/Lecture/router"
+import { getLectureDetailsById } from "@/app/api/Lecture/router"
 import style from './Posts.module.css'
 
 interface postsPaginationProps{
@@ -57,30 +57,26 @@ export function PostsWithPagination(props:postsPaginationProps){
         const fetchPosts = async () => {
             try{
                 if(props.lecture_id){
-                    const response = await getPostsById(props.lecture_id,activePage,15)
-                    if(response.ok){
-                        const data = await response.json()
-                        setTotalPages(data.total_page)
-                        //将接收到的数据映射到数组中
-                        //只保留需要的数据，剩下的数据全部丢弃
-                        const extratedData = data.posts.map((post: PostInResponse) => ({
-                            postId: post.id,
-                            publishDate: post.created_at,
-                            title: post.title,
-                            authorId: post.author_id,
-                            author: post.author_name,
-                            avatarPath: post.author_avatar_path,
-                            replyNum: post.comments.length
-                        }))
-                        //
-                        console.log(extratedData)
-                        //
-                        setPosts(extratedData)
-                    }else{
-                        throw new Error("response is not ok!")
-                    }
+                    const response = await getLectureDetailsById(props.lecture_id,activePage,15)
+                    console.log('返回数据成功')
+                    const data = response
+                    setTotalPages(data.total_page)
+                    //将接收到的数据映射到数组中
+                    //只保留需要的数据，剩下的数据全部丢弃
+                    const extratedData = data.posts.map((post: PostInResponse) => ({
+                        postId: post.id,
+                        publishDate: post.created_at,
+                        title: post.title,
+                        authorId: post.author_id,
+                        author: post.author_name,
+                        avatarPath: post.author_avatar_path,
+                        replyNum: post.comments.length
+                    }))
+                    //
+                    console.log(extratedData)
+                    //
+                    setPosts(extratedData)
                 }
-                console.error("lecture id invalid!")
             }catch(error){
                 console.error(`fetch posts error! ${error}`)
             }
@@ -105,8 +101,8 @@ export function PostsWithPagination(props:postsPaginationProps){
                     ></PostsOverview>
                 ))
             }
-            <div className={style.pagination}>
-                <Pagination total={totalPages} value={activePage} onChange={setActivePage}></Pagination>
+            <div className={style.paginationDiv}>
+                <Pagination total={totalPages} value={activePage} onChange={setActivePage} className={style.pagination}></Pagination>
             </div>
         </div>
     )

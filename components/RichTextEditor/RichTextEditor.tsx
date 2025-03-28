@@ -64,12 +64,24 @@ export const RichTextEditor = forwardRef((props, ref) => {
         
     const handleImageUpload = async (file: File) => {
         if (!file || !editor) return
-    
-        // 1. 上传图片，返回 URL
-        const url = await uploadImage(file)
-    
-        // 2. 插入图片
-        editor.chain().focus().setImage({ src: url }).run()
+
+        try{
+          const url = await uploadImage(file)
+          //console.log(url)
+
+          if(url){
+            if(url){
+              // 插入图片
+              editor.chain().focus().setImage({ src: url }).run()
+            }else{
+              console.error("上传失败,未返回有效URL")
+            }
+          }
+        }catch(error){
+          console.log("upload image error")
+          console.log(error)
+        }       
+        
     }
 
     //手动插入mention并且@Athena
@@ -151,15 +163,25 @@ export const RichTextEditor = forwardRef((props, ref) => {
     )
 })
 
-const uploadImage = async (file: File): Promise<string> => {
-    console.log('uploading image')
-    //具体逻辑
+const uploadImage = async (file: File):Promise<string> => {
+    //console.log('uploading image')
 
-    return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve('https://via.placeholder.com/400x300?text=Uploaded+Image')
-        }, 1000)
-      })
+    //具体逻辑
+    const url = '/backend/post/add_image'
+    const formData = new FormData()
+    formData.append('image', file)
+    const response = await fetch(url, {
+      method: 'POST', // 确保是 POST 方法
+      body: formData, // 这里一定要传 FormData
+    })
+    
+    if( response.ok ){
+      const url = await response.text()
+      //console.log(url)
+      return url
+    }else{
+      return ""
+    }
 }
 
 /*
@@ -173,7 +195,7 @@ const fetchUsers = async (query: string) => {
   })
   try{
     
-    const url = `/user/search-users?${data.toString()}`
+    const url = `/backend/user/search-users?${data.toString()}`
     const response = await fetch(url, {
       method: 'GET'
     })
@@ -199,7 +221,7 @@ const suggestion = {
     //异步请求
     if(query){
       const users = await fetchUsers(query)
-      console.log(users.users)
+      //console.log(users.users)
       return users.users.map((user: { username: any; user_id: any; }) => ({
         label: user.username,
         id: user.user_id

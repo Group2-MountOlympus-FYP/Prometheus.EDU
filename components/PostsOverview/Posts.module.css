@@ -36,4 +36,18 @@
     display: flex;
     margin: auto;
 }
+.paginationDiv{
+    display: flex;
+    justify-content: center;
+}
+.pagination{
+    justify-content: center;
+}
+.title{
+    cursor: pointer;
+    color: #00053b;
+}
+.title:hover{
+    text-decoration: underline;
+}
   
