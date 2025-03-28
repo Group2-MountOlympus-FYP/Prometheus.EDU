@@ -57,18 +57,18 @@ export function SignPanel({onExitClick = () => {}} : signPanelProps){
 
                     <tr className={`register-state ${signType == 'register' ? "hidden" : "" }`}>
                         <td>
-                            <div className="login-opt">
-                                <span className="login-ask">{getText('loginask')}</span>
-                                <span className="login" onClick={switchRegister}>{getText('signin')}</span>
-                            </div>
+                        <div className="login-opt">
+                            <span className="login-ask">{getText('loginask')}</span>
+                            <span className="login" onClick={switchRegister}>{getText('signin')}</span>
+                        </div>
                         </td>
                     </tr>
                     <tr className={`login-state ${signType == 'login' ? "hidden" : "" }`}>
                         <td>
-                            <div className="register-opt">
-                                <span className="register-ask">{getText('registerask')}</span>
-                                <span className="register" onClick={switchLogin}>{getText('signup')}</span>
-                            </div>
+                        <div className="register-opt">
+                            <span className="register-ask">{getText('registerask')}</span>
+                            <span className="register" onClick={switchLogin}>{getText('signup')}</span>
+                        </div>
                         </td>
                     </tr>
 

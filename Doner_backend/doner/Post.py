@@ -8,7 +8,8 @@ class Post(ReplyTarget):
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    composer_id= db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    lecture_id = db.Column(db.Integer, db.ForeignKey('lecture.id'))
+    lecture = db.relationship('Lecture',  backref='posts', foreign_keys=lecture_id)
 
 
 
@@ -60,11 +61,11 @@ class Post(ReplyTarget):
         return len(self.favorited_by.all())
     
     def get_all_comments(self):
-        return Comment.query.filter_by(post_id=self.id).all()
+        return Comment.query.filter_by(parent_target_id=self.id).all()
     
     @property
     def comments(self):
-        return Comment.query.filter_by(post_id=self.id).all()
+        return Comment.query.filter_by(parent_target_id=self.id).all()
     
     @property
     def comments_count(self):

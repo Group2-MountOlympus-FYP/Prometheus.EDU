@@ -11,7 +11,7 @@ def get_video(filename):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     parent_dir = os.path.dirname(current_dir)
 
-    video_path = os.path.join(parent_dir, 'static', 'Video', filename)
+    video_path = os.path.join(parent_dir, 'static', 'video', filename)
     file_size = os.path.getsize(video_path)
 
     # 获取客户端请求的Range头部

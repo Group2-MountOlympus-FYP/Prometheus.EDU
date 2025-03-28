@@ -25,7 +25,7 @@ followers = db.Table('followers',
                      )
 
 
-class UserStatus(Enum):
+class UserStatus(str,Enum):
     NORMAL = auto()
     VIP = auto()
     BANNED = auto()
@@ -39,7 +39,7 @@ class User(db.Model):
     birthdate = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     password_hash = db.Column(db.String(120), nullable=False)
-    posts = db.relationship('Post', backref='composer')
+    content = db.relationship('ReplyTarget', backref='author')
     avatar = db.Column(db.String(120), nullable=False,
                        default='https://ik.imagekit.io/vhboyr/agent-halloween-japanese-man-ninja-svgrepo-com_w4qyshQea.svg')
     favorited_posts = db.relationship('Post', secondary=favorites, lazy='dynamic',

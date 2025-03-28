@@ -1,5 +1,5 @@
 export async function GetCSRF() {
-    const url = '/login/get_csrf';
+    const url = '/backend/login/get_csrf';
     try {
         const response = await fetch(url, {
             method: 'GET',
@@ -44,9 +44,9 @@ export function GetCookie(name:string) {
 export function setLocalStorage(key:any, value:any){
     if( typeof window !== "undefined" ){
         //console.log(`Saving ${value} in ${key}`)
-        if(getLocalStorage('cookieConsent') !== 'true'){
-            return
-        }
+        // if(getLocalStorage('cookieConsent') !== 'true'){
+        //     return
+        // }
         localStorage.setItem(key, value);
     }
 }

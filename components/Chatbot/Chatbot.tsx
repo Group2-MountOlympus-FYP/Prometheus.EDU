@@ -1,244 +1,235 @@
-import { Button, Input } from '@mantine/core';
-import { useState } from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faComment, faTimes } from '@fortawesome/free-solid-svg-icons';
-import { Loader } from '@mantine/core';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  Box,
+  Paper,
+  TextInput,
+  Button,
+  Group,
+  Text,
+  ScrollArea,
+  Loader,
+  Avatar,
+  Container,
+  Title,
+  Alert,
+  Stack,
+} from '@mantine/core';
+import { IconSend, IconRobot, IconUser, IconInfoCircle } from '@tabler/icons-react';
+import { generateAnswer } from '@/app/api/Athena/router';
+import './Chatbot.css';
 
+// 定义消息类型
 interface Message {
-  sender: 'user' | 'bot';
+  id: string;
   text: string;
+  sender: 'user' | 'bot';
+  timestamp: Date;
 }
 
-export function ChatbotWindow() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      sender: 'bot',
-      text: '您好！我是您的 AI 顾问。您可以问我跟可持续发展有关的问题。',
-    },
-  ]);
-  const [input, setInput] = useState<string>('');
-  const [loading, setLoading] = useState<boolean>(false);
-  const [isChatbotOpen, setIsChatbotOpen] = useState<boolean>(false);
+const Chatbot: React.FC = () => {
+  // 状态管理：消息、输入框、加载状态和错误信息
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // 用于滚动到聊天底部的引用
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const toggleChatbot = () => {
-    setIsChatbotOpen(!isChatbotOpen);
+  // 当消息更新时滚动到底部
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSendMessage = async (): Promise<void> => {
-    if (input.trim() === '') return;
+  // 生成唯一ID
+  const generateId = () => {
+    return Date.now().toString(36) + Math.random().toString(36).substring(2);
+  };
 
-    // Add the user's message to the chat
-    const newMessages: Message[] = [...messages, { sender: 'user', text: input }];
-    setMessages(newMessages);
+  // 发送消息处理函数
+  const handleSendMessage = async () => {
+    if (!input.trim()) return;
+    
+    // 添加用户消息到聊天
+    const userMessage: Message = {
+      id: generateId(),
+      text: input,
+      sender: 'user',
+      timestamp: new Date(),
+    };
+    
+    setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput('');
-    setLoading(true);
-
+    setIsLoading(true);
+    setError(null);
+    
     try {
-      // Directly call the LLM API with a POST request
-      const response = await fetch('', { // TODO Add the LLM API endpoint
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_message: input }),
-      });
-
+      // 使用router中的方法发送请求到后端
+      const response = await generateAnswer(input);
+      
       if (!response.ok) {
-        throw new Error('Failed to fetch chatbot response');
+        throw new Error(`Error: ${response.status}`);
       }
-
-      // Get the response text from the LLM API
+      
       const data = await response.json();
-      let botMessage = data.text;
-
-      // Remove <ref> tags from the bot's response
-      botMessage = botMessage.replace(/<ref>.*?<\/ref>/g, '');
-
-      // Add the bot's response to the chat
-      setMessages((prevMessages) => [...prevMessages, { sender: 'bot', text: botMessage }]);
-    } catch (error) {
-      console.error('Error:', error);
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { sender: 'bot', text: '抱歉，似乎出现了一些问题。请稍后再试。' },
-      ]);
+      
+      // 添加机器人回复到聊天
+      const botMessage: Message = {
+        id: generateId(),
+        text: data.result,
+        sender: 'bot',
+        timestamp: new Date(),
+      };
+      
+      setMessages(prevMessages => [...prevMessages, botMessage]);
+    } catch (err) {
+      console.error('Error sending message:', err);
+      setError('很抱歉，处理您的请求时出现了错误。请稍后再试。');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
+  // 处理回车键按下事件
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+
+  // 建议问题列表
+  const suggestedQuestions = [
+    "什么是光合作用？",
+    "中国四大发明是什么？",
+    "如何解一元二次方程？",
+    "牛顿第三定律是什么？"
+  ];
+
+  // 处理点击建议问题
+  const handleSuggestedQuestion = (question: string) => {
+    setInput(question);
+  };
+
   return (
-    <>
-      {/* Floating Button */}
-      <div
-        style={{
-          position: 'fixed',
-          bottom: '20px',
-          right: '20px',
-          padding: '10px',
-          borderRadius: '30px',
-          backgroundColor: 'rgba(55, 120, 100, 0.8)', // 半透明背景色
-          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          flexDirection: 'column',
-          zIndex: 1000,
-        }}
-      >
-        <div
-          style={{
-            position: 'absolute',
-            bottom: '32px', // 斜下偏移
-            right: '8px',
-            width: '35px',
-            height: '35px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(55, 230, 100, 1)',
-            zIndex: -1, // 置于半透明按钮下方
-          }}
-        ></div>
-
-        <Button
-          onClick={toggleChatbot}
-          style={{
-            width: '60px',
-            height: '60px',
-            borderRadius: '50%',
-            backgroundColor: 'rgba(55, 180, 100, 0.68)',
-            color: 'white',
-            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.3)',
-            border: 'none',
-            cursor: 'pointer',
-            fontSize: '24px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backdropFilter: 'blur(2px)',
-            WebkitBackdropFilter: 'blur(2px)',
-          }}
-        >
-          <FontAwesomeIcon icon={faComment} />
-        </Button>
-        <span
-          style={{
-            fontSize: '15px',
-            color: 'white',
-            userSelect: 'none',
-            fontWeight: 'bold',
-            paddingTop: '8px',
-          }}
-        >
-          AI 问答
-        </span>
-      </div>
-
-      {/* Chatbot Window */}
-      {isChatbotOpen && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: 'white',
-            padding: '20px',
-            boxShadow: '0px 0px 10px rgba(0,0,0,0.3)',
-            borderRadius: '8px',
-            width: '620px',
-            zIndex: 1000,
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              marginBottom: '10px',
-            }}
-          >
-            <h2 style={{ margin: 0 }}>碳交易 AI 顾问</h2>
-
-            <button
-              onClick={toggleChatbot}
-              style={{
-                backgroundColor: 'transparent',
-                border: 'none',
-                color: 'black',
-                cursor: 'pointer',
-                fontSize: '18px',
-              }}
-            >
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
-          </div>
-
-          {/* Chatbot Component */}
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              width: '580px',
-              height: '400px',
-              border: '1px solid #ccc',
-              borderRadius: '8px',
-              padding: '10px',
-            }}
-          >
-            <div
-              style={{
-                flex: 1,
-                maxHeight: '300px',
-                overflowY: 'auto',
-                marginBottom: '10px',
-                padding: '10px',
-                backgroundColor: '#f9f9f9',
-                borderRadius: '8px',
-              }}
-            >
-              {messages.map((msg, index) => (
-                <div
-                  key={index}
-                  style={{
-                    textAlign: msg.sender === 'user' ? 'right' : 'left',
-                    marginBottom: '10px',
-                  }}
-                >
-                  <div
-                    style={{
-                      display: 'inline-block',
-                      padding: '8px',
-                      borderRadius: '8px',
-                      backgroundColor: msg.sender === 'user' ? '#018a53' : '#e0e0e0',
-                      color: msg.sender === 'user' ? '#fff' : '#000',
-                    }}
+    <Container className="chat-container" size="lg">
+      <Paper shadow="sm" p="md" withBorder className="chat-paper">
+        <Title order={2} className="chat-title">
+          <IconRobot size={24} /> AI 学习助手
+        </Title>
+        
+        <Text color="dimmed" size="sm" mb="lg">
+          有任何学习上的问题，都可以向我提问！
+        </Text>
+        
+        {/* 聊天消息区域 */}
+        <ScrollArea className="chat-messages" offsetScrollbars scrollbarSize={6}>
+          {/* 欢迎信息（当没有消息时显示） */}
+          {messages.length === 0 && (
+            <Stack spacing="md">
+              <Alert 
+                icon={<IconInfoCircle size={16} />} 
+                title="如何使用学习助手" 
+                color="blue" 
+                radius="md"
+              >
+                你可以问我任何学科问题，我会尽力给你详细解答。
+              </Alert>
+              
+              <Text size="sm" fw={500}>你可以尝试提问：</Text>
+              <Group spacing="xs">
+                {suggestedQuestions.map((question) => (
+                  <Button
+                    key={question}
+                    variant="light"
+                    size="xs"
+                    onClick={() => handleSuggestedQuestion(question)}
                   >
-                    {msg.text}
+                    {question}
+                  </Button>
+                ))}
+              </Group>
+            </Stack>
+          )}
+          
+          {/* 显示消息记录 */}
+          {messages.map((message) => (
+            <Box
+              key={message.id}
+              className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
+            >
+              <Group align="flex-start" spacing="xs">
+                <Avatar
+                  radius="xl"
+                  size="md"
+                  color={message.sender === 'user' ? 'blue' : 'green'}
+                >
+                  {message.sender === 'user' ? <IconUser size={18} /> : <IconRobot size={18} />}
+                </Avatar>
+                <Box className="message-content">
+                  <div className={message.sender === 'bot' ? 'markdown-content' : 'message-text'}>
+                    {message.text}
                   </div>
-                </div>
-              ))}
-              {loading && <div style={{ textAlign: 'left', color: '#555' }}><Loader color="teal" size="sm" type="dots" /> </div>}
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <Input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
-                placeholder="请输入问题"
-                style={{
-                  flex: 1,
-                  padding: '8px',
-                  marginRight: '5px',
-                }}
-              />
-              <Button onClick={handleSendMessage} variant="filled" color="teal">
-                发送
+                  <Text size="xs" color="dimmed" className="message-time">
+                    {message.timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                  </Text>
+                </Box>
+              </Group>
+            </Box>
+          ))}
+          
+          {/* 加载指示器 */}
+          {isLoading && (
+            <Box className="message bot-message">
+              <Group align="flex-start" spacing="xs">
+                <Avatar radius="xl" size="md" color="green">
+                  <IconRobot size={18} />
+                </Avatar>
+                <Box className="message-content loading-content">
+                  <Loader size="sm" />
+                </Box>
+              </Group>
+            </Box>
+          )}
+          
+          {/* 错误信息 */}
+          {error && (
+            <Alert color="red" title="发生错误" className="error-alert">
+              {error}
+            </Alert>
+          )}
+          
+          <div ref={messagesEndRef} />
+        </ScrollArea>
+        
+        {/* 输入区域 */}
+        <Box className="input-area">
+          <TextInput
+            className="message-input"
+            placeholder="输入你想问的问题..."
+            value={input}
+            onChange={(e) => setInput(e.currentTarget.value)}
+            onKeyDown={handleKeyPress}
+            disabled={isLoading}
+            rightSection={
+              <Button
+                color="blue"
+                radius="xl"
+                onClick={handleSendMessage}
+                disabled={!input.trim() || isLoading}
+              >
+                <IconSend size={16} />
               </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </>
+            }
+          />
+        </Box>
+      </Paper>
+    </Container>
   );
-}
+};
 
+export default Chatbot;
