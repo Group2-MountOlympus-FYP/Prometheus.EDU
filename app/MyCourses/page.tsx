@@ -3,6 +3,9 @@
 import { useEffect, useState } from 'react';
 import { getMyCourses } from '@/app/api/MyCourses/router';
 import { Card, Image, Text, Badge, Group, Stack, Loader } from '@mantine/core';
+import { useRouter } from 'next/navigation';
+
+
 
 interface Course {
   id: number;
@@ -23,6 +26,8 @@ interface EnrolledCourse {
 export default function MyCoursesPage() {
   const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
 
   useEffect(() => {
     getMyCourses()
@@ -45,7 +50,8 @@ export default function MyCoursesPage() {
     <Stack p="lg">
       <Text size="xl" fw={700}>My Courses</Text>
       {courses.map((item, idx) => (
-        <Card key={idx} shadow="sm" padding="lg" radius="md" withBorder>
+        <Card key={idx} shadow="sm" padding="lg" radius="md" withBorder
+              onClick={() => router.push(`/video/120`)}>
           <Group align="flex-start" justify="space-between">
             <Stack gap="xs">
               <Text fw={600} size="lg">{item.course.course_name}</Text>
