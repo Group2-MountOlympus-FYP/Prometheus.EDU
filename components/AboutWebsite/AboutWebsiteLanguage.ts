@@ -6,11 +6,11 @@ type Translations = {
 
 const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
-        welcome: "Welcome to Prometheus.EDU",
+        welcome: "A Comprehensive Online Education Platform",
         intro: "A Comprehensive Online Education Platform"
       },
       zh: {
-        welcome: "欢迎来到Prometheus.EDU",
+        welcome: "综合在线教育平台",
         intro: "综合在线教育平台"        
       },
 }

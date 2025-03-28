@@ -4,12 +4,34 @@
     background-position: center;
     height: 55vh;
     display: flex;
+    position: relative;
     justify-self: center;
     width: 100%;
 }
+.bgLight{
+    background-image: url(./../../public/light.png);
+    background-size: cover;
+    height: 75vh;
+    width: 75vh;
+    display: flex;
+    position: absolute;
+    top: -35%;
+    right: 2.5%;
+}
+.iconImg{
+    background-image: url(./../../public/main-logo.png);
+    background-size: cover;
+    height: 35vh;
+    width: 35vh;
+    display: flex;
+    position: absolute;
+    top: 20%;
+    right: 7.5%;
+}
 .intro{
     margin: auto;
-    /* background-color: rgba(105, 105, 105, 0.2); */
-    text-align: center;
-    padding-right: 10px;
+    display: flex;
+    position: absolute;
+    top: 20%;
+    left: 10%;
 }
