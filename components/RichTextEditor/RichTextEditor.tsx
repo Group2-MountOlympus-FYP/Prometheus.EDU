@@ -64,13 +64,23 @@ export const RichTextEditor = forwardRef((props, ref) => {
         
     const handleImageUpload = async (file: File) => {
         if (!file || !editor) return
-    
-        // 1. 上传图片，返回 URL
-        const url = await uploadImage(file)
-        if(url){
-          // 2. 插入图片
-          editor.chain().focus().setImage({ src: url }).run()
-        }
+
+        try{
+          const url = await uploadImage(file)
+          
+          if(url){
+            if(url){
+              // 插入图片
+              editor.chain().focus().setImage({ src: url }).run()
+            }else{
+              console.error("上传失败,未返回有效URL")
+            }
+          }
+        }catch(error){
+          console.log("upload image error")
+          console.log(error)
+        }       
+        
     }
 
     //手动插入mention并且@Athena
@@ -152,29 +162,23 @@ export const RichTextEditor = forwardRef((props, ref) => {
     )
 })
 
-const uploadImage = async (file: File) => {
+const uploadImage = async (file: File):Promise<string> => {
     console.log('uploading image')
 
     //具体逻辑
     const url = '/backend/post/add_image'
     const response = await fetch(url, {
-      method: 'GET',
+      method: 'POST',
       body: file,
     })
-    try{
-      if( response.ok ){
-        const resData = await response.json()
-        console.log(resData)
-        return ''
-      }else{
-        throw new Error('Upload image fail')
-      }
-    }catch(e){
-      console.log(e)
+    
+    if( response.ok ){
+      const resData = await response.json()
+      console.log(resData)
+      return ''
+    }else{
+      return ""
     }
-    
-    
-    
 }
 
 /*
