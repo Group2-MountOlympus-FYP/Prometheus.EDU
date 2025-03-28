@@ -17,8 +17,6 @@ export default function Course(){
     //控制发帖按钮
     const [opened, {open, close}] = useDisclosure(false)
 
-    const [titleLoading, setTitleLoading] = useState(true)
-    const [videoSelectorLoading, setVideoSelectorLoading] = useState(true)
     const [postsLoading, setPostsLoading] = useState(false)
 
     const searchParams = useSearchParams()
@@ -103,18 +101,6 @@ export default function Course(){
             <Skeleton height={'500px'} animate={true} hidden={!postsLoading}></Skeleton>
         </div>
         </Container>
-    )
-}
-
-const VideoSelector = ( {onLoadComplete}: {onLoadComplete: () => void } ) => {
-    useEffect(() => {
-        //加载完成
-        //onLoadComplete()
-    })
-    return (
-        <div>
-
-        </div>
     )
 }
 
