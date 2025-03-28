@@ -18,21 +18,21 @@ import {
   ActionIcon,
   List
 } from '@mantine/core';
-import {
-  IconSend,
-  IconRobot,
-  IconUser,
-  IconInfoCircle,
-  IconDownload,
-  IconDotsVertical,
+import { 
+  IconSend, 
+  IconRobot, 
+  IconUser, 
+  IconInfoCircle, 
+  IconDownload, 
+  IconDotsVertical, 
   IconSearch,
   IconBrain
 } from '@tabler/icons-react';
-import {
-  generateAnswer,
-  generateWithoutRAG,
-  retrieveDocumentsOnly,
-  generateReport
+import { 
+  generateAnswer, 
+  generateWithoutRAG, 
+  retrieveDocumentsOnly, 
+  generateReport 
 } from '@/app/api/Athena/router';
 import './Chatbot.css';
 
@@ -54,7 +54,7 @@ const Chatbot: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   // 查询模式: 'rag' (默认), 'norag', 'docs'
   const [queryMode, setQueryMode] = useState<'rag' | 'norag' | 'docs'>('rag');
-
+  
   // 用于滚动到聊天底部的引用
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -77,11 +77,11 @@ const Chatbot: React.FC = () => {
     try {
       setIsLoading(true);
       const response = await generateReport(query);
-
+      
       if (!response.ok) {
         throw new Error(`生成报告失败: ${response.status} ${response.statusText}`);
       }
-
+      
       // 获取 blob 数据并创建下载链接
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -93,10 +93,10 @@ const Chatbot: React.FC = () => {
       a.click();
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
-
+      
     } catch (err: any) {
       console.error('生成报告时出错:', err);
-      setError(`生成PDF报告失败: ${err.message}`);
+      setError(`Failed to generate PDF report: ${err.message}`);
     } finally {
       setIsLoading(false);
     }
@@ -108,14 +108,14 @@ const Chatbot: React.FC = () => {
     if (typeof data.result === 'string') {
       return data.result;
     }
-
+    
     // 如果data.result是对象且包含result字段
     if (data.result && typeof data.result === 'object' && 'result' in data.result) {
       return typeof data.result.result === 'string' 
         ? data.result.result 
         : JSON.stringify(data.result.result);
     }
-
+    
     // 如果没有找到合适的文本，则返回整个结果的字符串形式
     return JSON.stringify(data.result);
   };
@@ -123,7 +123,7 @@ const Chatbot: React.FC = () => {
   // 发送消息处理函数
   const handleSendMessage = async () => {
     if (!input.trim()) return;
-
+    
     // 添加用户消息到聊天
     const userMessage: Message = {
       id: generateId(),
@@ -132,17 +132,17 @@ const Chatbot: React.FC = () => {
       timestamp: new Date(),
       mode: queryMode
     };
-
+    
     setMessages(prevMessages => [...prevMessages, userMessage]);
     const currentQuery = input.trim();
     setInput('');
     setIsLoading(true);
     setError(null);
-
+    
     try {
       let response;
       let data;
-
+      
       // 根据不同的查询模式选择不同的API
       switch (queryMode) {
         case 'rag':
@@ -152,7 +152,7 @@ const Chatbot: React.FC = () => {
           }
           data = await response.json();
           console.log("API返回数据:", data); // 调试日志
-
+          
           // 添加机器人回复到聊天 - 使用提取函数处理嵌套结构
           setMessages(prevMessages => [...prevMessages, {
             id: generateId(),
@@ -162,7 +162,7 @@ const Chatbot: React.FC = () => {
             mode: 'rag'
           }]);
           break;
-
+          
         case 'norag':
           response = await generateWithoutRAG(currentQuery);
           if (!response.ok) {
@@ -170,7 +170,7 @@ const Chatbot: React.FC = () => {
           }
           data = await response.json();
           console.log("非RAG API返回数据:", data); // 调试日志
-
+          
           // 添加机器人回复到聊天 - 使用提取函数处理嵌套结构
           setMessages(prevMessages => [...prevMessages, {
             id: generateId(),
@@ -180,7 +180,7 @@ const Chatbot: React.FC = () => {
             mode: 'norag'
           }]);
           break;
-
+          
         case 'docs':
           response = await retrieveDocumentsOnly(currentQuery);
           if (!response.ok) {
@@ -188,7 +188,7 @@ const Chatbot: React.FC = () => {
           }
           data = await response.json();
           console.log("文档检索API返回数据:", data); // 调试日志
-
+          
           // 确保documents是字符串数组
           let documents: string[] = [];
           if (data.documents && Array.isArray(data.documents)) {
@@ -196,11 +196,11 @@ const Chatbot: React.FC = () => {
               typeof doc === 'string' ? doc : JSON.stringify(doc)
             );
           }
-
+          
           // 添加包含检索文档的回复
           setMessages(prevMessages => [...prevMessages, {
             id: generateId(),
-            text: "以下是与您的问题相关的文档片段：",
+            text: "Here are document excerpts relevant to your question:",
             sender: 'bot',
             timestamp: new Date(),
             mode: 'docs',
@@ -210,18 +210,18 @@ const Chatbot: React.FC = () => {
       }
     } catch (err: any) {
       console.error('发送消息时出错:', err);
-
+      
       // 显示更具体的错误信息
       if (err.message.includes('无法连接到后端服务器')) {
-        setError('无法连接到AI服务器。请确保后端服务器已启动。如果问题持续存在，请联系技术支持。');
+        setError('Unable to connect to AI server. Please ensure the backend server is running. If the problem persists, contact technical support.');
       } else if (err.message.includes('服务器响应错误')) {
-        setError(err.message);
+        setError(err.message.replace('服务器响应错误', 'Server response error'));
       } else if (err.message.includes('提交的表单数据无效')) {
-        setError('提交的表单数据无效。请确保您的问题不为空且格式正确。');
+        setError('The submitted form data is invalid. Please ensure your question is not empty and is properly formatted.');
       } else if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
-        setError('网络连接失败。请检查您的网络连接，并确保后端服务器正在运行。');
+        setError('Network connection failed. Please check your network connection and ensure the backend server is running.');
       } else {
-        setError(`处理您的请求时出现了错误: ${err.message}`);
+        setError(`An error occurred while processing your request: ${err.message}`);
       }
     } finally {
       setIsLoading(false);
@@ -238,10 +238,10 @@ const Chatbot: React.FC = () => {
 
   // 建议问题列表
   const suggestedQuestions = [
-    "什么是光合作用？",
-    "中国四大发明是什么？",
-    "如何解一元二次方程？",
-    "牛顿第三定律是什么？"
+    "What is photosynthesis?",
+    "What are the Four Great Inventions of ancient China?",
+    "How do I solve a quadratic equation?",
+    "What is Newton's Third Law?"
   ];
 
   // 处理点击建议问题
@@ -265,13 +265,13 @@ const Chatbot: React.FC = () => {
   // 获取查询模式的标签文本
   const getModeLabel = (mode?: 'rag' | 'norag' | 'docs') => {
     switch (mode) {
-      case 'rag': return '使用RAG';
-      case 'norag': return '不使用RAG';
-      case 'docs': return '仅检索文档';
+      case 'rag': return 'Using RAG';
+      case 'norag': return 'Without RAG';
+      case 'docs': return 'Documents Only';
       default: return '';
     }
   };
-
+  
   // 安全渲染文本内容，确保不会直接渲染对象
   const renderMessageText = (text: any) => {
     if (typeof text === 'string') {
@@ -283,15 +283,16 @@ const Chatbot: React.FC = () => {
       return JSON.stringify(text);
     }
   };
-
+  
   return (
     <Container className="chat-container" size="lg">
       <Paper shadow="sm" p="md" withBorder className="chat-paper">
         <Group position="apart" mb="md">
           <Title order={2} className="chat-title">
-            <IconRobot size={24} /> AI 学习助手
+            <IconRobot size={24} /> AthenaTutor
           </Title>
-
+          <Text color="dimmed" size="xs" mb="lg"> powered by Athena Intelligence</Text>
+          
           <Tabs
             value={queryMode}
             onChange={(value) => setQueryMode(value as 'rag' | 'norag' | 'docs')}
@@ -299,17 +300,17 @@ const Chatbot: React.FC = () => {
             variant="pills"
           >
             <Tabs.List>
-              <Tabs.Tab value="rag" icon={<IconBrain size={16} />}>使用RAG</Tabs.Tab>
-              <Tabs.Tab value="norag" icon={<IconRobot size={16} />}>不使用RAG</Tabs.Tab>
-              <Tabs.Tab value="docs" icon={<IconSearch size={16} />}>仅检索文档</Tabs.Tab>
+              <Tabs.Tab value="rag" icon={<IconBrain size={16} />}>Use RAG</Tabs.Tab>
+              <Tabs.Tab value="norag" icon={<IconRobot size={16} />}>No RAG</Tabs.Tab>
+              <Tabs.Tab value="docs" icon={<IconSearch size={16} />}>Docs Only</Tabs.Tab>
             </Tabs.List>
           </Tabs>
         </Group>
-
+        
         <Text color="dimmed" size="sm" mb="lg">
-          有任何学习上的问题，都可以向我提问！当前模式: <b>{getModeLabel(queryMode)}</b>
+          Feel free to ask me any learning questions! Current mode: <b>{getModeLabel(queryMode)}</b>
         </Text>
-
+        
         {/* 聊天消息区域 */}
         <ScrollArea className="chat-messages" offsetScrollbars scrollbarSize={6}>
           {/* 欢迎信息（当没有消息时显示） */}
@@ -317,22 +318,22 @@ const Chatbot: React.FC = () => {
             <Stack spacing="md">
               <Alert 
                 icon={<IconInfoCircle size={16} />} 
-                title="如何使用学习助手" 
+                title="How to Use the Learning Assistant" 
                 color="blue" 
                 radius="md"
               >
-                <Text mb="xs">你可以问我任何学科问题，我会尽力给你详细解答。</Text>
+                <Text mb="xs">You can ask me any subject questions, and I'll do my best to provide detailed answers.</Text>
                 <Box>
-                  <Text><b>使用模式说明:</b></Text>
+                  <Text><b>Mode Descriptions:</b></Text>
                   <List spacing="xs" size="sm">
-                    <List.Item><b>使用RAG</b>: 基于相关学习材料生成详细解答</List.Item>
-                    <List.Item><b>不使用RAG</b>: 直接生成回答，不依赖学习材料</List.Item>
-                    <List.Item><b>仅检索文档</b>: 仅返回与问题相关的参考资料</List.Item>
+                    <List.Item><b>Use RAG</b>: Generate detailed answers based on relevant learning materials</List.Item>
+                    <List.Item><b>No RAG</b>: Generate answers directly without using learning materials</List.Item>
+                    <List.Item><b>Docs Only</b>: Only return reference materials relevant to your question</List.Item>
                   </List>
                 </Box>
               </Alert>
               
-              <Text size="sm" fw={500}>你可以尝试提问：</Text>
+              <Text size="sm" fw={500}>You can try asking:</Text>
               <Group spacing="xs">
                 {suggestedQuestions.map((question) => (
                   <Button
@@ -366,7 +367,7 @@ const Chatbot: React.FC = () => {
                 <Box className="message-content">
                   {message.mode && message.sender === 'user' && (
                     <Text size="xs" fw={500} color="dimmed" mb={4}>
-                      请求模式: {getModeLabel(message.mode)}
+                      Request mode: {getModeLabel(message.mode)}
                     </Text>
                   )}
                   
@@ -401,7 +402,7 @@ const Chatbot: React.FC = () => {
                               typeof message.text === 'string' ? message.text : JSON.stringify(message.text)
                             )}
                           >
-                            生成PDF报告
+                            Generate PDF Report
                           </Menu.Item>
                         </Menu.Dropdown>
                       </Menu>
@@ -428,7 +429,7 @@ const Chatbot: React.FC = () => {
           
           {/* 错误信息 */}
           {error && (
-            <Alert color="red" title="发生错误" className="error-alert">
+            <Alert color="red" title="Error" className="error-alert">
               {error}
             </Alert>
           )}
@@ -440,7 +441,7 @@ const Chatbot: React.FC = () => {
         <Box className="input-area">
           <TextInput
             className="message-input"
-            placeholder="输入你想问的问题..."
+            placeholder="Enter your question..."
             value={input}
             onChange={(e) => setInput(e.currentTarget.value)}
             onKeyDown={handleKeyPress}
