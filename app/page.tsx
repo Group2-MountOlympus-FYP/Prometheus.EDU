@@ -12,7 +12,7 @@ import Link from 'next/link';
 
 export default function HomePage() {
   const allCourses: CourseCardInfo[] = [
-    { courseId: 115, url: 'placeholder.png', name: 'Program Design', category: 'Computer Science', institute: "Beijing University of Technology" },
+    { courseId: 115, url: 'placeholder.png', name: 'Computer Programming', category: 'Computer Science', institute: "Beijing University of Technology" },
     { url: 'placeholder.png', name: 'Python', category: 'Computer Science', institute: "Beijing University of Technology" },
     { url: 'placeholder.png', name: 'Java', category: 'Computer Science', institute: "Beijing University of Technology" },
     { url: 'placeholder.png', name: 'C++', category: 'Computer Science', institute: "Beijing University of Technology" },

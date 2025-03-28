@@ -9,12 +9,15 @@ import "./course_card.css";
 import {getEnrollDetailsById} from "@/app/api/Enroll/router";
 
 
+
 interface CourseHeaderProps {
   lectureId?: number;
 }
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
   const [data, setData] = useState<any>(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+
 
   useEffect(() => {
     getCourseDetailsById(lectureId)
@@ -47,9 +50,19 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
             )}
 
 
-            <Button color="indigo" size="md" className="enroll-button">
-              Enroll to this course
+            <Button
+              color={isEnrolled ? "gray" : "indigo"}
+              size="md"
+              className="enroll-button"
+              onClick={() => {
+                // 模拟调用 enroll 接口成功
+                setIsEnrolled(true);
+              }}
+              disabled={isEnrolled}
+            >
+              {isEnrolled ? "Enrolled" : "Enroll to this course"}
             </Button>
+
             <Text size="sm" color="dimmed">
               {data.enrollment_count || 0} people have enrolled
             </Text>

@@ -1,5 +1,5 @@
-import Course from './lecture'
+import Lecture from './lecture'
 
 export default function Page({ params }: { params: { lecture_id: string } }) {
-    return <Course lectureId={parseInt(params.lecture_id, 10)} />
+    return <Lecture lectureId={parseInt(params.lecture_id, 10)} />
 }
