@@ -6,7 +6,8 @@ import {
 import { IconStarFilled } from "@tabler/icons-react";
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import "./course_card.css";
-import CoursePic from "../../../public/course_pic.png";
+import {getEnrollDetailsById} from "@/app/api/Enroll/router";
+
 
 
 interface CourseHeaderProps {
@@ -15,6 +16,8 @@ interface CourseHeaderProps {
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
   const [data, setData] = useState<any>(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+
 
   useEffect(() => {
     getCourseDetailsById(lectureId)
@@ -30,9 +33,8 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
   if (!data) return null;
 
   return (
-    <Container size="lg" className="course-container">
-      <Grid align="center" gutter="xl" className="course-header">
-        <Grid.Col span={8}>
+    <div className="course-card">
+      <div className="course-left">
           <Stack>
             <Title order={1}>{data.course_name || "Course Name"}</Title>
             <Text size="lg" color="dimmed">{data.institution || "Institute Name"}</Text>
@@ -48,9 +50,19 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
             )}
 
 
-            <Button color="indigo" size="md" className="enroll-button">
-              Enroll to this course
+            <Button
+              color={isEnrolled ? "gray" : "indigo"}
+              size="md"
+              className="enroll-button"
+              onClick={() => {
+                // 模拟调用 enroll 接口成功
+                setIsEnrolled(true);
+              }}
+              disabled={isEnrolled}
+            >
+              {isEnrolled ? "Enrolled" : "Enroll to this course"}
             </Button>
+
             <Text size="sm" color="dimmed">
               {data.enrollment_count || 0} people have enrolled
             </Text>
@@ -65,23 +77,18 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
               ))}
             </Group>
           </Stack>
-        </Grid.Col>
-
-        <Grid.Col span={4}>
-          <Image
-            src={
-              typeof data.images?.[0] === "string"
-                ? data.images[0]
-                : "/course_pic.png"  // ✅ 前面加斜杠表示从 public 根路径开始
-            }
-            alt="Course Image"
-            radius="md"
-          />
+        </div>
 
 
-      </Grid.Col>
-      </Grid>
-    </Container>
+      <div className="course_right">
+        <Image
+          className="course_image"
+          src={typeof data.images?.[0] === "string" ? data.images[0] : "/course_pic.png"}
+          alt="Course Image"
+          radius="md"
+        />
+      </div>
+    </div>
   );
 };
 
