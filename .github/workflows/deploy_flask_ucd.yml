@@ -40,10 +40,9 @@ jobs:
           # Go to the deploy directory
           cd ~/Prometheus.EDU
 
-          # Pull the latest changes from the repository
           git fetch origin
           git checkout ${{ github.ref_name }}
-          git pull origin ${{ github.ref_name }}
+          git reset --hard origin/${{ github.ref_name }}
         
           # 安装其他依赖
           npm install
