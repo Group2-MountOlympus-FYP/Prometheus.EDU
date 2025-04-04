@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField
 from wtforms.validators import InputRequired
 
-from .athena_ta_core import TA_Client
+from .athena_ta_core import athena_client
 
 from dotenv import load_dotenv
 import os
@@ -19,9 +19,9 @@ load_dotenv()
 
 athena_bp = Blueprint('athena', __name__)
 
-ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
-                      directory='./doner/study_materials',
-                      model='gemini-2.0-flash')
+# athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
+#                        directory='./doner/study_materials',
+#                        model='gemini-2.0-flash')
 
 
 
@@ -39,14 +39,14 @@ def generate():
             return jsonify({"error": "Invalid form data"}), 400
         
         query = data['query']
-        result = ta_client.generate(query)
+        result = athena_client.generate(query)
         return jsonify({"result": result})
     
     # 如果不是JSON，尝试表单数据
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
-        result = ta_client.generate(query)
+        result = athena_client.generate(query)
         return jsonify({"result": result})
     
     return jsonify({"error": "Invalid form data"}), 400
@@ -61,13 +61,13 @@ def generate_without_rag():
             return jsonify({"error": "Invalid form data"}), 400
         
         query = data['query']
-        result = ta_client.generate_without_rag(query)
+        result = athena_client.generate_without_rag(query)
         return jsonify({"result": result})
     
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
-        result = ta_client.generate_without_rag(query)
+        result = athena_client.generate_without_rag(query)
         return jsonify({"result": result})
     
     return jsonify({"error": "Invalid form data"}), 400
@@ -81,14 +81,14 @@ def retrieve_documents_only():
             return jsonify({"error": "Invalid form data"}), 400
         
         query = data['query']
-        documents = ta_client.retrieve_documents_only(query)
+        documents = athena_client.retrieve_documents_only(query)
         docs_content = [doc.page_content for doc in documents]
         return jsonify({"documents": docs_content})
     
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
-        documents = ta_client.retrieve_documents_only(query)
+        documents = athena_client.retrieve_documents_only(query)
         docs_content = [doc.page_content for doc in documents]
         return jsonify({"documents": docs_content})
     
@@ -195,7 +195,7 @@ def build_pdf(report_text: str) -> BytesIO:
 #     query = form.query.data.strip()
 #
 #     # 2. Generate the step-by-step report text from your RAG pipeline
-#     report_text = ta_client.generate_report(query)['result']
+#     report_text = athena_client.generate_report(query)['result']
 #
 #     # 3. Build a nicely formatted PDF
 #     pdf_buffer = build_pdf(report_text)
@@ -217,7 +217,7 @@ def generate_report():
             return jsonify({"error": "Invalid form data"}), 400
         
         query = data['query']
-        report_text = ta_client.generate_report(query)['result']
+        report_text = athena_client.generate_report(query)['result']
         pdf_buffer = build_pdf(report_text)
         
         return send_file(
@@ -232,7 +232,7 @@ def generate_report():
         return jsonify({"error": "Invalid form data"}), 400
 
     query = form.query.data.strip()
-    report_text = ta_client.generate_report(query)['result']
+    report_text = athena_client.generate_report(query)['result']
     pdf_buffer = build_pdf(report_text)
 
     return send_file(
