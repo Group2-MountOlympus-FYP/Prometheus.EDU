@@ -3,22 +3,11 @@ export async function GetCSRF() {
     try {
         const response = await fetch(url, {
             method: 'GET',
-            mode: 'cors',
-            cache: 'no-cache',
-            credentials: 'same-origin',
-            headers: {
-                "Accept": "*/*",
-                "Connection": "keep-alive"
-            },
-            redirect: "follow",
-            referrerPolicy: 'no-referrer',
         });
         const data = await response.json();
 
-        if(typeof window !== undefined){
-            document.cookie = `csrf_token=${data.csrf_token}; path=/; Secure; SameSite=Strict`;
-        }
-        
+        setLocalStorage("csrf_token", data.csrf_token)
+        console.log(data.csrf_token)
         return true; // 成功时返回 true
     } catch (error) {
         console.log(error);
