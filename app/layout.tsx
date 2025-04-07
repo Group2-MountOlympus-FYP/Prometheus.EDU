@@ -1,9 +1,11 @@
 import '@mantine/core/styles.css';
+import '@mantine/notifications/styles.css';
 
 import {ColorSchemeScript, MantineProvider} from '@mantine/core';
 import {theme} from '../theme';
 import Header from '@/components/HeaderMenu/Header';
 import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
+import { Notifications } from '@mantine/notifications';
 
 export const metadata = {
     title: 'Prometheus.EDU',
@@ -23,6 +25,7 @@ export default function RootLayout({children}: { children: any }) {
         </head>
         <body>
         <MantineProvider theme={theme}>
+            <Notifications/>
             <Header/>
             {children}
             <FooterSimple/>
