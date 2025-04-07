@@ -9,7 +9,7 @@ interface WritingPostPanelProps {
     lecture_id: number;
 }
 
-type RichTextEditorRef = {
+export type RichTextEditorRef = {
     getText: () => string
 }
 
