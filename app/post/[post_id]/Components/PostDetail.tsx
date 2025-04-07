@@ -4,6 +4,8 @@ import { Button, Container, Group, Modal, Stack, Text, Textarea, TextInput } fro
 import { MainContent } from "./MainContent"
 import { useEffect, useState } from "react"
 import { Comment } from "./Comment"
+import { CommentWrite } from "./CommentWrite"
+import { useDisclosure } from "@mantine/hooks"
 
 
 interface Props{
@@ -19,42 +21,12 @@ interface CommentProps{
 }
 export function PostDetail(props: Props){
 
-    const [dialogOpened, setDialogOpened] = useState(false)
-    const [comment, setComment] = useState("enter")
-
     const [title, setTitle] = useState('')
     const [content, setContent] = useState('')
     const [createTime, setCreateTime] = useState('')
     const [comments, setComments] = useState<CommentProps[]>([])
+    const [opened, {open, close}] = useDisclosure(false)
 
-    const handleCommentSubmit = async (event:any) => {
-        event.preventDefault()
-        // Use URLSearchParams to encode the data in x-www-form-urlencoded format
-        const payload = new URLSearchParams({
-            target_id: String(props.post_id),
-            comment: comment,
-        })
-
-        try {
-            const response = await fetch("/backend/post/comment", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: payload.toString()
-            })
-
-            if (response.ok) {
-                alert("Comment submitted successfully.")
-                setDialogOpened(false)
-            } else {
-                alert("Failed to submit comment, status code: " + response.status)
-            }
-        } catch (error) {
-            console.error("Error submitting comment:", error)
-            alert("Error submitting comment.")
-        }
-    }
 
     useEffect(() => {
         const url = `/backend/post/${props.post_id}`
@@ -87,29 +59,9 @@ export function PostDetail(props: Props){
 
             {/* Comment dialog section */}
             <Group mt="md">
-                <Button onClick={() => setDialogOpened(true)}>Post Comment</Button>
+                <Button onClick={open}>Post Comment</Button>
             </Group>
-            <Modal opened={dialogOpened} onClose={() => setDialogOpened(false)} title="Post Comment">
-                <form onSubmit={handleCommentSubmit}>
-                    <TextInput
-                        label="Target Post ID"
-                        type="number"
-                        value={props.post_id}
-                        disabled
-                        required
-                    />
-                    <Textarea
-                        label="Comment Content"
-                        value={comment}
-                        onChange={(event) => setComment(event.currentTarget.value)}
-                        required
-                    />
-                    <Group mt="md">
-                        <Button variant="outline" onClick={() => setDialogOpened(false)}>Cancel</Button>
-                        <Button type="submit">Submit Comment</Button>
-                    </Group>
-                </form>
-            </Modal>
+            <CommentWrite opened={opened} onClose={close} post_id={props.post_id}></CommentWrite>
         </Container>
     )
 }
