@@ -11,7 +11,7 @@ from langchain.chains import RetrievalQA
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 
 
-class TA_Client:
+class Athena:
     embeddings = None
     vector_store = None
     qa_chain = None
@@ -91,32 +91,32 @@ class TA_Client:
             print("API Key Not Set. Athena Intelligence Not Available.\n Peylix is watching you 👁️.")
             return
 
-        if TA_Client.embeddings is None:
-            TA_Client.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=self.api_key)
+        if Athena.embeddings is None:
+            Athena.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=self.api_key)
             print("Embeddings initialized.")
 
 
         if os.path.exists('vector_store.faiss'):
-            TA_Client.vector_store = FAISS.load_local('vector_store.faiss',
-                                            embeddings=TA_Client.embeddings,
-                                            allow_dangerous_deserialization=True)
+            Athena.vector_store = FAISS.load_local('vector_store.faiss',
+                                                   embeddings=Athena.embeddings,
+                                                   allow_dangerous_deserialization=True)
             print('Vector store loaded.')
         else:
             print('Vector store not found. Creating new vector store...')
 
             # Create a FAISS vector store from the documents and their embeddings
-            TA_Client.vector_store = self.create_vector_store_batched(self.documents, TA_Client.embeddings)
+            Athena.vector_store = self.create_vector_store_batched(self.documents, Athena.embeddings)
             print('Vector store created.')
 
-            if TA_Client.vector_store is not None:
-                TA_Client.vector_store.save_local('vector_store.faiss')
+            if Athena.vector_store is not None:
+                Athena.vector_store.save_local('vector_store.faiss')
                 print('Vector store saved.')
             else:
                 raise Exception("Vector store creation failed. Please check the input documents and embeddings.")
 
 
         if self.model == "gemini-2.0-flash":
-            TA_Client.llm = ChatGoogleGenerativeAI(model=self.model, temperature=0.6, google_api_key=self.api_key)
+            Athena.llm = ChatGoogleGenerativeAI(model=self.model, temperature=0.6, google_api_key=self.api_key)
         else:
             raise Exception("LLM Provider Not Supported. Peylix is Watching You.")
 
@@ -137,10 +137,10 @@ class TA_Client:
 
         prompt = ChatPromptTemplate.from_template(prompt_template)
 
-        TA_Client.qa_chain = RetrievalQA.from_chain_type(
-            llm=TA_Client.llm,
+        Athena.qa_chain = RetrievalQA.from_chain_type(
+            llm=Athena.llm,
             chain_type="stuff",
-            retriever=TA_Client.vector_store.as_retriever(),
+            retriever=Athena.vector_store.as_retriever(),
             chain_type_kwargs={"prompt": prompt}
         )
 
@@ -165,24 +165,24 @@ class TA_Client:
         augmented_query = f"{system_instructions}\n\nUser Query: {query}"
 
         # Use the same RAG pipeline, but with the augmented query
-        answer = TA_Client.qa_chain.invoke(augmented_query)
+        answer = Athena.qa_chain.invoke(augmented_query)
         return answer
 
 
 
 
     def generate(self, query: str):
-        answer = TA_Client.qa_chain.invoke(query)
+        answer = Athena.qa_chain.invoke(query)
         return answer
 
 
     def generate_without_rag(self, query: str):
-        answer = TA_Client.llm.invoke(query)
+        answer = Athena.llm.invoke(query)
         return answer
 
 
     def retrieve_documents_only(self, query: str):
-        retrieved_docs = TA_Client.vector_store.as_retriever().invoke(query)
+        retrieved_docs = Athena.vector_store.as_retriever().invoke(query)
         return retrieved_docs
 
 
@@ -197,7 +197,7 @@ class TA_Client:
 
         augmented_query = f"{system_instructions}\n\nAssignment Requirements:\n{task_requirements}\n\nStudent's Answer:\n{submitted_content}\n"
 
-        answer = TA_Client.qa_chain.invoke(augmented_query)
+        answer = Athena.qa_chain.invoke(augmented_query)
         return answer
 
 
@@ -221,12 +221,12 @@ if __name__ == "__main__":
         try:
             start_time = time.time()
 
-            ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
-                                  directory='study_materials',
-                                  model='gemini-2.0-flash')
+            athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
+                                   directory='study_materials',
+                                   model='gemini-2.0-flash')
 
-            answer = ta_client.generate(query)
-            retrieved_docs = ta_client.retrieve_documents_only(query)
+            answer = athena_client.generate(query)
+            retrieved_docs = athena_client.retrieve_documents_only(query)
 
             end_time = time.time()
 
@@ -257,6 +257,7 @@ if __name__ == "__main__":
             print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
 
-ta_client = TA_Client(api_key=os.getenv('GOOGLE_API_KEY', ''),
-                      directory='./doner/study_materials',
-                      model='gemini-2.0-flash')
+
+athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
+                       directory='./doner/study_materials',
+                       model='gemini-2.0-flash')
