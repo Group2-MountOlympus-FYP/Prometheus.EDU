@@ -5,7 +5,9 @@ import { UserProfile } from "@/components/UserProfile/UserProfile"
 import { TabBar } from "@/components/UserProfile/TABBar/TabBar"
 import { getUserProfile, genders, userProfile } from "../api/User/router"
 
+
 export default function UserInfoPage() {
+
     const [avatar, setAvatar] = useState('')
     const [BirthDate, setBirthDate] = useState('')
     const [gender, setGender] = useState('')
@@ -26,9 +28,10 @@ export default function UserInfoPage() {
         fetchUserProfile()
     }) 
     return (
-        <div className="bg">
-            <UserProfile username={username} birthdate={BirthDate}/>
-            <TabBar/>
+        <div className="bg" style={{width: '100%'}}>
+            <div style={{display:'flex', alignItems:'center', width:"100%"}}>
+                <UserProfile username={username} birthDate={BirthDate} gender={gender} avatar={avatar}/>
+            </div>
         </div>
     )
 }
