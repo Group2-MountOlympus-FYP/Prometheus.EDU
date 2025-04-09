@@ -9,6 +9,7 @@ import './page.css'
 import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
+import Material from '@/app/video/[lecture_id]/components/material';
 
 interface LectureProps {
   lectureId: number;
@@ -28,6 +29,13 @@ export default function Lecture({ lectureId }: LectureProps){
   const [postsLoading, setPostsLoading] = useState(false)
 
   const searchParams = useSearchParams()
+
+  const [activeTab, setActiveTab] = useState("posts");
+  const handleTabChange = (value: string | null) => {
+    if (typeof value === 'string') {
+      setActiveTab(value);
+    }
+  };
 
 
   useEffect(() => {
@@ -85,7 +93,7 @@ export default function Lecture({ lectureId }: LectureProps){
       </Grid>
       <div>
         <div hidden={postsLoading}>
-          <Tabs color='#3C4077' variant="pills" defaultValue={"posts"} className="tabs">
+          <Tabs color='#3C4077' variant="pills" defaultValue={"posts"} className="tabs" value={activeTab} onChange={handleTabChange}>
             <Tabs.List className="tabs-list">
               <Tabs.Tab value="posts">Posts</Tabs.Tab>
               <Tabs.Tab value="Matrials">Materials</Tabs.Tab>
@@ -95,15 +103,28 @@ export default function Lecture({ lectureId }: LectureProps){
               <PostsWithPagination lecture_id={lectureId}/>
             </Tabs.Panel>
             <Tabs.Panel value="Matrials">
-              Materials
+              <Material lectureId={lectureId}/>
             </Tabs.Panel>
             <Tabs.Panel value="Assignments">
               Assignments
             </Tabs.Panel>
           </Tabs>
+
           <div className="post-panel">
-            <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId}></WritingPostPanel>
-            <Button onClick={open} id={`${isVideoLeaveWindow ? "normal" : "right-corner"}`} className="post-button">Open to write post</Button>
+            {/* 👇 只有在 Posts 标签下显示按钮 */}
+            {activeTab === "posts" && (
+              <div className="post-panel">
+                <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId} />
+                <Button
+                  onClick={open}
+                  id={`${isVideoLeaveWindow ? "normal" : "right-corner"}`}
+                  className="post-button"
+                >
+                  Open to write post
+                </Button>
+              </div>
+            )}
+
           </div>
         </div>
         <Skeleton height={'500px'} animate={true} hidden={!postsLoading}></Skeleton>

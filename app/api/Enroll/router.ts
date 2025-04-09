@@ -1,4 +1,4 @@
-export async function getEnrollDetailsById(course_id: number) {
+export async function enrollCourseById(course_id: number) {
   const url = `/backend/course/${course_id}/enroll`;
 
   const response = await fetch(url, {
