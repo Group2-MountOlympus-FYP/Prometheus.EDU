@@ -53,7 +53,7 @@ jobs:
         
           pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env
         
-          echo ${{ secrets.SERVER_PASSWORD_UCD }} | sudo -S supervisorctl restart doner
+          echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"
         EOF
