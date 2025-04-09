@@ -1,66 +1,98 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { Button, Input, Select } from "@mantine/core"
+import { DateInput, DatePicker } from '@mantine/dates';
 import './UpdateUserInfo.css'
+import { getText } from "../Language";
+import '@mantine/dates/styles.css';
+import { CheckUsernameExist } from "@/app/api/Register/router";
+import dayjs from 'dayjs';
+import { updateProfile } from "@/app/api/User/router";
+import { notifications } from "@mantine/notifications";
+import { reloadWindow } from "@/app/api/General";
 
 export function UpdateUserInfoPanel(){
-    const [username, setUsername] = useState()
-    const [nickName, setNickName] = useState()
-    const [birthDate, setBirthDate] = useState()
+    const [username, setUsername] = useState<string>('')
+    const [birthDate, setBirthDate] = useState<Date | null>()
+    const [gender, setGender] = useState<string>("male")
+    const [usernameError, setUSernameError] = useState('')
+    const [isAbleSubmit, setIsAbleSubmit] = useState<boolean>(false)
 
     const checkUsernameExist = async () => {
-
-    }
-
-    const handleUsername = (e:any) => {
-        setUsername(e.target.value)
-    }
-
-    const handleNickName = (e:any) => {
-        setNickName(e.target.value)
-    }
-
-    const handleBirthDate = (e:any) => {
-        setBirthDate(e.target.value)
+        if(!username){
+            return
+        }
+        CheckUsernameExist(username)
+        .then((response) => response.json())
+        .then((data) => {
+            //console.log(data)
+            if(data.Occupied == false){
+                setUSernameError('')
+                setIsAbleSubmit(true)
+            }else{
+                setUSernameError(getText("UsernameExist"))
+                setIsAbleSubmit(false)
+            }
+        })
+        .catch((error) => {
+            console.error("Error: " , error)
+        })
     }
     
     const handleSubmit = async (e:any) => {
         e.preventDefault()
+        //console.log(data)
+        try{
+            const response = await updateProfile(username, dayjs(birthDate).format('YYYY-MM-DD'), gender)
+            if(response == true){
+                notifications.show({
+                    title: "Update success",
+                    message: "Update success"
+                })
+            }
+            setTimeout(() => {
+                reloadWindow()
+            }, 1000);
+        }catch(e){
+            console.log(e)
+        }
+        
     }
     return (
         <div className="bg">
-            <form onSubmit={handleSubmit}>
-                <table>
-                    <tbody>
-                    <tr>
-                        <td id="title" colSpan={2}>
-                            <p>Title</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="text">
-                            <p>Username</p>
-                        </td>
-                        <td>
-                            <input type="text" maxLength={20} value={username} onBlur={checkUsernameExist} onChange={handleUsername}></input>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className="text">nickname</td>
-                        <td><input type="text" maxLength={20} className="input" value={nickName} onChange={handleNickName}></input></td>
-                    </tr>
-                    <tr>
-                        <td className="text">birthDate</td>
-                        <td className="input"><input type="date" value={birthDate} className="input" onChange={handleBirthDate}></input></td>
-                    </tr>
-                    <tr>
-                        <td colSpan={2}>
-                            <button type="submit">Submit</button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
+            <form onSubmit={handleSubmit} className="infoForm">
+                <Input.Wrapper label="Username" error={usernameError} withAsterisk>
+                    <Input placeholder="username" onBlur={checkUsernameExist} value={username} onChange={(event) => setUsername(event.target.value)}></Input>
+                </Input.Wrapper>
+                <DateInput label="Birthdate" value={birthDate} disabled withAsterisk></DateInput>
+                <DatePicker value={birthDate} onChange={setBirthDate}></DatePicker>
+                <GenderSelect value={gender} onChange={setGender} withAsterisk></GenderSelect>
+                <Button type="submit" disabled={!isAbleSubmit} className="submitButton">Submit Change</Button>
             </form>
         </div>
     )
+}
+
+function GenderSelect({ value, onChange }:any) {
+    const [genderOptions, setGenderOptions] = useState([{value: "male", label: "male"}])
+
+    useEffect(() => {
+        const genderOptionsData = [
+            { value: 'male', label: getText("male") },    // 中文展示，实际值是'male'
+            { value: 'female', label: getText("female") },
+            { value: 'other', label: getText("other") },
+        ];
+        setGenderOptions(genderOptionsData)
+    }, [])
+
+    return (
+        <Select
+        label= {getText("gender")}
+        placeholder={getText("Please select gender")}
+        data={genderOptions}
+        value={value}
+        onChange={onChange} // 返回的是 value，例如 "male"
+        />
+    );
 }

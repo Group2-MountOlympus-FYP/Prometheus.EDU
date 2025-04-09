@@ -1,4 +1,13 @@
 .bg{
-    width: 200px;
+    width: 100%;
     height: 300px;
+}
+.submitButton{
+    background-color: #777CB9;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.infoForm{
+    width: 100%;
+    text-align: center;
 }

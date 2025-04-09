@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import './Login.css'
-import { GetCSRF, GetCookie } from "@/app/api/General"
+import { GetCSRF, getLocalStorage, reloadWindow, setLocalStorage } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
 import { windowRedirect } from "@/app/api/General"
@@ -26,26 +26,21 @@ export function LoginPanel(){
         e.preventDefault()
         let csrf
         const response = await GetCSRF()
-        if(response == true){
-            
-        }else{
-            alert("error!")
+        if(!response){
+            alert("Error!")
             return
         }
-        csrf = GetCookie("csrf_token")
+        csrf = getLocalStorage("csrf_token")
+        console.log(csrf)
 
-        Login(username,password,csrf,isRemember)
-        .then(response => {
-            if(response.status == 200){
-                return response.json()
-            }
-        })
-        .then(data => {
-            //防止服务端报错
-            windowRedirect('/user-info')
-        })
-
-
+        try{
+            const data = await Login(username, password, csrf, isRemember)
+            setLocalStorage('isLogin', 'true')
+            //alert("true")
+        }catch(error){
+            console.log(error)
+        }
+        reloadWindow()
     }
     return(
         <div className="bgLogin">

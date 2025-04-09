@@ -15,8 +15,10 @@ from flasgger import swag_from
 from .ReplyTarget import Tag
 
 from celery import shared_task
+
 from .athena_ta_core import ta_client
 from sqlalchemy.orm import aliased
+
 post_bp = Blueprint('post', __name__)
 
 
@@ -28,7 +30,7 @@ def notify_review_complete(result):
 
 @shared_task()
 def review_assignment_async(parent_dict, comment_content):
-    return ta_client.review_assignment(str(parent_dict), comment_content)
+    return athena_client.review_assignment(str(parent_dict), comment_content)
 
 
 @post_bp.before_request
@@ -312,7 +314,7 @@ def comment():
         parent = comment.parent_target
         parent_dict = {"Title": parent.title, "Content": parent.content}
 
-        ai_reply = ta_client.review_assignment(str(parent_dict), comment.content)
+        ai_reply = athena_client.review_assignment(str(parent_dict), comment.content)
         print(ai_reply['result'])
         Comment.comment(comment.id, ai_reply['result'], 134)
 

@@ -1,0 +1,128 @@
+.editor-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 16px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+}
+
+.editor-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.editor-toolbar button {
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.editor-toolbar button:hover {
+    background-color: #e0e0e0;
+}
+
+.editor-toolbar button.active {
+    background-color: #1890ff;
+    color: #fff;
+    border-color: #1890ff;
+}
+
+.editor-content {
+    min-height: 200px;
+    border: 1px solid #ccc;
+    padding: 12px;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.editor-content p {
+    margin: 0 0 8px;
+}
+
+.editor-content h1 {
+    font-size: 24px;
+    margin: 12px 0;
+}
+
+.editor-content h2 {
+    font-size: 20px;
+    margin: 10px 0;
+}
+
+.editor-content ul {
+    list-style-type: disc;
+    margin-left: 20px;
+}
+
+.editor-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 10px 0;
+}
+
+.editor-output {
+    margin-top: 20px;
+}
+
+.editor-output textarea {
+    width: 100%;
+    height: 150px;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    resize: vertical;
+    font-family: monospace;
+}
+.mention{
+    color: rgb(98, 66, 255);
+}
+.mention-item {
+    cursor: pointer;
+    padding-left: 0.5rem; /* 8px */
+    padding-right: 0.5rem; /* 8px */
+    padding-top: 0.25rem;  /* 4px */
+    padding-bottom: 0.25rem; /* 4px */
+  }
+  
+.mention-item:hover {
+background-color: #494949; /* gray-100 color */
+}
+
+.quote{
+    border-left: 4px solid #ccc; /* 左边竖线 */
+    padding-left: 16px;          /* 内边距 */
+    margin: 16px 0;              /* 上下外边距 */
+    color: #555;                 /* 字体颜色 */
+    font-style: italic;          /* 斜体 */
+    background-color: #f9f9f9;   /* 背景色 */
+    border-radius: 4px; 
+}
+.code-block{
+    background-color: #f5f5f5;   /* 背景色 */
+  color: #333;                /* 字体颜色 */
+  padding: 16px;              /* 内边距 */
+  border-radius: 8px;         /* 圆角 */
+  font-size: 14px;            /* 字体大小 */
+  font-family: 'Fira Code', monospace; /* 等宽字体 */
+  overflow-x: auto;           /* 超出自动滚动 */
+  line-height: 1.6;           /* 行高 */
+  white-space: pre-wrap;      /* 自动换行（按需） */
+  margin: 16px 0;
+  font-family: 'Fira Code', monospace;
+  color: #d6336c; 
+}
+  
