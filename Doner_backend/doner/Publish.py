@@ -16,7 +16,7 @@ from .ReplyTarget import Tag
 
 from celery import shared_task
 
-from .athena_ta_core import ta_client
+from .athena_ta_core import athena_client
 from sqlalchemy.orm import aliased
 
 post_bp = Blueprint('post', __name__)
