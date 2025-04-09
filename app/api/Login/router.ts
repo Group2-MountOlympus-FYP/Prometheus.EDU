@@ -1,4 +1,4 @@
-import { setLocalStorage } from "../General"
+import { clearCookie } from "../General"
 
 export async function Login(username:string, password:string, csrf:any, isRemember:any){
     const url = '/backend/login'
@@ -43,6 +43,7 @@ export async function Logout(){
         throw new Error('internal server error')
     }
     if(response.status == 200){
+        clearCookie()
         return true
     }else{
         throw new Error(`code: ${response.status}`)
