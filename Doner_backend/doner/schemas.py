@@ -11,6 +11,7 @@ from .Comment import Comment
 from .ActivityLog import ActivityLog
 from .Image import Image
 from .Lecture import Lecture, Resource
+from .Mention import Mention
 import yaml
 import os
 
@@ -39,6 +40,7 @@ class PostSchema(SQLAlchemyAutoSchema):
 
     images = Nested(ImageSchema, many=True, )
     comments = Nested(CommentSchema, many=True)
+    author = Nested('UserSchema', only=['username', 'avatar', 'id'])
 
 
 class LightCourseSchema(SQLAlchemyAutoSchema):

@@ -10,6 +10,7 @@ class Post(ReplyTarget):
     content = db.Column(db.Text, nullable=False)
     lecture_id = db.Column(db.Integer, db.ForeignKey('lecture.id'))
     lecture = db.relationship('Lecture',  backref='posts', foreign_keys=lecture_id)
+    mentions = db.relationship('Mention', back_populates='post', cascade='all, delete-orphan')
 
 
 

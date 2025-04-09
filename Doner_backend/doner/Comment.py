@@ -3,7 +3,7 @@ from .extensions import db
 from .ReplyTarget import ReplyTarget
 from datetime import datetime
 from .ActivityLog import ActivityLog
-
+from sqlalchemy.orm import undefer
 
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
@@ -11,7 +11,7 @@ class Comment(ReplyTarget):
     content = db.Column(db.Text, nullable=False)
     parent_target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'))
     parent_target = db.relationship('ReplyTarget', foreign_keys=[parent_target_id], backref='children')
-    read = db.Column(db.Boolean, default=False)
+    read = db.Column(db.Boolean, default=False,nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'comment',
@@ -87,3 +87,13 @@ class Comment(ReplyTarget):
         if parent_comment and parent_comment.parent_comment:
             return "Reply " + parent_comment.user.username + ": "
         return ""
+
+    def get_post_id(self):
+        current = self
+        while True:
+            temp = Comment.query.options(undefer(Comment.parent_target_id)).get(current.parent_target_id)
+
+            if temp is None:
+                return current.parent_target_id
+            else:
+                current = temp
