@@ -524,3 +524,9 @@ def read_post(id):
         db.session.commit()
 
     return "success", 200
+
+
+@post_bp.route('/get_post_id_by_comment_id')
+def get_post_id_by_comment_id():
+    comment = Comment.query.get_or_404(request.args.get('comment_id'))
+    return jsonify({"id": comment.get_post_id()})
