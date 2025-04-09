@@ -8,9 +8,11 @@ from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import Select2Widget, Select2Field
 from flask_wtf import FlaskForm
 from markupsafe import Markup
+from werkzeug.datastructures import FileStorage
 from wtforms import PasswordField, StringField, TextAreaField, IntegerField, SubmitField, SelectField
 from wtforms.validators import InputRequired, DataRequired
 
+from .Course import CourseLevel, CourseStatus
 from .decorator import *
 from .extensions import db
 from .schemas import *
@@ -566,8 +568,11 @@ class BaseAdminView(ModelView):
 class UserAdminModelView(ModelView):
     column_exclude_list = ('password_hash',)
     column_display_pk = True  # 显示主键，避免自动解析外键
-    form_columns = ('id','username','birthdate','gender','nickname', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    form_columns = ('username','birthdate','gender','nickname','password', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
     column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
+    form_extra_fields = {
+        'password': PasswordField('Password')
+    }
     column_formatters = {
         'avatar': lambda v, c, m, p: Markup(
             f'<img src="{m.avatar}" width="50" height="50" style="border-radius: 10px;">')
@@ -582,6 +587,10 @@ class UserAdminModelView(ModelView):
             'widget': Select2Widget()
         }
     }
+
+    def on_model_change(self, form, model, is_created):
+        if form.password.data:  # 仅当有输入密码时才更新
+            model.password_hash = hashlib.sha256(form.password.data.encode('utf-8')).hexdigest()
 
     # 6. 处理删除用户（调用后端 API 删除）
     def delete_model(self, model):
@@ -632,6 +641,49 @@ class ActivityLogView(BaseAdminView):
     column_list = ('id', 'user_id', 'action', 'target_type', 'target_id', 'timestamp')  # 只列出具体字段
     form_excluded_columns = ('user',)
 
+class CourseAdminModelView(ModelView):
+    form_columns = ('course_name', 'description', 'level', 'status', 'institution')
+    form_overrides = {
+        'level': SelectField,
+        'status': SelectField
+    }
+
+    form_args = {
+        'level': {
+            'choices': [(level.name, f"{level.name} ({level.value})") for level in CourseLevel]
+        },
+        'status': {
+            'choices': [(status.name, status.name) for status in CourseStatus]
+        }
+    }
+
+    def create_model(self, form):
+        data = {
+            'course_name': form.course_name.data,
+            'description': form.description.data,
+            'level': form.level.data,
+            'status': form.status.data,
+            'institution': form.institution.data or "No institution",
+        }
+
+        files = {}
+        if hasattr(form.main_picture, 'data') and isinstance(form.main_picture.data, FileStorage):
+            file = form.main_picture.data
+            files['main_picture'] = (file.filename, file.stream, file.mimetype)
+
+        response = requests.post(
+            url='http://localhost:5000/api/course/create',  # 根据你的实际路由修改
+            data=data,
+            files=files,
+            cookies=request.cookies
+        )
+
+        if response.status_code == 201:
+            self.session.expire_all()
+            return True
+        else:
+            self._on_model_change_failed(form, response.text)
+            return False
 
 def init_admin(app):
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())
