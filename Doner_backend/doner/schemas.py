@@ -4,7 +4,7 @@ from marshmallow_sqlalchemy.fields import Nested
 from marshmallow.fields import Integer, String, Float, Boolean, List, Dict
 
 from .Course import Course, Enrollment
-from .ReplyTarget import Tag
+from .ReplyTarget import Tag,ReplyTarget
 from .User import User
 from .Post import Post
 from .Comment import Comment
@@ -21,7 +21,8 @@ class CommentSchema(SQLAlchemyAutoSchema):
         model = Comment
         include_relationships = True
 
-
+    children = Nested('CommentSchema', many=True)
+    author = Nested('UserSchema', only=['username', 'avatar', 'id'])
 
 
 class ImageSchema(SQLAlchemyAutoSchema):
@@ -36,7 +37,7 @@ class PostSchema(SQLAlchemyAutoSchema):
         # include_fk=True 可以让外键也暴露在序列化结果中，比如 user_id
         include_relationships = True
 
-    images = Nested(ImageSchema, many=True,)
+    images = Nested(ImageSchema, many=True, )
     comments = Nested(CommentSchema, many=True)
 
 
@@ -167,13 +168,14 @@ def save_dict_as_yaml(name, schema_dict):
     with open(save_path, "w") as file:
         file.write(schema_yaml)
 
+if __name__ == "__main__":
 
-save_dict_as_yaml("definitions", {
-    "Post": get_schema_dict(PostSchema),
-    "User": get_schema_dict(UserSchema),
-    "ActivityLog": get_schema_dict(ActivityLogSchema),
-    "Image": get_schema_dict(ImageSchema),
-    "Comment": get_schema_dict(CommentSchema),
-    "Course": get_schema_dict(CourseSchema),
-    "Tag": get_schema_dict(TagSchema)
-})
+    save_dict_as_yaml("definitions", {
+        "Post": get_schema_dict(PostSchema),
+        "User": get_schema_dict(UserSchema),
+        "ActivityLog": get_schema_dict(ActivityLogSchema),
+        "Image": get_schema_dict(ImageSchema),
+        "Comment": get_schema_dict(CommentSchema),
+        "Course": get_schema_dict(CourseSchema),
+        "Tag": get_schema_dict(TagSchema)
+    })
