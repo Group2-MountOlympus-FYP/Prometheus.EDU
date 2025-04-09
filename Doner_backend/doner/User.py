@@ -4,7 +4,7 @@ from enum import Enum, auto
 from .extensions import db ,shared_sequence
 from .Post import Post
 from datetime import datetime
-from .Mention import mention
+
 from .Image import fileUpload
 import os
 from flask import url_for
@@ -50,7 +50,7 @@ class User(db.Model):
                                secondaryjoin=(followers.c.followed_id == id),
                                backref=db.backref('followers', lazy='dynamic'),
                                lazy='dynamic')
-    mentioned = db.relationship('Post', secondary=mention, backref=db.backref('mention', lazy='dynamic'))
+    mentions = db.relationship('Mention', back_populates='user', cascade='all, delete-orphan')
     nickname = db.Column(db.String(80), default='default nickname')
     status = db.Column(db.Enum(UserStatus), default=UserStatus.NORMAL)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
@@ -112,16 +112,6 @@ class User(db.Model):
         db.session.commit()
         return info
 
-    def is_post_liked_by_user(self, post_id):
-        # 检查是否存在一条记录，其中 user_id 和 post_id 与提供的值匹配
-        like_exists = db.session.query(
-            mention.c.user_id, mention.c.post_id
-        ).filter(
-            mention.c.user_id == self.id,
-            mention.c.post_id == post_id
-        ).first()
-
-        return like_exists is not None
 
     def saveAvatar(self, file):
         self.avatar = fileUpload(file)
