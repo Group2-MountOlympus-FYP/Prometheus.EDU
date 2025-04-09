@@ -25,3 +25,26 @@ export async function getUserProfile(): Promise<userProfile> {
         throw new Error(`internal server error. code: ${response.status}`)
     }
 }
+
+export async function updateProfile(username:string, birthDate: string, gender: string){
+    const url = "/backend/change_profile"
+    const data = new URLSearchParams({
+        username: username,
+        birthdate: birthDate,
+        gender: gender,
+    })
+
+    const response = await fetch(url, {
+        method: 'POST',
+        body: data,
+    })
+    if( response.ok ){
+        if(response.status == 200){
+            return true
+        }else{
+            throw new Error(`Error! code: ${response.status}`)
+        }
+    }else{
+        throw new Error('Update user profile error')
+    }
+}

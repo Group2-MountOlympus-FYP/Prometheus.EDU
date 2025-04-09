@@ -27,16 +27,20 @@ Post:
       type: string
     content:
       type: string
+    children:
+      type: array
+      items:
+        $ref: '#/Children'
     author:
       type: string
     favorited_by:
       type: array
       items:
         type: integer
-    liked_by:
+    mention:
       type: array
       items:
-        type: integer
+        $ref: '#/Mention'
 User:
   type: object
   properties:
@@ -56,10 +60,10 @@ User:
       type: array
       items:
         $ref: '#/Followed'
-    liked_posts:
+    mentioned:
       type: array
       items:
-        $ref: '#/Liked_post'
+        $ref: '#/Mentioned'
     id:
       type: integer
     username:
@@ -82,10 +86,6 @@ User:
       type: array
       items:
         $ref: '#/Activitie'
-    liked_comments:
-      type: array
-      items:
-        $ref: '#/Liked_comment'
     followers:
       type: array
       items:
@@ -115,12 +115,16 @@ Image:
 Comment:
   type: object
   properties:
-    parent_target:
-      type: string
-    liked_by:
+    children:
       type: array
       items:
-        type: integer
+        $ref: '#/Children'
+    author:
+      type: array
+      items:
+        $ref: '#/Author'
+    parent_target:
+      type: string
     tags:
       type: array
       items:
@@ -139,8 +143,8 @@ Comment:
       type: string
     content:
       type: string
-    author:
-      type: string
+    read:
+      type: boolean
 Course:
   type: object
   properties:
@@ -148,10 +152,6 @@ Course:
       type: array
       items:
         $ref: '#/Lecture'
-    lower_level_course:
-      type: string
-    higher_level_course:
-      type: string
     tags:
       type: array
       items:
@@ -182,20 +182,16 @@ Course:
       type: integer
     institution:
       type: string
+    children:
+      type: array
+      items:
+        $ref: '#/Children'
     author:
       type: string
     enrollments:
       type: array
       items:
         $ref: '#/Enrollment'
-    higher_level_courses:
-      type: array
-      items:
-        $ref: '#/Higher_level_course'
-    lower_level_courses:
-      type: array
-      items:
-        $ref: '#/Lower_level_course'
 Tag:
   type: object
   properties:
