@@ -16,7 +16,7 @@ from .ReplyTarget import Tag
 
 from celery import shared_task
 from .athena_ta_core import ta_client
-
+from sqlalchemy.orm import aliased
 post_bp = Blueprint('post', __name__)
 
 
@@ -85,6 +85,15 @@ def before_request():
             },
             "required": False,
             "description": "帖子附带的图片（可选）"
+        },
+        {
+            "name": "mention_list",
+            "in": "formData",
+            "type": "array",
+            "items": {
+                "type": "integer",
+            },
+            "description": "at的用户的id"
         }
     ]
 })
@@ -94,12 +103,15 @@ def publish():
     title = request.form.get('title')
     content = request.form.get('content')
     files = request.files.getlist('images')
-    tags_raw = request.form.get('tags')
+    tags = request.form.getlist('tags')
     lecture_id = request.form.get('lecture_id')
+    mention = request.form.getlist('mention_list')
     new_post = Post(title=title, content=content, author_id=session['id'], lecture_id=lecture_id)
-    if tags_raw:
-        tags = [int(tag.strip()) for tag in tags_raw.split(',') if tag.strip().isdigit()]
+    if tags:
         new_post.tags = Tag.query.filter(Tag.id.in_(tags)).all()
+    if mention:
+        new_post.mention = User.query.filter(User.id.in_(mention)).all()
+
     images_to_add = []
 
     for file in files:
@@ -441,7 +453,26 @@ def add_image():
 
 @post_bp.route('/comment/<int:id>')
 def get_comment(id):
-    comment = Comment.query.get_or_404(id)
-    comment_dict = CommentSchema().dump(comment)
-    comment_dict['child_comment'] = [CommentSchema().dump(child_comment) for child_comment in comment.child_comments]
+    parent_comment = Comment.query.get_or_404(id)
+    comment_dict = CommentSchema().dump(parent_comment)
     return jsonify(comment_dict)
+
+
+@post_bp.route('/comment/all')
+def get_all_comments():
+    user = get_current_user()
+    user_comments = Comment.query.filter(Comment.author_id == user.id).all()
+    return jsonify(CommentSchema(many=True).dump(user_comments))
+
+
+@post_bp.route('/get_notifications')
+def get_notifications():
+    user = get_current_user()
+    ReplyTargetAlias = aliased(ReplyTarget)
+    user_reply = (
+        Comment.query
+        .join(ReplyTargetAlias,Comment.parent_target)
+        .filter(ReplyTargetAlias.author_id == user.id, Comment.read == False)
+        .all()
+    )
+    return jsonify(CommentSchema(many=True).dump(user_reply))
