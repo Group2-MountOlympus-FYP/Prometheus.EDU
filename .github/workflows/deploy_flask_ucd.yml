@@ -53,6 +53,8 @@ jobs:
         
           pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env
         
+          pip install -r Doner_backend/requirements.txt --no-deps
+        
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"
