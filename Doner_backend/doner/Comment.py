@@ -3,25 +3,15 @@ from .extensions import db
 from .ReplyTarget import ReplyTarget
 from datetime import datetime
 from .ActivityLog import ActivityLog
-
-
-
-post_likes = db.Table('post_likes',
-                      db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-                      db.Column('comment_id', db.Integer, db.ForeignKey('comment.id'), primary_key=True),
-                      db.Column('created_at', db.DateTime, default=datetime.utcnow)
-                      )
-
-
-
+from sqlalchemy.orm import undefer
 
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     content = db.Column(db.Text, nullable=False)
     parent_target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'))
-    parent_target = db.relationship('ReplyTarget', foreign_keys=[parent_target_id])
-    liked_by = db.relationship('User', secondary=post_likes, backref=db.backref('liked_comments', lazy='dynamic'))
+    parent_target = db.relationship('ReplyTarget', foreign_keys=[parent_target_id], backref='children')
+    read = db.Column(db.Boolean, default=False,nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'comment',
@@ -45,11 +35,6 @@ class Comment(ReplyTarget):
     def child_comments_count(self):
         # 返回 parent_target_id 等于当前评论 id 的 Comment 对象的数量
         return Comment.query.filter_by(parent_target_id=self.id).count()
-
-    @property
-    def child_comments(self):
-        # 查找所有 parent_target_id 等于当前评论 id 的 Comment 对象
-        return Comment.query.filter_by(parent_target_id=self.id).all()
 
     @property
     def is_assignment_submission(self):
@@ -92,7 +77,7 @@ class Comment(ReplyTarget):
         comments = [self]
 
         # 对每个子评论递归调用 dfs_traverse 并扩展到列表中
-        for child_comment in self.child_comments:
+        for child_comment in self.children:
             comments.extend(child_comment.dfs_traverse())
 
         return comments
@@ -102,3 +87,13 @@ class Comment(ReplyTarget):
         if parent_comment and parent_comment.parent_comment:
             return "Reply " + parent_comment.user.username + ": "
         return ""
+
+    def get_post_id(self):
+        current = self
+        while True:
+            temp = Comment.query.options(undefer(Comment.parent_target_id)).get(current.parent_target_id)
+
+            if temp is None:
+                return current.parent_target_id
+            else:
+                current = temp

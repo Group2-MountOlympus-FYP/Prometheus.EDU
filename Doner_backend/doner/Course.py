@@ -61,25 +61,6 @@ class Course(ReplyTarget):
     student_count = db.Column(db.Integer, nullable=False, default=0)
     institution = db.Column(db.String(100), nullable=False)
 
-    # 自关联：指向更低等级的课程（例如前置课程）
-    lower_level_course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
-    lower_level_course = db.relationship(
-        'Course',
-        remote_side=[id],
-        foreign_keys=[lower_level_course_id],
-        post_update=True,
-        backref='higher_level_courses'
-    )
-
-    # 自关联：指向更高等级的课程（例如进阶课程）
-    higher_level_course_id = db.Column(db.Integer, db.ForeignKey('course.id'), nullable=True)
-    higher_level_course = db.relationship(
-        'Course',
-        remote_side=[id],
-        foreign_keys=[higher_level_course_id],
-        post_update=True,
-        backref='lower_level_courses'
-    )
 
     __mapper_args__ = {
         'polymorphic_identity': 'course',
@@ -114,9 +95,8 @@ class Course(ReplyTarget):
         return query.paginate(page=page, per_page=per_page, error_out=False)
 
     @classmethod
-    def create_course(cls, author_id, course_name, description, institution, level=CourseLevel.LEVEL_1,
-                      status=CourseStatus.NORMAL, lower_level_course_id=None,
-                      higher_level_course_id=None):
+    def create_course(cls, author_id, course_name, description, institution, level,
+                      status=CourseStatus.NORMAL):
         """
         创建一个新课程
         :param author_id:
@@ -137,9 +117,7 @@ class Course(ReplyTarget):
             description=description,
             institution=institution,
             level=level,
-            status=status,
-            lower_level_course_id=lower_level_course_id,
-            higher_level_course_id=higher_level_course_id
+            status=status
         )
         db.session.add(course)
         db.session.commit()

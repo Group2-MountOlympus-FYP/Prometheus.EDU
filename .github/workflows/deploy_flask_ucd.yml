@@ -13,6 +13,8 @@ jobs:
     steps:
     - name: Check out repository
       uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # 👈 拉取完整历史，才能 reset
 
     - name: Set up SSH
       env:
@@ -50,6 +52,8 @@ jobs:
           npm run build
         
           pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env
+        
+          pip install -r Doner_backend/requirements.txt --no-deps
         
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 

@@ -197,13 +197,9 @@ def create_course():
     description = data.get('description')
     level = CourseLevel.__members__.get(data.get('level', ''), CourseLevel.LEVEL_1)
     status = CourseStatus.__members__.get(data.get('status', ''), CourseStatus.NORMAL)
-    lower_level_course_id = data.get('lower_level_course_id')
-    higher_level_course_id = data.get('higher_level_course_id')
     file = request.files.get('main_picture')
     institution = request.form.get('institution', "No institution")
-    course = Course.create_course(session['id'], course_name, description, institution, level, status,
-                                  lower_level_course_id,
-                                  higher_level_course_id)
+    course = Course.create_course(session['id'], course_name, description, institution, level, status)
     Image.save_image(file, course)
 
     return {"id": course.id}, 201
