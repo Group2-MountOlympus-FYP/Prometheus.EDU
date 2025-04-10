@@ -3,6 +3,7 @@ import hashlib
 import requests
 import sqlalchemy
 from flasgger import swag_from
+from flask import flash
 from flask_admin import Admin, AdminIndexView, expose
 from flask_admin.contrib.sqla import ModelView
 from flask_admin.form import Select2Widget, Select2Field
@@ -12,7 +13,7 @@ from werkzeug.datastructures import FileStorage
 from wtforms import PasswordField, StringField, TextAreaField, IntegerField, SubmitField, SelectField
 from wtforms.validators import InputRequired, DataRequired
 
-from .Course import CourseLevel, CourseStatus
+from .Course import CourseStatus, CourseLevel
 from .decorator import *
 from .extensions import db
 from .schemas import *
@@ -534,7 +535,7 @@ def setRoot(app):
 
 class AdminModelView(ModelView):
     def is_accessible(self):
-        return session.get('admin')  # 只有 session['admin'] = True 时才能访问
+        return session.get('id')  # 只有 session['admin'] = True 时才能访问
 
     def inaccessible_callback(self, name, **kwargs):
         return jsonify({"message": "WRONG PASSWORD!!!"}), 401  # 直接返回 401 错误
@@ -544,20 +545,19 @@ class AdminModelView(ModelView):
 class MyAdminIndexView(AdminIndexView):
     @expose('/')
     def index(self):
-        form = AdminLoginForm()
-        if not session.get('admin'):
-            if form.validate_on_submit():
-                if generate_hash(
-                        form.password.data) == "a665a45920422f9d417e4867efdc4fb8a04a1f3fff1fa07e998e86f7f7a27ae3":
-                    session['admin'] = True
-                    return "success"
-                else:
-                    return jsonify(
-                        {"message": "WRONG PASSWORD!!!"}), 401
-
-            else:
-                return super().index()
         return super().index()
+        # user_id = session.get('id')
+        # if not user_id:
+        #     return jsonify({'msg': 'not logged in', 'code': 401})
+        #
+        # user = User.getUserById(user_id)
+        # if not user:
+        #     return jsonify({'msg': 'user not found', 'code': 404})
+        #
+        # if user.status in ['ADMIN', 'TEACHER']:
+        #     return super().index()
+        # else:
+        #     return jsonify({'msg': 'not authorized', 'code': 403})
 
 
 class BaseAdminView(ModelView):
@@ -568,7 +568,7 @@ class BaseAdminView(ModelView):
 class UserAdminModelView(ModelView):
     column_exclude_list = ('password_hash',)
     column_display_pk = True  # 显示主键，避免自动解析外键
-    form_columns = ('username','birthdate','gender','nickname','password', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    form_columns = ('id','username','birthdate','gender','nickname','password', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
     column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
     form_extra_fields = {
         'password': PasswordField('Password')
@@ -641,7 +641,7 @@ class ActivityLogView(BaseAdminView):
     column_list = ('id', 'user_id', 'action', 'target_type', 'target_id', 'timestamp')  # 只列出具体字段
     form_excluded_columns = ('user',)
 
-class CourseAdminModelView(ModelView):
+class CourseAdminModelView(BaseAdminView):
     form_columns = ('course_name', 'description', 'level', 'status', 'institution')
     form_overrides = {
         'level': SelectField,
@@ -657,32 +657,20 @@ class CourseAdminModelView(ModelView):
         }
     }
 
-    def create_model(self, form):
-        data = {
-            'course_name': form.course_name.data,
-            'description': form.description.data,
-            'level': form.level.data,
-            'status': form.status.data,
-            'institution': form.institution.data or "No institution",
-        }
+    def on_model_change(self, form, model, is_created):
+        if is_created:
+            model.author_id = session.get('id')
 
-        files = {}
-        if hasattr(form.main_picture, 'data') and isinstance(form.main_picture.data, FileStorage):
-            file = form.main_picture.data
-            files['main_picture'] = (file.filename, file.stream, file.mimetype)
+        return super().on_model_change(form, model, is_created)
 
-        response = requests.post(
-            url='http://localhost:5000/api/course/create',  # 根据你的实际路由修改
-            data=data,
-            files=files,
-            cookies=request.cookies
-        )
-
-        if response.status_code == 201:
-            self.session.expire_all()
+    def delete_model(self, model):
+        try:
+            model.deleted = True
+            db.session.commit()
             return True
-        else:
-            self._on_model_change_failed(form, response.text)
+        except Exception as ex:
+            flash(f'删除失败：{ex}', 'error')
+            db.session.rollback()
             return False
 
 def init_admin(app):
@@ -693,7 +681,7 @@ def init_admin(app):
     admin.add_view(UserAdminModelView(User, db.session))
     admin.add_view(PostAdminModelView(Post, db.session, endpoint="admin_post"))
     admin.add_view(CommentAdminModelView(Comment, db.session))
-    admin.add_view(BaseAdminView(Course, db.session, endpoint="admin_course"))
+    admin.add_view(CourseAdminModelView(Course, db.session, endpoint="admin_course"))
     admin.add_view(BaseAdminView(Enrollment, db.session))
     admin.add_view(BaseAdminView(Lecture, db.session))
     admin.add_view(BaseAdminView(Resource, db.session))
