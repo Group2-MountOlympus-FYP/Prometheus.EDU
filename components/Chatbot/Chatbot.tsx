@@ -59,9 +59,18 @@ const Chatbot: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // 当消息更新时滚动到底部
+  const isFirstRender = useRef(true);
   useEffect(() => {
-    scrollToBottom();
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return; // 初次加载不滚动
+    }
+    scrollToBottom(); // 后续有新消息再滚动
   }, [messages]);
+  
+  // useEffect(() => {
+  //   scrollToBottom();
+  // }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
