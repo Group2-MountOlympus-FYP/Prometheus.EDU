@@ -1,0 +1,26 @@
+.msgPanel-bg{
+    width: 100%;
+    padding: 20px 45px 50px 45px;
+}
+.msgTitle{
+    text-align: center;
+}
+.message{
+    width: 100%;
+    font-size: clamp(16px, 3vw, 30px);
+    margin-right: 10px;
+}
+
+.placeholder{
+    width: 100%;
+}
+.exit-button{
+    width: 100%;
+    display: flex;
+}
+#exitbutton{
+    margin-left: auto;
+    margin-right: 1.5vw;
+    margin-top: 2vh;
+    cursor: pointer;
+}
