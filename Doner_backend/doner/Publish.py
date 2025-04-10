@@ -473,8 +473,60 @@ def get_notifications():
     ReplyTargetAlias = aliased(ReplyTarget)
     user_reply = (
         Comment.query
-        .join(ReplyTargetAlias,Comment.parent_target)
-        .filter(ReplyTargetAlias.author_id == user.id, Comment.read == False)
+        .join(ReplyTargetAlias, Comment.parent_target)
+        .filter(ReplyTargetAlias.author_id == user.id)
         .all()
     )
-    return jsonify(CommentSchema(many=True).dump(user_reply))
+
+    user_mention = user.mentions
+
+    # 3. 构建统一格式
+    notifications = []
+
+    for comment in user_reply:
+        notifications.append({
+            "id": comment.id,
+            "type": "replied",
+            "created_at": comment.created_at,
+            "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(comment.author),
+            "post_id": comment.get_post_id(),
+            "read": comment.read,
+            "content": comment.content,
+            "comment_id": comment.id
+        })
+
+    for mention in user_mention:
+        notifications.append({
+            "id": mention.id,
+            "type": "mentioned",
+            "created_at": mention.created_at,
+            "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(mention.user),
+            "post_id": mention.post_id,
+            "read": mention.read
+
+        })
+
+    # 4. 按时间倒序排序
+    notifications.sort(key=lambda x: x["created_at"], reverse=True)
+
+    return jsonify(notifications)
+
+
+@post_bp.route('/read/<int:id>')
+def read_post(id):
+    mention = Mention.query.get(id)
+    if mention:
+        mention.read = True
+        db.session.commit()
+    else:
+        comment = Comment.query.get_or_404(id)
+        comment.read = True
+        db.session.commit()
+
+    return "success", 200
+
+
+@post_bp.route('/get_post_id_by_comment_id')
+def get_post_id_by_comment_id():
+    comment = Comment.query.get_or_404(request.args.get('comment_id'))
+    return jsonify({"id": comment.get_post_id()})
