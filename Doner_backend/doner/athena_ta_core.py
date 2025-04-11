@@ -1,6 +1,7 @@
 import datetime
 import os
 import time
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -93,14 +94,14 @@ class Athena:
 
         if Athena.embeddings is None:
             Athena.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=self.api_key)
-            print("Embeddings initialized.")
+            # print("Embeddings initialized.")
 
 
         if os.path.exists('vector_store.faiss'):
             Athena.vector_store = FAISS.load_local('vector_store.faiss',
                                                    embeddings=Athena.embeddings,
                                                    allow_dangerous_deserialization=True)
-            print('Vector store loaded.')
+            # print('Vector store loaded.')
         else:
             print('Vector store not found. Creating new vector store...')
 
@@ -257,6 +258,8 @@ if __name__ == "__main__":
             print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
 
+
+load_dotenv()
 
 athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
                        directory='./doner/study_materials',
