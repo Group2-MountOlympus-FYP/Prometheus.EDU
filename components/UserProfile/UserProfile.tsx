@@ -1,10 +1,12 @@
 'use client'
 
 import { useState } from "react"
-import { Anchor, Avatar, Button, Card, Group, Text, Grid, GridCol, Container, Tabs, Modal, FloatingIndicator } from "@mantine/core"
+import { Anchor, Avatar, Button, Card, Group, Text, Grid, Container, Tabs, Modal, FloatingIndicator } from "@mantine/core"
 import { UpdateUserInfoPanel } from "./UpdateUserInfo/UpdateUserInfo";
 import style from './UserProfile.module.css'
 import { useDisclosure } from "@mantine/hooks";
+import { UpdateAvatar } from "./UpdateUserInfo/UpdateAvatar";
+import { getText } from "./Language";
 
 interface userDataProps{
     username: string,
@@ -15,6 +17,8 @@ interface userDataProps{
 
 export function UserProfile(props:userDataProps){
     const [opened, {open, close}] = useDisclosure()
+    const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false)
+    const [avatarChangeOpen, {open: openAvatarChange, close: closeAvatarChange}] = useDisclosure()
 
     const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
     const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
@@ -24,24 +28,30 @@ export function UserProfile(props:userDataProps){
     };
     const [value, setValue] = useState<string | null>('1');
     
+    
     return (
         <Card withBorder radius={"md"} padding={"lg"} className={style.card}>
             <Grid>
                 <Grid.Col span={6} className={style.centered}>
                     <div className={style.textDiv}>
-                        <Text className={style.text}><strong>Username: </strong>{props.username}</Text>
-                        <Text className={style.text}><strong>Gender: </strong>{props.gender}</Text>
-                        <Text className={style.text}><strong>birthDate: </strong>{props.birthDate}</Text>
-                        <Text className={style.text}><strong>identity: </strong><span style={{color:'#777CB9'}}>Student</span></Text>
+                        <Text className={style.text}><strong>{getText('username')}: </strong>{props.username}</Text>
+                        <Text className={style.text}><strong>{getText('gender')}: </strong>{props.gender}</Text>
+                        <Text className={style.text}><strong>{getText('birthdate')}: </strong>{props.birthDate}</Text>
+                        <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>Student</span></Text>
                     </div>
                     <Group className={style.centered} style={{"marginBottom": '8vh'}}>
-                        <Button style={{backgroundColor:'#777CB9'}} onClick={open}>Edit</Button>
-                        <Anchor component="button" type="button" style={{color:'#309AA8'}}>Change password</Anchor>
+                        <Button style={{backgroundColor:'#777CB9'}} onClick={open}>{getText('edit')}</Button>
+                        <Anchor component="button" type="button" style={{color:'#309AA8'}}>{getText("ChangePassword")}</Anchor>
                     </Group>
                 </Grid.Col>
                 <Grid.Col span={6} style={{margin:'auto', display:'flex', justifyContent: 'flex-end'}}>
                     <div className={style.avatarRing}>
-                        <Avatar src={props.avatar} size={180} className={style.avatar}></Avatar>
+                        <div className={`${style.overlay} ${isMouseOnAvatar ? style.overlayVisible : ''}`}>Change Avatar</div>
+                        <Avatar src={props.avatar} size={180} className={style.avatar}
+                            onMouseEnter={() => setIsMouseOnAvatar(true)}
+                            onMouseLeave={() => setIsMouseOnAvatar(false)}
+                            onClick={openAvatarChange}
+                        ></Avatar>
                     </div> 
                 </Grid.Col>
             </Grid>
@@ -57,13 +67,13 @@ export function UserProfile(props:userDataProps){
                       >
                         <Tabs.List ref={setRootRef} className={style.tabList}>
                             <Tabs.Tab value="1" ref={setControlRef('1')} className={style.tab}>
-                                My Course
+                                {getText("myCourse")}
                             </Tabs.Tab>
                             <Tabs.Tab value="2" ref={setControlRef('2')} className={style.tab}>
-                                Posts
+                                {getText("posts")}
                             </Tabs.Tab>
                             <Tabs.Tab value="3" ref={setControlRef('3')} className={style.tab}>
-                                Comments
+                                {getText('comments')}
                             </Tabs.Tab>
 
                             <FloatingIndicator
@@ -75,8 +85,11 @@ export function UserProfile(props:userDataProps){
                     </Tabs>
                 </div>
             </Container>
-            <Modal opened={opened} onClose={close} centered title={"update profile"}>
+            <Modal opened={opened} onClose={close} centered title={getText('updateProfile')}>
                 <UpdateUserInfoPanel></UpdateUserInfoPanel>
+            </Modal>
+            <Modal opened={avatarChangeOpen} onClose={closeAvatarChange} centered title={getText('changeAvatar')}>
+                <UpdateAvatar></UpdateAvatar>
             </Modal>
         </Card>
     )

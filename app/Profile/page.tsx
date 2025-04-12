@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react"
 import { UserProfile } from "@/components/UserProfile/UserProfile"
-import { TabBar } from "@/components/UserProfile/TABBar/TabBar"
 import { getUserProfile, genders, userProfile } from "../api/User/router"
 
 
