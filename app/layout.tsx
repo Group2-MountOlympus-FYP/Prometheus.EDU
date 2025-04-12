@@ -27,7 +27,7 @@ export default function RootLayout({children}: { children: any }) {
         <MantineProvider theme={theme}>
             <Notifications/>
             <Header/>
-            <div style={{marginTop: '7vh'}}>
+            <div style={{marginTop: '7vh', marginBottom:'10vh'}}>
                 {children}
             </div>
             <FooterSimple/>
