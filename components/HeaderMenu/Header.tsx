@@ -5,9 +5,10 @@ import { Group, Burger, ActionIcon, Avatar, Modal, Menu } from "@mantine/core"
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { SignPanel } from "../SignPanel/SignPanel"
+import { MessagePanel } from "../MessagePanel/MessagePanel"
 import { useState, useEffect } from "react"
 import {getLocalStorage, lockOverflow, reloadWindow, setLocalStorage, unlockOverflow} from "@/app/api/General"
-import Link from 'next/link';
+import { useRouter } from 'next/navigation'
 import {getUserProfile} from "@/app/api/User/router";
 import error from "eslint-plugin-react/lib/util/error";
 import { IconChevronDown } from "@tabler/icons-react"
@@ -19,10 +20,11 @@ type headerProps = {
 }
 
 const links = [
-    { link: '/', label: 'AthenaTutor' },
+    { link: '/athena_chat', label: 'AthenaTutor' },
     { link: '/MyCourses', label: 'My Courses' },
-    { link: '/', label: 'Message' }
+    // { link: '/', label: 'Message' }
 ]
+
 export default function Header() {
     const [avatar, setAvatar] = useState('')
     const [username, setUsername] = useState('')
@@ -47,26 +49,39 @@ export default function Header() {
         fetchUserInfo()
     }, []);
 
+    const [isMsgPanelOpen, setIsMsgOpen] = useState(false)
     const [isLoginPanelOpen, setIsPanelOpen] = useState(false)
 
+    const router = useRouter();
+
+    {/* 进入个人主页 */}
+    const goToProfile = () => {
+        router.push('/Profile');
+    };
+
+    {/* 登出 */}
     const handleLogout = async () =>{
         setIsLogin(false)
         try{
-            Logout()
+            await Logout()
         }catch(error){
             console.log(error)
         }
-        reloadWindow()
+        setTimeout(() => {
+            reloadWindow()
+        }, 1000);
     }
 
+    {/* 导航链接 */}
     const items = links.map((link) => (
-      <Link
+      <span
         key={link.label}
-        href={link.link}
         className={classes.links}
+        onClick={() => router.push(link.link, { scroll: false })}
+        style={{ cursor: 'pointer' }}
       >
           {link.label}
-      </Link>
+      </span>
     ));
 
     return (
@@ -85,32 +100,53 @@ export default function Header() {
                 <div style={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
                     <LanguageSwitcher></LanguageSwitcher>
                 </div>
-                <Group ml={50} gap={10} visibleFrom="sm" className={classes.links}>
-                    {items}
-                </Group>
-                {isLogin ? 
+                
+                {isLogin ? (
+                    <>
+                    {/* 登录状态下显示导航链接 */}
+                    <Group ml={50} gap={10} visibleFrom="sm" className={classes.links}>
+                        {items}
+                    </Group>
+                    <Group className={classes.links}>
+                        <span onClick={() => {setIsMsgOpen(true);lockOverflow()}} style={{ paddingRight: "1.4vw" }}>
+                            Message
+                        </span>
+                    </Group>
+
+                    {/* 登录状态下显示头像 */}
                     <Group >
-                        <Avatar src={avatar}></Avatar>
+                        
                         <Menu zIndex={1001} shadow={"md"}>
                             <Menu.Target>
-                                <ActionIcon variant="transparent" size={10}>
-                                    <IconChevronDown size={10}/>
-                                </ActionIcon>
+                                <Avatar src={avatar} style={{ cursor: "pointer" }}></Avatar>
                             </Menu.Target>
                             <Menu.Dropdown>
-                                <Menu.Item className={classes.select} onClick={handleLogout}>Logout</Menu.Item>
+                                <Menu.Item className={classes.select} onClick={goToProfile}>
+                                    My Profile
+                                </Menu.Item>
+                                <Menu.Item className={classes.select} onClick={handleLogout}>
+                                    Logout
+                                </Menu.Item>
                             </Menu.Dropdown>
                         </Menu>
                     </Group>
-                    :
+                    </>
+                    ) : (
                     <Group className={classes.links}>
                         <span onClick={() => {setIsPanelOpen(true);lockOverflow()}}>Login</span>
                     </Group>
-                }
+                )}
             </div>
             <div style={{height: '0', border: 'none' , borderBottom: '1px solid grey'}}></div>
+
+            <div hidden={!isMsgPanelOpen} className={`${classes.overlay} ${isMsgPanelOpen ? 'show' : ''}`}></div>
             <div hidden={!isLoginPanelOpen} className={`${classes.overlay} ${isLoginPanelOpen ? 'show' : ''}`}></div>
         </header>
+
+            <div hidden={!isMsgPanelOpen} className={`${classes.msgPanel} ${isMsgPanelOpen ? classes.show : ''}`}>
+                <MessagePanel onExitClick={() => {setIsMsgOpen(false);unlockOverflow()}}></MessagePanel>
+            </div>
+
             <div hidden={!isLoginPanelOpen} className={`${classes.signPanel} ${isLoginPanelOpen ? classes.show : ''}`}>
                 <SignPanel onExitClick={() => {setIsPanelOpen(false);unlockOverflow()}}></SignPanel>
             </div>

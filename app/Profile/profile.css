@@ -1,0 +1,9 @@
+.tabsPanels{
+    display: block;
+    margin-top: 10vh;
+    width: 100%;
+}
+.courseCard{
+    margin: auto;
+    margin-bottom: 5vh;
+}
