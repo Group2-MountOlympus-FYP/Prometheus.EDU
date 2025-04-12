@@ -13,6 +13,8 @@ interface userDataProps{
     birthDate: string,
     gender: string,
     avatar: string,
+    tabsValue: string | null,
+    onTabsChange: (value: string | null) => void,
 }
 
 export function UserProfile(props:userDataProps){
@@ -26,7 +28,6 @@ export function UserProfile(props:userDataProps){
         controlsRefs[val] = node;
         setControlsRefs(controlsRefs);
     };
-    const [value, setValue] = useState<string | null>('1');
     
     
     return (
@@ -57,7 +58,7 @@ export function UserProfile(props:userDataProps){
             </Grid>
             <Container className={style.tabBar}>
                 <div style={{display:'flex'}}>
-                    <Tabs value={value} onChange={setValue}
+                    <Tabs value={props.tabsValue} onChange={props.onTabsChange}
                     style={{
                         '--tabs-list-line-bottom': '0',
                         '--tabs-list-line-top': 'unset',
@@ -77,7 +78,7 @@ export function UserProfile(props:userDataProps){
                             </Tabs.Tab>
 
                             <FloatingIndicator
-                            target={value ? controlsRefs[value] : null}
+                            target={props.tabsValue ? controlsRefs[props.tabsValue] : null}
                             parent={rootRef}
                             className={style.indicator}
                             />
