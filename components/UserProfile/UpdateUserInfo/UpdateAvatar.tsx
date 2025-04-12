@@ -47,12 +47,12 @@ export function UpdateAvatar(){
         setURL(url)
     }
     return (
-        <div style={{width:'100%', justifyContent:'center'}}>
+        <div >
         <Dropzone
             className='dropzone'
             onDrop={handleDropImage}
             onReject={(files) => {notifications.show({
-                message: 'File upload fail!'
+                message: getText("uploadFileFail")
             })}}
             maxSize={5 * 1024 ** 2}
             accept={IMAGE_MIME_TYPE}
