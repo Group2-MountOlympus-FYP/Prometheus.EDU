@@ -29,7 +29,6 @@ class CommentSchema(SQLAlchemyAutoSchema):
 class ImageSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Image
-        load_instance = True
 
 
 class PostSchema(SQLAlchemyAutoSchema):
@@ -67,8 +66,6 @@ class UserSchema(SQLAlchemyAutoSchema):
 class ActivityLogSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = ActivityLog
-        include_fk = True
-        load_instance = True
 
 
 class TagSchema(SQLAlchemyAutoSchema):
@@ -89,15 +86,16 @@ class LectureSchema(SQLAlchemyAutoSchema):
 
     resources = Nested(ResourceSchema, many=True)
     posts = Nested(PostSchema, many=True)
-    author = Nested(UserSchema, exclude=["password_hash"])
-
+    author = Nested(UserSchema, only=['username', 'avatar', 'id'])
+    images = Nested(ImageSchema, many=True, only=['url'])
 
 class CourseSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Course
         include_relationships = True
 
-    lectures = Nested(LectureSchema, many=True)
+    lectures = Nested(LectureSchema, many=True,exclude=['posts'])
+    images = Nested(ImageSchema, many=True, only=['url'])
 
 
 # 定义一个映射表，key 是字段类型，value 是对应的 JSON 类型字符串
