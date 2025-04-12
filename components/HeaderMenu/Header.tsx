@@ -63,11 +63,13 @@ export default function Header() {
     const handleLogout = async () =>{
         setIsLogin(false)
         try{
-            Logout()
+            await Logout()
         }catch(error){
             console.log(error)
         }
-        reloadWindow()
+        setTimeout(() => {
+            reloadWindow()
+        }, 1000);
     }
 
     {/* 导航链接 */}
