@@ -62,9 +62,26 @@
     font-weight: 500;
     cursor: pointer;
 }
-/* .links:hover{
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-6));
-} */
+.links:hover{
+    color: #777CB9;
+}
+.msgPanel{
+    width: 40vw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    z-index: 1000;
+    box-shadow: 8px 8px 7px rgb(0, 0, 0, 0.25);
+    border-radius: 15px;
+}
+.msgPanel.show{
+    opacity: 1;
+    visibility: visible;
+    display: block;
+    animation: editPanelMoveIn 0.5s ease-in-out;
+}
 .signPanel{
     width: 40vw;
     position: absolute;
