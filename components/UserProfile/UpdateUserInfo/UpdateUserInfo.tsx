@@ -62,13 +62,13 @@ export function UpdateUserInfoPanel(){
     return (
         <div className="bg">
             <form onSubmit={handleSubmit} className="infoForm">
-                <Input.Wrapper label="Username" error={usernameError} withAsterisk>
-                    <Input placeholder="username" onBlur={checkUsernameExist} value={username} onChange={(event) => setUsername(event.target.value)}></Input>
+                <Input.Wrapper label={getText("username")} error={usernameError} withAsterisk>
+                    <Input placeholder={getText("username")} onBlur={checkUsernameExist} value={username} onChange={(event) => setUsername(event.target.value)}></Input>
                 </Input.Wrapper>
-                <DateInput label="Birthdate" value={birthDate} disabled withAsterisk></DateInput>
+                <DateInput label={getText("birthdate")} value={birthDate} disabled withAsterisk></DateInput>
                 <DatePicker value={birthDate} onChange={setBirthDate}></DatePicker>
                 <GenderSelect value={gender} onChange={setGender} withAsterisk></GenderSelect>
-                <Button type="submit" disabled={!isAbleSubmit} className="submitButton">Submit Change</Button>
+                <Button type="submit" disabled={!isAbleSubmit} className="submitButton">{getText("submit")}</Button>
             </form>
         </div>
     )
@@ -89,7 +89,7 @@ function GenderSelect({ value, onChange }:any) {
     return (
         <Select
         label= {getText("gender")}
-        placeholder={getText("Please select gender")}
+        placeholder={getText("PleaseSelectGender")}
         data={genderOptions}
         value={value}
         onChange={onChange} // 返回的是 value，例如 "male"

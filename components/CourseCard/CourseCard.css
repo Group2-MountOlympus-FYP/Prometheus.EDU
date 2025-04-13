@@ -9,6 +9,26 @@
     padding: 10px;
 }
 
+.course-card-for-profile{
+    display: block;
+    align-items: center;
+    width: 20vw;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    background: #fff;
+    padding: 10px;
+}
+.course-image-for-profile {
+    width: 18vw;
+    height: 10vw;
+    object-fit: cover;
+    border-radius: 5px;
+}
+.course-info-for-profile {
+    text-align: left;
+}
+
 .course-image {
     width: 16vw;
     height: 9vw;
