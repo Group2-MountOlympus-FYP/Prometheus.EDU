@@ -23,6 +23,7 @@
     "@mantine/core": "^7.17.4",
     "@mantine/dates": "^7.17.4",
     "@mantine/dropzone": "^7.17.4",
+    "@mantine/form": "^7.17.4",
     "@mantine/hooks": "^7.17.4",
     "@mantine/notifications": "^7.17.4",
     "@next/bundle-analyzer": "^15.0.2",
