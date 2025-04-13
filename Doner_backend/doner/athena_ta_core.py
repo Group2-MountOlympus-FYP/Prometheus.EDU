@@ -12,6 +12,8 @@ from langchain.chains import RetrievalQA
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 
 
+load_dotenv()
+
 class Athena:
     embeddings = None
     vector_store = None
@@ -204,8 +206,6 @@ class Athena:
 
 
 if __name__ == "__main__":
-    from dotenv import load_dotenv
-    load_dotenv()
     api_key = os.getenv('GOOGLE_API_KEY', '')
 
     print("RAG Module Activated.\n")
@@ -259,8 +259,7 @@ if __name__ == "__main__":
             print("\n" + "=" * 50 + "\n")
 
 
-load_dotenv()
-
 athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
                        directory='./doner/study_materials',
                        model='gemini-2.0-flash')
+
