@@ -52,6 +52,8 @@ jobs:
           npm run build
         
           pm2 restart shawarma --update-env || pm2 start npm --name 'shawarma' -- start --update-env
+          
+          source /home/student/Prometheus.EDU/Doner_backend/donerenv/bin/activate
         
           pip install -r Doner_backend/requirements.txt --no-deps
         
