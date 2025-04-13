@@ -7,25 +7,27 @@ from pypdf import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain.schema import Document
-from langchain_core.prompts import ChatPromptTemplate
-from langchain.chains import RetrievalQA
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 
+from .athena_prompts import AthenaPrompts
 
 load_dotenv()
 
 class Athena:
     embeddings = None
     vector_store = None
-    qa_chain = None
     llm = None
+
+    # Chains for different functionalities
+    qa_chain = None
+    report_chain = None
+    assignment_review_chain = None
 
     @staticmethod
     def load_files(directory: str):
         documents = []
 
         for root, _, files in os.walk(directory):
-            # print("Reading from folder:", root)
             for filename in files:
                 if not filename.endswith(('.html', '.htm', '.md', '.pdf', 'DS_Store')):
                     print(f"Unexpected file format: {filename}")
@@ -81,7 +83,6 @@ class Athena:
             return None
 
 
-
     def __init__(self, api_key: str, directory: str, model: str):
         self.api_key = api_key
         self.documents = self.load_files(directory)
@@ -96,18 +97,13 @@ class Athena:
 
         if Athena.embeddings is None:
             Athena.embeddings = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004", google_api_key=self.api_key)
-            # print("Embeddings initialized.")
-
 
         if os.path.exists('vector_store.faiss'):
             Athena.vector_store = FAISS.load_local('vector_store.faiss',
                                                    embeddings=Athena.embeddings,
                                                    allow_dangerous_deserialization=True)
-            # print('Vector store loaded.')
         else:
             print('Vector store not found. Creating new vector store...')
-
-            # Create a FAISS vector store from the documents and their embeddings
             Athena.vector_store = self.create_vector_store_batched(self.documents, Athena.embeddings)
             print('Vector store created.')
 
@@ -117,92 +113,75 @@ class Athena:
             else:
                 raise Exception("Vector store creation failed. Please check the input documents and embeddings.")
 
-
         if self.model == "gemini-2.0-flash":
             Athena.llm = ChatGoogleGenerativeAI(model=self.model, temperature=0.6, google_api_key=self.api_key)
         else:
             raise Exception("LLM Provider Not Supported. Peylix is Watching You.")
 
-        # Establish RAG pipeline
-        prompt_template = """
-        Instructions:
-        You are an AI teaching assistant specialized in providing guidance and assistance to junior students.
-        Based on the retrieved course-related materials, respond to the User Query.
-        Note that your response should be heuristic. When the student is asking a complex question, you should
-        not directly give the answer, but encourage the student to discover the answer by themselves.
-
-        Retrieved Documents:
-        {context}
-
-        User Query:
-        {question}
-        """
-
-        prompt = ChatPromptTemplate.from_template(prompt_template)
-
-        Athena.qa_chain = RetrievalQA.from_chain_type(
-            llm=Athena.llm,
-            chain_type="stuff",
-            retriever=Athena.vector_store.as_retriever(),
-            chain_type_kwargs={"prompt": prompt}
-        )
+        # Initialize specialized chains
+        self.initialize_chains()
 
 
-    def generate_report(self, query: str) -> str:
-        """
-        Generate a step-by-step report (in plain text) based on the user query.
-        Internally uses the same RAG pipeline, but we prepend instructions
-        so that the final answer is more like a detailed, step-by-step guide.
-        """
-        # You can tailor these instructions as needed
-        system_instructions = (
-            '''
-            You are an AI Teaching Assistant. The user wants a PDF report that 
-            explains step-by-step how to approach the problem or question. 
-            Please provide a thorough, numbered list of steps or instructions,
-            followed by a concise summary at the end.
-            '''
-        )
+    def initialize_chains(self):
+        """Initialize all specialized chains"""
+        retriever = Athena.vector_store.as_retriever()
 
-        # Combine your system instructions with the user query
-        augmented_query = f"{system_instructions}\n\nUser Query: {query}"
+        # Standard QA chain
+        Athena.qa_chain = AthenaPrompts.create_qa_chain(Athena.llm, retriever)
 
-        # Use the same RAG pipeline, but with the augmented query
-        answer = Athena.qa_chain.invoke(augmented_query)
-        return answer
+        # Report generation chain
+        Athena.report_chain = AthenaPrompts.create_report_chain(Athena.llm, retriever)
 
-
+        # Assignment review chain (with special handling)
+        Athena.assignment_review_chain = AthenaPrompts.create_assignment_review_chain(Athena.llm, retriever)
 
 
     def generate(self, query: str):
+        """Generate a response using the general QA chain"""
         answer = Athena.qa_chain.invoke(query)
         return answer
 
 
+    def generate_report(self, query: str) -> str:
+        """Generate a report using the report chain"""
+        answer = Athena.report_chain.invoke(query)
+        return answer
+
+
     def generate_without_rag(self, query: str):
-        answer = Athena.llm.invoke(query)
+        """Generate a response without using RAG retrieval"""
+        formatted_prompt = AthenaPrompts.format_no_rag_prompt(query)
+        answer = Athena.llm.invoke(formatted_prompt)
         return answer
 
 
     def retrieve_documents_only(self, query: str):
+        """Only retrieve documents without generating a response"""
         retrieved_docs = Athena.vector_store.as_retriever().invoke(query)
         return retrieved_docs
 
 
     def review_assignment(self, task_requirements: str, submitted_content: str):
-        system_instructions = (
-            '''
-            You are asked to review the assignment submitted by a student. The
-            requirements of the assignment and student's answer is provided bellow.
-            Please provide your feedback for the student.
-            '''
-        )
+        """Review an assignment using the assignment review chain
 
-        augmented_query = f"{system_instructions}\n\nAssignment Requirements:\n{task_requirements}\n\nStudent's Answer:\n{submitted_content}\n"
+        Note: This requires special handling because the assignment review template
+        has an additional 'submission' parameter.
+        """
+        # this is to make it compatible with LangChain's standard QA chain.
+        combined_query = f"Assignment Requirements: {task_requirements}\n\nStudent Submission: {submitted_content}"
 
-        answer = Athena.qa_chain.invoke(augmented_query)
+        # The combined_query will be passed as the 'question' parameter
+        # The actual submission will be extracted within the template itself
+        answer = Athena.assignment_review_chain.invoke({
+            "question": combined_query,
+            "submission": submitted_content  # This might not be used if the chain doesn't handle it
+        })
         return answer
 
+
+athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
+                        directory='study_materials',
+                        model='gemini-2.0-flash')
 
 
 if __name__ == "__main__":
@@ -221,10 +200,6 @@ if __name__ == "__main__":
 
         try:
             start_time = time.time()
-
-            athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
-                                   directory='study_materials',
-                                   model='gemini-2.0-flash')
 
             answer = athena_client.generate(query)
             retrieved_docs = athena_client.retrieve_documents_only(query)
@@ -257,9 +232,3 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
-
-
-athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
-                       directory='./doner/study_materials',
-                       model='gemini-2.0-flash')
-
