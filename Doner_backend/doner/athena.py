@@ -5,9 +5,6 @@ from wtforms.validators import InputRequired
 
 from .athena_ta_core import athena_client
 
-from dotenv import load_dotenv
-import os
-
 from io import BytesIO
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer 
 from reportlab.lib.pagesizes import LETTER
@@ -15,14 +12,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 
 
-load_dotenv()
 
 athena_bp = Blueprint('athena', __name__)
-
-# athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
-#                        directory='./doner/study_materials',
-#                        model='gemini-2.0-flash')
-
 
 
 class QueryForm(FlaskForm):
