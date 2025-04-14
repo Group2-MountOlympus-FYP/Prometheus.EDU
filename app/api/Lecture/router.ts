@@ -21,3 +21,21 @@ export async function getLectureDetailsById(id: number, page: number, per_page: 
 
     return await response.json();
 }
+
+export async function createLecture(course_id: number, formData: FormData) {
+  const url = `/backend/course/${course_id}/add_lecture`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+    // 不要设置 headers 中的 Content-Type！
+  });
+
+  if (!response.ok) {
+    throw new Error(`Lecture creation failed: ${response.status}`);
+  }
+
+  return await response.json();
+}
+
