@@ -87,12 +87,10 @@ const CourseCreate: React.FC = () => {
     };
 
     return (
-        <Container size="sm" mt={200}> {/* 整体下移 */}
-            <Center>
-                <Title order={2} size="3rem" fw={700}>
-                    Add New Course
-                </Title>
-            </Center>
+        <Container size="sm" mt={200}>
+            <Title order={2} ta="center" mb="xl" size="2.5rem">
+                Add New Course
+            </Title>
 
             <Text size="xl" mt="md" mb="xl" ta="center">
                 Please fill in the information below to create a new course.
@@ -101,22 +99,37 @@ const CourseCreate: React.FC = () => {
             <form onSubmit={handleSubmit}>
                 <Stack spacing={40}>
 
-                    <Dropzone
-                        onDrop={(files) => {
-                            const file = files[0];
-                            form.setFieldValue("main_picture", file);
-                            setImagePreview(URL.createObjectURL(file));
-                        }}
-                        onReject={() =>
-                            showNotification({
-                                title: "Upload failed",
-                                message: "Please upload a valid image file.",
-                                color: "red",
-                            })
-                        }
-                        maxSize={5 * 1024 ** 2}
-                        accept={IMAGE_MIME_TYPE}
-                    >
+                    <TextInput
+                        label="Course Name"
+                        placeholder="Enter the course name"
+                        size="lg"
+                        {...form.getInputProps("course_name")}
+                        required
+                        mt="xl"
+                    />
+
+                    <div>
+                        <Text fw={500} mt={30} mb={20}>
+                            Upload Course Picture
+                        </Text>
+
+                        <Dropzone
+                            onDrop={(files) => {
+                                const file = files[0];
+                                form.setFieldValue("main_picture", file);
+                                setImagePreview(URL.createObjectURL(file));
+                            }}
+                            onReject={() =>
+                                showNotification({
+                                    title: "Upload failed",
+                                    message: "Please upload a valid image file.",
+                                    color: "red",
+                                })
+                            }
+                            maxSize={5 * 1024 ** 2}
+                            accept={IMAGE_MIME_TYPE}
+                            style={{backgroundColor: "#f1f3f5", borderRadius: 8}}
+                        >
                             <Group justify="center" style={{pointerEvents: "none"}}>
                                 <IconUpload size={80} stroke={1.5}/>
                                 <div>
@@ -128,24 +141,16 @@ const CourseCreate: React.FC = () => {
                                     </Text>
                                 </div>
                             </Group>
-                    </Dropzone>
+                        </Dropzone>
 
-                    {imagePreview && (
-                        <img
-                            src={imagePreview}
-                            alt="Uploaded preview"
-                            style={{maxWidth: "100%", marginTop: 20, borderRadius: 16}}
-                        />
-                    )}
-
-                    <TextInput
-                        label="Course Name"
-                        placeholder="Enter the course name"
-                        size="lg"
-                        {...form.getInputProps("course_name")}
-                        required
-                        mt="xl"
-                    />
+                        {imagePreview && (
+                            <img
+                                src={imagePreview}
+                                alt="Uploaded preview"
+                                style={{maxWidth: "100%", marginTop: 20, borderRadius: 16}}
+                            />
+                        )}
+                    </div>
 
                     <Textarea
                         label="Description"
@@ -177,13 +182,14 @@ const CourseCreate: React.FC = () => {
                         required
                         mt="xl"
                     />
-                </Stack>
 
-                <Group justify="center" mt={80}>
-                    <Button type="submit" size="lg" loading={loading}>
-                        Create Course
-                    </Button>
-                </Group>
+
+                    <Group justify="center" mt={80}>
+                        <Button type="submit" size="lg" loading={loading}>
+                            Create Course
+                        </Button>
+                    </Group>
+                </Stack>
             </form>
         </Container>
     );
