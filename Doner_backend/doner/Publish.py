@@ -467,6 +467,13 @@ def get_all_comments():
     return jsonify(CommentSchema(many=True).dump(user_comments))
 
 
+@post_bp.route('/my/all')
+def get_all_posts():
+    user = get_current_user()
+    user_posts = Post.query.filter(Comment.author_id == user.id).all()
+    return jsonify(PostSchema(many=True).dump(user_posts))
+
+
 @post_bp.route('/get_notifications')
 def get_notifications():
     user = get_current_user()

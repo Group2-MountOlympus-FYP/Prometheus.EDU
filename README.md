@@ -20,7 +20,7 @@ Consequently, Agape needs a versatile yet user-friendly solution that not only o
 
 - **Structured Learning via NousTube**: Educational videos and lectures will be curated and hosted on the a module called *NousTube*, with features for taking notes and tracking course completion. The user-friendly interface ensures compatibility with mobile devices and low-bandwidth environments.
 - **Community Support through MetisHub**: *MetisHub* will serve as the primary forum for discussions, where learners can post questions, exchange ideas, and receive timely assistance. Additionally, they can reach out directly to partnering NGOs for help regarding study-related hurdles, such as financial constraints or access to learning materials.
-- **AI-Powered Assistance with AthenaTutor**: Leveraging Retrieval-Augmented Generation (RAG) techniques, *AthenaTutor* will reference approved course content to provide quick and accurate answers to learners’ questions. This minimizes the need for constant human intervention while maintaining consistent, fact-checked responses.
+- **AI-Powered Assistance with AthenaIntelligence**: Leveraging Retrieval-Augmented Generation (RAG) techniques, *AthenaIntelligence* will reference approved course content to provide quick and accurate answers to learners’ questions. This minimizes the need for constant human intervention while maintaining consistent, fact-checked responses.
 
 Through **Prometheus.EDU**, **MountOlympus** will deliver an end-to-end educational ecosystem that breaks barriers to access, fosters community collaboration, and leverages cutting-edge AI to support learners across the globe.
 
