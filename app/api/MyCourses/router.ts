@@ -8,12 +8,13 @@ export async function getMyCourses() {
   if (!response.ok) {
     throw new Error(`Error: ${response.status}`);
   }
-  return await response.json();
+  return response;
 }
 
 export async function checkEnrollmentStatus(course_id: number): Promise<boolean> {
   try {
-    const myCourses = await getMyCourses();
+    const response = await getMyCourses();
+    const myCourses = await response.json();
 
     console.log("已报名课程 ID：", myCourses.map((c: any) => c.course?.id));
     console.log("当前课程 ID：", course_id);
