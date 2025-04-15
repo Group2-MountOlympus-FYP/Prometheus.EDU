@@ -26,6 +26,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         comments: 'Comments',
         updateProfile: 'Update Profile',
         changeAvatar: 'Change Avatar',
+        noPostYet: 'You don\'t have post',
+        noCourseYet: 'You don\'t have courses',
       },
       zh: {
         UsernameExist: '用户名已存在！',
@@ -48,6 +50,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         comments: '我的评论',
         updateProfile: '修改信息',
         changeAvatar: '修改头像',
+        noPostYet: '您没有发帖',
+        noCourseYet: '您没有课程',
       },
 }
 

@@ -3,9 +3,10 @@
 import { useState, useEffect } from "react"
 import { UserProfile } from "@/components/UserProfile/UserProfile"
 import { getUserProfile, genders, userProfile, getMyPosts, getMyComments } from "../api/User/router"
-import { Tabs } from "@mantine/core"
+import { Skeleton, Tabs, Text } from "@mantine/core"
 import { MyCourse } from "./Components/myCourse"
 import { getMyCourses } from "../api/MyCourses/router"
+import { getText } from "@/components/UserProfile/Language"
 import "./profile.css"
 import { MyPosts } from "./Components/myPosts"
 
@@ -19,7 +20,7 @@ export default function UserInfoPage() {
     const [tabsValue, setTabsValue] = useState<string | null>('1')
     const [courses, setCourses] = useState([])
     const [posts, setPosts] = useState([])
-    const [comments, setComments] = useState([])
+    const [isLoading, setIsLoading] = useState<boolean>(true)
     useEffect(() => {
         const fetchUserProfile = async () => {
             try{
@@ -39,6 +40,7 @@ export default function UserInfoPage() {
     const onTabValueChange = async(value:string | null) => {
         setTabsValue(value)
         if(value){
+            setIsLoading(true)
             if(value === "1"){
                 //获取course
                 try{
@@ -70,6 +72,7 @@ export default function UserInfoPage() {
                     console.log(e)
                 }
             }
+            setIsLoading(false)
         }
     }
     return (
@@ -79,14 +82,33 @@ export default function UserInfoPage() {
             </div>
         
             <div className="tabsPanels">
-                <Tabs value={tabsValue} onChange={setTabsValue}>
-                    <Tabs.Panel value="1">
-                        <MyCourse data={courses}></MyCourse>
-                    </Tabs.Panel>
-                    <Tabs.Panel value="2">
-                        <MyPosts posts={posts}></MyPosts>
-                    </Tabs.Panel>
-                </Tabs>
+                {
+                    !isLoading ? 
+                    <Tabs value={tabsValue} onChange={setTabsValue}>
+                        <Tabs.Panel value="1">
+                            {
+                                courses.length !== 0 ?
+                                <MyCourse data={courses}></MyCourse> :
+                                <Text>{getText("noCourseYet")}</Text>
+                            }
+                        </Tabs.Panel>
+                        <Tabs.Panel value="2">
+                            {
+                                posts.length !== 0 ? 
+                                <MyPosts posts={posts}></MyPosts> :
+                                <Text>{getText("noPostYet")}</Text>
+                            }
+                        </Tabs.Panel>
+                    </Tabs>
+                    :
+                    <div>
+                        <Skeleton height={50} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={20} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={20} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={20} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
+                    </div>
+                }
+                
             </div>
         </div>
     )
