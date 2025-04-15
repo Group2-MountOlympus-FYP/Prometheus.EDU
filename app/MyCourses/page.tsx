@@ -31,7 +31,8 @@ export default function MyCoursesPage() {
 
   useEffect(() => {
     getMyCourses()
-      .then((res) => {
+      .then(async (response) => {
+        const res = await response.json();
         if (Array.isArray(res)) {
           setCourses(res); // ✅ 安全设置
         } else {
