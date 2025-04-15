@@ -31,13 +31,14 @@ export default function UserInfoPage() {
         }
         onTabValueChange(tabsValue) //初始先执行一次调用显示默认tab的值
         fetchUserProfile()
-    }) 
+    }, []) 
 
     const onTabValueChange = async(value:string | null) => {
         setTabsValue(value)
         if(value){
             if(value === "1"){
                 try{
+                    console.log("Getting course...")
                     const response = await getMyCourses()
                     const data = await response.json()
                     //console.log(data)
