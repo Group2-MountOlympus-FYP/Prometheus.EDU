@@ -21,7 +21,7 @@ export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
                         alignItems: 'center',
                     }}>
                         <span>{getText('welcome1')}</span>
-                        <div style={{ paddingLeft: '0.6vw' }}><GradientText /></div>
+                        <div style={{ paddingLeft: '0.6vw' }}><GradientText>{getText('education')}</GradientText></div>
                         <span style={{ paddingLeft: '0.6vw' }}>{getText('welcome2')}</span>
                     </div>
 
@@ -47,9 +47,6 @@ export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
                     </div>
                 </div>
 
-            </div>
-            <div >
-                
             </div>
         </div>
     )

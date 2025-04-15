@@ -2,63 +2,80 @@
 
 import { AboutWebSite } from '@/components/AboutWebsite/AboutWebsite';
 import { CourseCard } from '@/components/CourseCard/CourseCard';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Group, SimpleGrid } from '@mantine/core';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 import Link from 'next/link';
+import { getCourseByCategory } from '@/app/api/Course/router';
 
 
 export default function HomePage() {
-  const allCourses: CourseCardInfo[] = [
-    { courseId: 115, url: 'placeholder.png', name: 'Computer Programming', category: 'Computer Science', institute: "Beijing University of Technology" },
-    { url: 'placeholder.png', name: 'Python', category: 'Computer Science', institute: "Beijing University of Technology" },
-    { url: 'placeholder.png', name: 'Java', category: 'Computer Science', institute: "Beijing University of Technology" },
-    { url: 'placeholder.png', name: 'C++', category: 'Computer Science', institute: "Beijing University of Technology" },
-    { url: 'placeholder.png', name: 'Cooking', category: 'Life', institute: "Beijing University of Technology" },
-    { url: 'placeholder.png', name: 'Cycling', category: 'Sports', institute: "Beijing University of Technology" },
-    { url: 'placeholder.png', name: 'React', category: 'Computer Science', institute: "Beijing University of Technology" },
-  ];
-
   const categories: string[] = ['All','Computer Science', 'Math', 'Sports', 'Life', 'Art', 'Language', 'Others'];
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [courses, setCourses] = useState<CourseCardInfo[]>([]);
 
-  // 筛选课程
-  const filteredCourses = selectedCategory === 'All' 
-    ? allCourses 
-    : allCourses.filter(course => course.category === selectedCategory);
+  // 监听分类变化，获取课程数据
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        if (selectedCategory === 'All') {
+          // 如果后端有专门的 "全部课程" 接口，可以用一个通用的 fetchAllCourses()
+          const allCategories = categories.filter(cat => cat !== 'All');
+          let allCourses: CourseCardInfo[] = [];
+          for (const category of allCategories) {
+            const data = await getCourseByCategory(category);
+            allCourses = [...allCourses, ...data];
+          }
+          setCourses(allCourses);
+        } else {
+          const data = await getCourseByCategory(selectedCategory);
+          setCourses(data);
+        }
+      } catch (error) {
+        console.error('failed:', error);
+      }
+    };
+
+    fetchCourses();
+  }, [selectedCategory]);
 
   return (
     <div style={{ maxWidth: '100vw' }}>
       <AboutWebSite style={{ maxWidth: '100vw' }} />
 
       <div className={classes.courseContainer}>
-      
-      {/* 课程分类 */}
-      <div className={classes.categoriesContainer}>
-        <span className={classes.categoriesTitle}> Categories </span>
-        <div className={classes.categoriesList}>
-          {categories.map((category, index) => (
-            <button
+
+        {/* 课程分类 */}
+        <div className={classes.categoriesContainer}>
+          <span className={classes.categoriesTitle}> Categories </span>
+          <div className={classes.categoriesList}>
+            {categories.map((category, index) => (
+              <button
+                key={index}
+                className={`${classes.categoriesButton} ${selectedCategory === category ? classes.selected : ''}`}
+                onClick={() => setSelectedCategory(category)}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* 课程列表 */}
+        <div className={classes.courseList}>
+          {courses.map((course, index) => (
+            <Link
+              href={`/course/${course.courseId}`}
               key={index}
-              className={`${classes.categoriesButton} ${selectedCategory === category ? classes.selected : ''}`}
-              onClick={() => setSelectedCategory(category)}
+              style={{ textDecoration: 'none' }}
+              className={classes.courseLink}
             >
-              {category}
-            </button>
+              <CourseCard {...course} />
+            </Link>
           ))}
         </div>
-      </div>
-
-      {/* 课程列表 */}
-      <div className={classes.courseList}>
-        {filteredCourses.map((course, index) => (
-          <Link href={`/course/${course.courseId}`} key={index} style={{ textDecoration: 'none' }} className={classes.courseLink}>
-            <CourseCard {...course} />
-          </Link>
-        ))}
-      </div>
 
       </div>
 
