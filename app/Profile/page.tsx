@@ -21,14 +21,17 @@ export default function UserInfoPage() {
     const [courses, setCourses] = useState([])
     const [posts, setPosts] = useState([])
     const [isLoading, setIsLoading] = useState<boolean>(true)
+    const [isProfileLoading, setIsProfileLoading] = useState<boolean>(true)
     useEffect(() => {
         const fetchUserProfile = async () => {
+            setIsProfileLoading(true)
             try{
                 const userData = await getUserProfile()
                 setAvatar(userData.avatar)
                 setBirthDate(userData.birthdate)
                 setUsername(userData.username)
                 setGender(userData.gender)
+                setIsProfileLoading(false)
             }catch(error){
                 console.log(error)
             }
@@ -78,7 +81,7 @@ export default function UserInfoPage() {
     return (
         <div style={{width: '100%', display: 'block'}}>
             <div style={{display:'flex', alignItems:'center', width:"100%"}}>
-                <UserProfile username={username} birthDate={BirthDate} gender={gender} avatar={avatar} tabsValue={tabsValue} onTabsChange={onTabValueChange}/>
+                <UserProfile username={username} birthDate={BirthDate} gender={gender} avatar={avatar} tabsValue={tabsValue} onTabsChange={onTabValueChange} isLoading={isProfileLoading}/>
             </div>
         
             <div className="tabsPanels">
@@ -102,10 +105,10 @@ export default function UserInfoPage() {
                     </Tabs>
                     :
                     <div>
-                        <Skeleton height={50} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
-                        <Skeleton height={20} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
-                        <Skeleton height={20} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
-                        <Skeleton height={20} mt={6} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={50} mt={12} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={20} mt={12} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={20} mt={12} width="70%" radius="xl" style={{margin:'auto'}}/>
+                        <Skeleton height={20} mt={12} width="70%" radius="xl" style={{margin:'auto'}}/>
                     </div>
                 }
                 
