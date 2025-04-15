@@ -20,7 +20,7 @@ type headerProps = {
 }
 
 const links = [
-    { link: '/', label: 'Homepage' },
+    // { link: '/', label: 'Homepage' },
     { link: '/athena_chat', label: 'AthenaTutor' },
     { link: '/MyCourses', label: 'My Courses' },
     // { link: '/', label: 'Message' }
@@ -94,7 +94,7 @@ export default function Header() {
         <div>
         <header className={classes.naviBar} style={{width:"100%"}}>
             <div className={classes.inner}>
-                <div style={{display: "flex", alignItems: "center"}} onClick={goToHomepage}>
+                <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={goToHomepage}>
                     <div className={classes.logoBox}>
                         <img src="/website-logo.png" className={classes.logo}/>
                     </div>
