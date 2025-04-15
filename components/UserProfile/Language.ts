@@ -22,7 +22,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         edit: 'Edit',
         ChangePassword: 'Change password',
         myCourse: 'My Course',
-        posts: 'Posts',
+        posts: 'My Posts',
         comments: 'Comments',
         updateProfile: 'Update Profile',
         changeAvatar: 'Change Avatar',

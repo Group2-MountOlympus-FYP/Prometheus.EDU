@@ -73,9 +73,7 @@ export function UserProfile(props:userDataProps){
                             <Tabs.Tab value="2" ref={setControlRef('2')} className={style.tab}>
                                 {getText("posts")}
                             </Tabs.Tab>
-                            <Tabs.Tab value="3" ref={setControlRef('3')} className={style.tab}>
-                                {getText('comments')}
-                            </Tabs.Tab>
+                            
 
                             <FloatingIndicator
                             target={props.tabsValue ? controlsRefs[props.tabsValue] : null}

@@ -86,7 +86,6 @@ export default function UserInfoPage() {
                     <Tabs.Panel value="2">
                         <MyPosts posts={posts}></MyPosts>
                     </Tabs.Panel>
-                    <Tabs.Panel value="3">333</Tabs.Panel>
                 </Tabs>
             </div>
         </div>
