@@ -32,7 +32,12 @@ export default function MyCoursesPage() {
   useEffect(() => {
     getMyCourses()
       .then((res) => {
-        setCourses(res);
+        if (Array.isArray(res)) {
+          setCourses(res); // ✅ 安全设置
+        } else {
+          console.error('返回值不是数组:', res);
+          setCourses([]); // fallback 空数组
+        }
       })
       .catch((err) => {
         console.error('加载课程失败', err);
@@ -41,6 +46,8 @@ export default function MyCoursesPage() {
         setLoading(false);
       });
   }, []);
+
+
 
   if (loading) {
     return <Loader color="indigo" size="lg" />;
