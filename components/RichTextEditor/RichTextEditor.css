@@ -125,4 +125,11 @@ background-color: #494949; /* gray-100 color */
   font-family: 'Fira Code', monospace;
   color: #d6336c; 
 }
+.ProseMirror p.is-empty::before {
+    content: attr(data-placeholder);
+    float: left;
+    color: #999;
+    pointer-events: none;
+    height: 0;
+}
   
