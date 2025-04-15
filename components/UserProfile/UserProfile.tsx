@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from "react"
-import { Anchor, Avatar, Button, Card, Group, Text, Grid, Container, Tabs, Modal, FloatingIndicator } from "@mantine/core"
+import { Anchor, Avatar, Button, Card, Group, Text, Grid, Container, Tabs, Modal, FloatingIndicator, Skeleton } from "@mantine/core"
 import { UpdateUserInfoPanel } from "./UpdateUserInfo/UpdateUserInfo";
 import style from './UserProfile.module.css'
 import { useDisclosure } from "@mantine/hooks";
@@ -15,6 +15,7 @@ interface userDataProps{
     avatar: string,
     tabsValue: string | null,
     onTabsChange: (value: string | null) => void,
+    isLoading: boolean,
 }
 
 export function UserProfile(props:userDataProps){
@@ -32,6 +33,8 @@ export function UserProfile(props:userDataProps){
     
     return (
         <Card withBorder radius={"md"} padding={"lg"} className={style.card}>
+            {
+                !props.isLoading ? 
             <Grid>
                 <Grid.Col span={6} className={style.centered}>
                     <div className={style.textDiv}>
@@ -55,7 +58,23 @@ export function UserProfile(props:userDataProps){
                         ></Avatar>
                     </div> 
                 </Grid.Col>
-            </Grid>
+            </Grid> 
+            :
+            <div>
+                <Grid>
+                    <Grid.Col span={6} style={{marginBottom:'20px'}}>
+                        <Skeleton height={30} width="100%" mt={10} radius="xl"></Skeleton>
+                        <Skeleton height={30} width="100%" mt={10} radius="xl"></Skeleton>
+                        <Skeleton height={30} width="100%" mt={10} radius="xl"></Skeleton>
+                        <Skeleton height={30} width="100%" mt={10} radius="xl"></Skeleton>
+                        <Skeleton height={30} width="100%" mt={10} radius="xl"></Skeleton>
+                    </Grid.Col>
+                    <Grid.Col span={6}>
+                        <Skeleton height={100} width="100%" style={{margin:'auto'}} circle></Skeleton>
+                    </Grid.Col>
+                </Grid>
+            </div>
+            }
             <Container className={style.tabBar}>
                 <div style={{display:'flex'}}>
                     <Tabs value={props.tabsValue} onChange={props.onTabsChange}
@@ -73,9 +92,7 @@ export function UserProfile(props:userDataProps){
                             <Tabs.Tab value="2" ref={setControlRef('2')} className={style.tab}>
                                 {getText("posts")}
                             </Tabs.Tab>
-                            <Tabs.Tab value="3" ref={setControlRef('3')} className={style.tab}>
-                                {getText('comments')}
-                            </Tabs.Tab>
+                            
 
                             <FloatingIndicator
                             target={props.tabsValue ? controlsRefs[props.tabsValue] : null}
