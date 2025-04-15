@@ -3,15 +3,28 @@ export async function getMyCourses() {
 
   const response = await fetch(url, {
     method: 'GET',
-    credentials: 'include', // 如果需要带 cookie
-    headers: {
-      // 不建议在 GET 中显式设置 Content-Type
-    },
   });
 
   if (!response.ok) {
-    throw new Error(`请求失败: ${response.status}`);
+    throw new Error(`Error: ${response.status}`);
   }
-
-  return await response.json(); // 返回数组，每个元素含有 course, progress 等字段
+  return response;
 }
+
+export async function checkEnrollmentStatus(course_id: number): Promise<boolean> {
+  try {
+    const response = await getMyCourses();
+    const myCourses = await response.json();
+
+    console.log("已报名课程 ID：", myCourses.map((c: any) => c.course?.id));
+    console.log("当前课程 ID：", course_id);
+
+    return myCourses.some((item: any) => Number(item.course?.id) === Number(course_id));
+  } catch (error) {
+    console.error("获取已报名课程失败", error);
+    return false;
+  }
+}
+
+
+

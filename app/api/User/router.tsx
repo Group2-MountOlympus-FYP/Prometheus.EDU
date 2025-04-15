@@ -48,3 +48,48 @@ export async function updateProfile(username:string, birthDate: string, gender: 
         throw new Error('Update user profile error')
     }
 }
+
+export async function uploadAvatar(file:File){
+    const url = '/backend/change_avatar'
+    
+    const data = new FormData()
+    data.append("file", file)
+
+    const response = await fetch(url, {
+        method: 'POST',
+        body: data
+    })
+    if(response.ok){
+        return true
+    }else{
+        throw new Error("Upload error!")
+    }
+}
+
+//获取所有评论
+export async function getMyComments(){
+    const url = '/backend/post/comment/all'
+
+    const response = await fetch(url, {
+        method: 'GET'
+    })
+    if(response.ok){
+        return response
+    }else{
+        throw new Error("Get Comments Error")
+    }
+}
+
+//获取所有post
+export async function getMyPosts(){
+    const url = '/backend/post/my/all'
+
+    const response = await fetch(url, {
+        method: 'GET'
+    })
+    if(response.ok){
+        return response
+    }else{
+        throw new Error("Get Posts Error")
+    }
+}

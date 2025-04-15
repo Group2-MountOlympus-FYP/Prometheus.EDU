@@ -20,6 +20,7 @@ type headerProps = {
 }
 
 const links = [
+    // { link: '/', label: 'Homepage' },
     { link: '/athena_chat', label: 'AthenaTutor' },
     { link: '/MyCourses', label: 'My Courses' },
     // { link: '/', label: 'Message' }
@@ -54,6 +55,11 @@ export default function Header() {
 
     const router = useRouter();
 
+    // 返回主页
+    const goToHomepage = () => {
+        router.push('/');
+    }
+
     {/* 进入个人主页 */}
     const goToProfile = () => {
         router.push('/Profile');
@@ -63,11 +69,13 @@ export default function Header() {
     const handleLogout = async () =>{
         setIsLogin(false)
         try{
-            Logout()
+            await Logout()
         }catch(error){
             console.log(error)
         }
-        reloadWindow()
+        setTimeout(() => {
+            reloadWindow()
+        }, 1000);
     }
 
     {/* 导航链接 */}
@@ -86,12 +94,15 @@ export default function Header() {
         <div>
         <header className={classes.naviBar} style={{width:"100%"}}>
             <div className={classes.inner}>
-                <div className={classes.logoBox}>
-                    <img src="/website-logo.png" className={classes.logo}/>
+                <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={goToHomepage}>
+                    <div className={classes.logoBox}>
+                        <img src="/website-logo.png" className={classes.logo}/>
+                    </div>
+                    <div className={classes.nameBox}>
+                        <p className={classes.webName}> Prometheus.EDU</p>
+                    </div>
                 </div>
-                <div className={classes.nameBox}>
-                    <p className={classes.webName}> Prometheus.EDU</p>
-                </div>
+
                 <div style={{ flexGrow: 2, display: "flex", justifyContent: "center" }}>
                     <SearchBar></SearchBar>
                 </div>

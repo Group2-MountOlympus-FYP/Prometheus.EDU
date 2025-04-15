@@ -9,5 +9,10 @@
 }
 .infoForm{
     width: 100%;
-    text-align: center;
+
+}
+.dropzone{
+    border-radius: 5px;
+    border: 2px solid #777CB9;
+    cursor: pointer;
 }
