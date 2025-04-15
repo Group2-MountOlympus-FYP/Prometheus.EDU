@@ -7,6 +7,7 @@ import { IconStarFilled } from "@tabler/icons-react";
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import "./course_card.css";
 import {enrollCourseById} from "@/app/api/Enroll/router";
+import {checkEnrollmentStatus} from "@/app/api/MyCourses/router";
 
 
 
@@ -22,13 +23,21 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
   useEffect(() => {
     getCourseDetailsById(lectureId)
       .then((res) => {
-        console.log("课程详情数据", res);
         setData(res);
       })
       .catch((err) => {
         console.error("加载课程信息失败", err);
       });
+
+    checkEnrollmentStatus(lectureId)
+      .then((isEnrolled) => {
+        setIsEnrolled(isEnrolled);
+      })
+      .catch((err) => {
+        console.error("检查报名状态失败", err);
+      });
   }, [lectureId]);
+
 
   if (!data) return null;
 
@@ -57,7 +66,9 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
             onClick={async () => {
               try {
                 await enrollCourseById(lectureId);
-                setIsEnrolled(true);
+                // ✅ 报名成功后重新验证是否报名（确保后端写入成功）
+                const confirmed = await checkEnrollmentStatus(lectureId);
+                setIsEnrolled(confirmed);
                 alert("报名成功！");
               } catch (err) {
                 console.error("报名失败", err);
@@ -68,6 +79,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
           >
             {isEnrolled ? "Enrolled" : "Enroll to this course"}
           </Button>
+
 
 
           <Text size="sm" color="dimmed">
