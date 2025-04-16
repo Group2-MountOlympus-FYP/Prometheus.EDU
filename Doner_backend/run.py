@@ -1,7 +1,7 @@
 # run.py
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 
 from doner import create_app, register_extensions
