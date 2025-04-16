@@ -1,8 +1,13 @@
-from .extensions import db  # 假设 db 为 SQLAlchemy 实例
+from .extensions import db, upload_async
 from .ReplyTarget import ReplyTarget
 from moviepy import VideoFileClip
 import hashlib
 import os
+
+
+
+
+
 
 
 class Lecture(ReplyTarget):
@@ -23,9 +28,9 @@ class Lecture(ReplyTarget):
 
     @classmethod
     def create(cls, name, description, course_id, video_file, teacher_id, files=None):
-
         url, time = save_video(video_file)
-        lecture = cls(name=name, description=description, course_id=course_id,author_id=teacher_id, video_time=time, video_url=url)
+        lecture = cls(name=name, description=description, course_id=course_id, author_id=teacher_id, video_time=time,
+                      video_url=url)
         if files is not None:
             lecture.resources = [Resource.create(file) for file in files]
         db.session.add(lecture)
@@ -36,6 +41,8 @@ class Lecture(ReplyTarget):
 
 
 
+
+# s3_client.create_bucket(Bucket='prometheus.edu')
 
 def hash_file_contents(file):
     hasher = hashlib.sha256()
@@ -52,25 +59,31 @@ def save_resource(file):
     original_filename = file.filename
     filename = hash_file_contents(file)
     file.seek(0)  # 重置文件指针到开始位置
-    url = os.path.join('static', 'resource', filename)
-    file.save(url)
-    return url,original_filename
+    location = os.path.join('static', 'resource', filename)
+    file.save(location)
+    upload_async.delay(location, filename)
+    url = f"https://d343u9gpkn8sd1.cloudfront.net/{filename}"
+    return url, original_filename
 
 
 def save_video(file):
     filename = hash_file_contents(file)
     file.seek(0)  # 重置文件指针到开始位置
-    url = os.path.join('static', 'video', filename)
-    file.save(url)
+    local_location = os.path.join('static', 'video', filename)
+    file.save(local_location)
+
     # 使用 moviepy 获取视频时长
-    clip = VideoFileClip(url)
+    clip = VideoFileClip(local_location)
     duration = clip.duration  # 视频时长，单位为秒
 
     # 转换为字符串形式（如 "2 minutes 30 seconds"）
     minutes = int(duration // 60)
     seconds = int(duration % 60)
     duration_str = f"{minutes}:{seconds}"
-    return url,duration_str
+    upload_async.delay(local_location, filename)
+
+    s3_url=f"https://d343u9gpkn8sd1.cloudfront.net/{filename}"
+    return s3_url, duration_str
 
 
 class Resource(db.Model):
@@ -82,6 +95,5 @@ class Resource(db.Model):
 
     @classmethod
     def create(cls, file):
-        url ,original_filename = save_resource(file)
-        return cls(url=url,  name=original_filename)
-
+        url, original_filename = save_resource(file)
+        return cls(url=url, name=original_filename)

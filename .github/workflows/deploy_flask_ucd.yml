@@ -29,6 +29,7 @@ jobs:
       env:
         SSH_HOST: csi420-01-vm2.ucd.ie
         SSH_USER: student
+        SECRET_ENV: ${{ secrets.secrets_env }}
       run: |
         echo "Deploying to server..."
         # Connect to the server and perform the deployment
@@ -56,6 +57,8 @@ jobs:
           source /home/student/Prometheus.EDU/Doner_backend/donerenv/bin/activate
         
           pip install -r Doner_backend/requirements.txt --no-deps
+          
+          echo "$SECRET_ENV" > Doner_backend/.env
         
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 

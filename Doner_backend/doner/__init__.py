@@ -17,7 +17,6 @@ from .Video import video_bp
 import os
 
 
-
 def create_app():
     app = Flask(__name__, static_folder='../static')
 
@@ -48,17 +47,18 @@ def create_app():
     app.before_request(before_request)
     app.after_request(after_request)
 
+    redis_url = os.environ.get('REDIS_URL')
     app.config.from_mapping(
         CELERY=dict(
-            broker_url="redis://:boyr_8170@vhboyr.com:6379",
-            result_backend="redis://:boyr_8170@vhboyr.com:6379",
+            broker_url=redis_url,
+            result_backend=redis_url,
             task_ignore_result=True,
         ),
     )
     app.config.from_prefixed_env()
-    celery_init_app(app)
+    celery_app = celery_init_app(app)
 
-    return app
+    return app, celery_app
 
 
 def register_extensions(app):
