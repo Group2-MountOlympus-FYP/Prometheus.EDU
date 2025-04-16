@@ -37,6 +37,10 @@ export function LoginPanel(){
 
         try{
             const data = await Login(username, password, csrf, isRemember)
+            if(data.message){
+                setPasswordError(getText('password_error'))
+                return
+            }
             setLocalStorage('isLogin', 'true')
             //alert("true")
         }catch(error){

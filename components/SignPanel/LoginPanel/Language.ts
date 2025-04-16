@@ -14,6 +14,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         already_have_account: 'Already have account?',
         remember: 'Remember Me',
         login: 'Login',
+        password_error: 'Wrong password',
       },
       zh: {
         welcome: "登录",
@@ -24,6 +25,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         already_have_account: '已有账户？',
         remember: '记住我',
         login: '登录',
+        password_error: '密码错误',
       },
 }
 
