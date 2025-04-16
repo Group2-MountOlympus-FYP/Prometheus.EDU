@@ -15,6 +15,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         remember: 'Remember Me',
         login: 'Login',
         password_error: 'Wrong password',
+        login_success: 'Login Successful',
       },
       zh: {
         welcome: "登录",
@@ -26,6 +27,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         remember: '记住我',
         login: '登录',
         password_error: '密码错误',
+        login_success: '登陆成功',
       },
 }
 

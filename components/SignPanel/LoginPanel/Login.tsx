@@ -6,6 +6,7 @@ import { GetCSRF, getLocalStorage, reloadWindow, setLocalStorage } from "@/app/a
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
 import { Button, Grid, Input, Text } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
 
 export function LoginPanel(){
     const [username, setUsername] = useState('')
@@ -42,11 +43,16 @@ export function LoginPanel(){
                 return
             }
             setLocalStorage('isLogin', 'true')
-            //alert("true")
+
+            notifications.show({
+                message: getText('login_success')
+            })
+            setTimeout(() => {
+                reloadWindow()
+            }, 1000);
         }catch(error){
             console.log(error)
         }
-        reloadWindow()
     }
     return(
         <div className="bgLogin">
