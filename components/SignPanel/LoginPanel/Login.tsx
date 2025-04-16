@@ -5,11 +5,13 @@ import './Login.css'
 import { GetCSRF, getLocalStorage, reloadWindow, setLocalStorage } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
-import { windowRedirect } from "@/app/api/General"
+import { Button, Grid, Input, Text } from "@mantine/core"
 
 export function LoginPanel(){
     const [username, setUsername] = useState('')
+    const [usernameError, setUsernameError] = useState<string>('')
     const [password, setPassword] = useState('')
+    const [passwordError, setPasswordError] = useState<string>('')
     const [isRemember, setIsRemember] = useState(false)
 
     const handleUsername = (e:any) => {
@@ -45,33 +47,29 @@ export function LoginPanel(){
     return(
         <div className="bgLogin">
             <form onSubmit={handleLogin}>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td id='login-title' colSpan={2}>
-                                {getText('welcome')}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className='login-text'>{getText('username')}</td>
-                            <td className="login-inputbox">
-                                <input type="text" className="login-input" maxLength={20} value={username} onChange={handleUsername}></input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="login-text">{getText('password')}</td>
-                            <td className="login-inputbox">
-                                <input type="password" className="login-input" maxLength={20} value={password} onChange={handlePassword}></input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colSpan={2} id='login-footer'>
-                                <p>{getText('remember')}<input type="checkbox" checked={isRemember} onChange={handleIsRemember}></input></p>
-                                <button type="submit">{getText('login')}</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <Text id='login-title'>{getText('welcome')}</Text>
+                <Grid style={{width: "100%"}}>
+
+                    <Grid.Col span={4}><Text className='login-text'>{getText('username')}</Text></Grid.Col>
+                    <Grid.Col span={8} style={{marginBottom: '10px'}}>
+                        <Input.Wrapper error={usernameError}>
+                            <Input className="login-input" value={username} onChange={handleUsername} maxLength={20}></Input>
+                        </Input.Wrapper>
+                    </Grid.Col>
+
+                    <Grid.Col span={4}><Text className='login-text'>{getText('password')}</Text></Grid.Col>
+                    <Grid.Col span={8}>
+                    <Input.Wrapper error={passwordError}>
+                            <Input type="password" className="login-input" value={password} onChange={handlePassword} maxLength={20}></Input>
+                        </Input.Wrapper>
+                    </Grid.Col>
+
+                </Grid>
+
+                <div id='login-footer'>
+                    <p>{getText('remember')}<input type="checkbox" checked={isRemember} onChange={handleIsRemember}></input></p>
+                    <Button type="submit" id="submit-button">{getText('login')}</Button>
+                </div>
             </form>
         </div>
     )
