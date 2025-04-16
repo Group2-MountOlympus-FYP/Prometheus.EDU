@@ -6,10 +6,10 @@ type Translations = {
 
 const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
-        
+        placeholder: 'Please input your content',
       },
       zh: {
-        
+        placeholder: '请输入内容',
       },
 }
 

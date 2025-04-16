@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { getCourseDetailsById } from '@/app/api/Course/router';
+import { getCourseByCategory } from '@/app/api/Course/router';
 import { useRouter } from 'next/navigation';
 import "./CourseCard.css";
 import { IoCaretForwardCircle } from "react-icons/io5";

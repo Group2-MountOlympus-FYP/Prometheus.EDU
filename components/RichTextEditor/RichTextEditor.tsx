@@ -17,6 +17,8 @@ import Blockquote from "@tiptap/extension-blockquote";
 import { TfiList } from "react-icons/tfi";
 import { TfiListOl } from "react-icons/tfi";
 import CodeBlock from "@tiptap/extension-code-block";
+import Placeholder from '@tiptap/extension-placeholder'
+import { getText } from "./language";
 
 interface UserItem{
   id: string,
@@ -35,7 +37,11 @@ export const RichTextEditor = forwardRef((props, ref) => {
         extensions: [
           StarterKit,
           Image,
-          BulletList, OrderedList, ListItem, Paragraph, Underline, 
+          BulletList, OrderedList, ListItem, Underline, 
+          Paragraph,
+          Placeholder.configure({
+            placeholder: getText('placeholder'),
+          }),
           CodeBlock.configure({
             HTMLAttributes:{
               class: 'code-block'
@@ -59,7 +65,6 @@ export const RichTextEditor = forwardRef((props, ref) => {
             },
           }),
         ],
-        content: '<p>开始写点什么吧...</p>',
     })
         
     const handleImageUpload = async (file: File) => {

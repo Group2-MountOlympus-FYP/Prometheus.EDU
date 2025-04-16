@@ -1,5 +1,5 @@
-export async function getCourseDetailsById(id: number) {
-    const url = `/backend/course/${id}`;  // ✅ 正确路径拼接
+export async function getCourseByCategory(category: string) {
+    const url = `/backend/course/${category}`;  // ✅ 正确路径拼接
 
     const response = await fetch(url, {
         method: 'GET',
@@ -7,7 +7,7 @@ export async function getCourseDetailsById(id: number) {
     });
 
     if (!response.ok) {
-        throw new Error(`请求失败: ${response.status}`);
+        throw new Error(`failed: ${response.status}`);
     }
 
     return await response.json();

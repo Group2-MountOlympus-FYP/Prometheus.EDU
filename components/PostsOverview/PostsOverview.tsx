@@ -54,7 +54,11 @@ export function PostsOverview(props: PostOverviewProps){
                                     </Grid.Col>
                                 </Grid>
                             </Paper>
-                            <Text size="s" c={"gray"} style={{paddingRight:"1vw", textAlign:'right'}}>{props.publishDate}</Text>
+                            <Text size="s" c={"gray"} style={{paddingRight:"1vw", textAlign:'right'}}>{
+                                props.publishDate ? 
+                                new Date(props.publishDate).toLocaleString():
+                                props.publishDate
+                            }</Text>
                             </td>
                         </tr>
                     </tbody>

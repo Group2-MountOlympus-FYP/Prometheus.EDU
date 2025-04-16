@@ -1,14 +1,30 @@
 import { Text } from '@mantine/core';
 
-export function GradientText() {
+interface GradientTextProps {
+  children: React.ReactNode;
+  size?: string;
+  weight?: number;
+  from?: string;
+  to?: string;
+  deg?: number;
+}
+
+export function GradientText({
+  children,
+  size = '2.5vw',
+  weight = 900,
+  from = 'rgba(254, 111, 78, 1)',
+  to = 'rgba(225, 218, 101, 1)',
+  deg = 120,
+}: GradientTextProps) {
   return (
     <Text
-      size="2.5vw"
-      fw={900}
+      size={size}
+      fw={weight}
       variant="gradient"
-      gradient={{ from: 'rgba(254, 111, 78, 1)', to: 'rgba(225, 218, 101, 1)', deg: 120 }}
+      gradient={{ from, to, deg }}
     >
-      Education
+      {children}
     </Text>
   );
 }
