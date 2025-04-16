@@ -23,6 +23,8 @@ jobs:
           python-version: '3.12'
 
       - name: Setup, Install, and Test
+        env:
+          SECRET_ENV: ${{ secrets.secrets_env }}
         run: |
           cd Doner_backend
           
@@ -34,7 +36,7 @@ jobs:
           pip install --no-deps -r requirements.txt
           
           # 安全写入 .env 文件（防止特殊字符破坏格式，且不打印内容）
-          printf "%s" "${{ secrets.secrets_env }}" > .env
+          echo "$SECRET_ENV" > .env
           
           # 运行 Pytest
           pytest
