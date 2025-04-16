@@ -1,22 +1,16 @@
 'use client'
-import { useState, useEffect } from "react"
+import { useState } from "react"
 import { LoginPanel } from "./LoginPanel/Login"
 import { RegisterPanel } from "./RegisterPanel/Register"
 import './SignPanel.css'
 import { getText } from "./SignLanguage"
 import { IoCloseSharp } from "react-icons/io5";
 
-type signPanelProps = {
-    onExitClick?:() => void
-}
 
-export function SignPanel({onExitClick = () => {}} : signPanelProps){
+
+export function SignPanel(){
     type signTypes = 'login' | 'register'
     const [signType, setSignType] = useState<signTypes>('register')
-
-    useEffect(() => {
-        
-    }, [])
 
     const switchLogin = () => {
         setSignType('login')
@@ -28,9 +22,6 @@ export function SignPanel({onExitClick = () => {}} : signPanelProps){
     }
     return (
         <div style={{width: '100%'}}>
-            <div className='exit-button'>
-                <IoCloseSharp id="exitbutton" size={28} onClick={onExitClick}></IoCloseSharp>
-            </div>
         <div className="panel-bg">
         <div className="panel-content">
             <div className="title">

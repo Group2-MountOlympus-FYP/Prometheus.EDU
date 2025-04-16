@@ -7,13 +7,11 @@ import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { SignPanel } from "../SignPanel/SignPanel"
 import { MessagePanel } from "../MessagePanel/MessagePanel"
 import { useState, useEffect } from "react"
-import {getLocalStorage, lockOverflow, reloadWindow, setLocalStorage, unlockOverflow} from "@/app/api/General"
+import { getLocalStorage, lockOverflow, reloadWindow, setLocalStorage, unlockOverflow } from "@/app/api/General"
 import { useRouter } from 'next/navigation'
 import {getUserProfile} from "@/app/api/User/router";
-import error from "eslint-plugin-react/lib/util/error";
-import { IconChevronDown } from "@tabler/icons-react"
 import { Logout } from "@/app/api/Login/router"
-
+import { useDisclosure } from "@mantine/hooks"
 
 type headerProps = {
     onLoginClick?: () => void
@@ -52,6 +50,7 @@ export default function Header() {
 
     const [isMsgPanelOpen, setIsMsgOpen] = useState(false)
     const [isLoginPanelOpen, setIsPanelOpen] = useState(false)
+    const [loginPanelOpened, {open: loginOpen, close: loginClose}] = useDisclosure()
 
     const router = useRouter();
 
@@ -142,23 +141,23 @@ export default function Header() {
                     </>
                     ) : (
                     <Group className={classes.links}>
-                        <span onClick={() => {setIsPanelOpen(true);lockOverflow()}}>Login</span>
+                        <span onClick={loginOpen}>Login</span>
                     </Group>
                 )}
             </div>
             <div style={{height: '0', border: 'none' , borderBottom: '1px solid grey'}}></div>
 
             <div hidden={!isMsgPanelOpen} className={`${classes.overlay} ${isMsgPanelOpen ? 'show' : ''}`}></div>
-            <div hidden={!isLoginPanelOpen} className={`${classes.overlay} ${isLoginPanelOpen ? 'show' : ''}`}></div>
         </header>
 
             <div hidden={!isMsgPanelOpen} className={`${classes.msgPanel} ${isMsgPanelOpen ? classes.show : ''}`}>
                 <MessagePanel onExitClick={() => {setIsMsgOpen(false);unlockOverflow()}}></MessagePanel>
             </div>
 
-            <div hidden={!isLoginPanelOpen} className={`${classes.signPanel} ${isLoginPanelOpen ? classes.show : ''}`}>
-                <SignPanel onExitClick={() => {setIsPanelOpen(false);unlockOverflow()}}></SignPanel>
-            </div>
+            <Modal opened={loginPanelOpened} onClose={loginClose} centered size={"lg"}>
+                <SignPanel></SignPanel>
+            </Modal>
+            
         </div>
         
     )
