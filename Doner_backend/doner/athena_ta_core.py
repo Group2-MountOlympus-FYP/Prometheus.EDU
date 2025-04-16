@@ -85,10 +85,10 @@ class Athena:
         self.api_key = api_key
         self.documents = self.load_files(directory)
         self.model = model
-        self.initialize_system()
+        self._initialize_system()
 
 
-    def initialize_system(self):
+    def _initialize_system(self):
         if self.api_key == '':
             print("API Key Not Set. Athena Intelligence Not Available.\n Peylix is watching you 👁️.")
             return
