@@ -57,6 +57,8 @@ jobs:
         
           pip install -r Doner_backend/requirements.txt --no-deps
         
+          echo "${{ secrets.secrets_env }}" > Doner_backend/.env
+        
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
           echo "Deployment complete!"

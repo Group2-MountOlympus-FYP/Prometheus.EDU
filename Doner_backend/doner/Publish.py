@@ -23,9 +23,11 @@ post_bp = Blueprint('post', __name__)
 
 
 @shared_task
-def notify_review_complete(result):
-    Comment.comment(45, "OOOOO", 134)
-    print(f"任务完成，返回结果是：{result}")
+def async_review_assignment(parent_dict_str, comment_content, comment_id):
+    ai_reply = athena_client.review_assignment(parent_dict_str, comment_content)
+    if 'result' in ai_reply:
+        # 自动评论结果（用系统用户，比如ID 134）
+        Comment.comment(comment_id, ai_reply['result'], 134)
 
 
 @shared_task()
@@ -314,9 +316,7 @@ def comment():
         parent = comment.parent_target
         parent_dict = {"Title": parent.title, "Content": parent.content}
 
-        ai_reply = athena_client.review_assignment(str(parent_dict), comment.content)
-        print(ai_reply['result'])
-        Comment.comment(comment.id, ai_reply['result'], 134)
+        async_review_assignment.delay(str(parent_dict), comment.content, comment.id)
 
     return CommentSchema().dump(comment)
 
