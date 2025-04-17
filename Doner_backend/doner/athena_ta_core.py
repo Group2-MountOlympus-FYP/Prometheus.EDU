@@ -1,7 +1,6 @@
 import datetime
 import os
 import time
-from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
@@ -11,7 +10,6 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGener
 
 from .athena_prompts import AthenaPrompts
 
-load_dotenv()
 
 class Athena:
     embeddings = None
@@ -87,10 +85,10 @@ class Athena:
         self.api_key = api_key
         self.documents = self.load_files(directory)
         self.model = model
-        self.initialize_system()
+        self._initialize_system()
 
 
-    def initialize_system(self):
+    def _initialize_system(self):
         if self.api_key == '':
             print("API Key Not Set. Athena Intelligence Not Available.\n Peylix is watching you 👁️.")
             return
@@ -182,6 +180,7 @@ class Athena:
 athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
                         directory='study_materials',
                         model='gemini-2.0-flash')
+
 
 
 if __name__ == "__main__":
