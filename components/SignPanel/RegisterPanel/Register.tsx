@@ -1,15 +1,19 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { LoadingContext } from '@/components/Contexts/LoadingContext';
 import './Register.css'
 import { CheckUsernameExist, RegisterUser } from '@/app/api/Register/router';
-import { GetCSRF, GetCookie } from '@/app/api/General';
+import { GetCSRF, getLocalStorage, reloadWindow } from '@/app/api/General';
 import { getText } from './language';
 import { Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { UserAgreement } from '../UserAgreement/UserAgreement';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
+import { notifications } from '@mantine/notifications';
 
 export function RegisterPanel(){
+    const { isLoading, setIsLoading } = useContext(LoadingContext)
+
     const today = new Date().toISOString().split('T')[0]
     const [isUsernameExist, setIsUsernameExist] = useState(false) //用户名是否已存在
     const [birthDate, setDate] = useState(today)
@@ -60,10 +64,15 @@ export function RegisterPanel(){
         e.preventDefault()
 
         if(!isProtocolAgree){
-            alert('You must confirm the Agreement to continue')
+            notifications.show({
+                color: "yellow",
+                title: 'Warning',
+                message: 'You must confirm the Agreement to continue'
+            })
             return
         }
         
+        setIsLoading(true)
         const response = await GetCSRF()
         if(response == true){
             
@@ -72,7 +81,7 @@ export function RegisterPanel(){
             return
         }
 
-        let csrf = GetCookie("csrf_token")
+        let csrf = getLocalStorage("csrf_token")
         //处理gender
         let genderStr
         if(gender == 0){
@@ -84,7 +93,7 @@ export function RegisterPanel(){
         else{
             genderStr = 'other'
         }
-        console.log(birthDate)
+        //console.log(birthDate)
         RegisterUser(username, password, genderStr, birthDate, csrf)
         .then((response) => {
             if(response.status == 401){
@@ -96,11 +105,17 @@ export function RegisterPanel(){
         })
         .then((data) => {
             //console.log(document.cookie)
+            notifications.show({
+                message: 'register success'
+            })
+            setTimeout(() => {
+                reloadWindow()
+            }, 1000);
         })
     }
 
     const onProtocolAgree = () => {
-        console.log('agree')
+        //console.log('agree')
         setIsProtocolAgree(true)
         close()
     }

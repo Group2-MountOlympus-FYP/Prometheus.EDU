@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useContext } from "react"
 import { Button, Input, Select } from "@mantine/core"
 import { DateInput, DatePicker } from '@mantine/dates';
 import './UpdateUserInfo.css'
@@ -11,39 +11,48 @@ import dayjs from 'dayjs';
 import { updateProfile } from "@/app/api/User/router";
 import { notifications } from "@mantine/notifications";
 import { reloadWindow } from "@/app/api/General";
+import { LoadingContext } from "@/components/Contexts/LoadingContext";
 
-export function UpdateUserInfoPanel(){
-    const [username, setUsername] = useState<string>('')
+
+export function UpdateUserInfoPanel({currentUsername}: {currentUsername: string}){
+    const { isLoading, setIsLoading } = useContext(LoadingContext)
+
+    const [username, setUsername] = useState<string>(currentUsername)
     const [birthDate, setBirthDate] = useState<Date | null>()
     const [gender, setGender] = useState<string>("male")
     const [usernameError, setUSernameError] = useState('')
-    const [isAbleSubmit, setIsAbleSubmit] = useState<boolean>(false)
+    const [isAbleSubmit, setIsAbleSubmit] = useState<boolean>(true)
 
     const checkUsernameExist = async () => {
         if(!username){
             return
         }
-        CheckUsernameExist(username)
-        .then((response) => response.json())
-        .then((data) => {
-            //console.log(data)
-            if(data.Occupied == false){
-                setUSernameError('')
-                setIsAbleSubmit(true)
-            }else{
-                setUSernameError(getText("UsernameExist"))
-                setIsAbleSubmit(false)
-            }
-        })
-        .catch((error) => {
-            console.error("Error: " , error)
-        })
+        if(username != currentUsername){
+            CheckUsernameExist(username)
+            .then((response) => response.json())
+            .then((data) => {
+                //console.log(data)
+                if(data.Occupied == false){
+                    setUSernameError('')
+                    setIsAbleSubmit(true)
+                }else{
+                    setUSernameError(getText("UsernameExist"))
+                    setIsAbleSubmit(false)
+                }
+            })
+            .catch((error) => {
+                console.error("Error: " , error)
+            })
+        }else{
+            setIsAbleSubmit(true)
+        }
     }
     
     const handleSubmit = async (e:any) => {
         e.preventDefault()
         //console.log(data)
         try{
+            setIsLoading(true)
             const response = await updateProfile(username, dayjs(birthDate).format('YYYY-MM-DD'), gender)
             if(response == true){
                 notifications.show({
@@ -53,9 +62,10 @@ export function UpdateUserInfoPanel(){
             }
             setTimeout(() => {
                 reloadWindow()
-            }, 1000);
+            }, 500);
         }catch(e){
             console.log(e)
+            setIsLoading(false)
         }
         
     }
