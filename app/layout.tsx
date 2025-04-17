@@ -6,6 +6,8 @@ import {theme} from '../theme';
 import Header from '@/components/HeaderMenu/Header';
 import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 import { Notifications } from '@mantine/notifications';
+import { LoadingContextProvider } from '@/components/Contexts/LoadingContext';
+import { AppShell } from './AppShell';
 
 export const metadata = {
     title: 'Prometheus.EDU',
@@ -13,6 +15,7 @@ export const metadata = {
 };
 
 export default function RootLayout({children}: { children: any }) {
+
     return (
         <html lang="en" suppressHydrationWarning>
         <head>
@@ -25,12 +28,12 @@ export default function RootLayout({children}: { children: any }) {
         </head>
         <body>
         <MantineProvider theme={theme}>
-            <Notifications/>
-            <Header/>
-            <div style={{marginTop: '7vh', marginBottom:'10vh'}}>
-                {children}
-            </div>
-            <FooterSimple/>
+            <LoadingContextProvider>
+                <Notifications/>
+                <AppShell>
+                    {children}
+                </AppShell>
+            </LoadingContextProvider>
         </MantineProvider>
         </body>
         </html>
