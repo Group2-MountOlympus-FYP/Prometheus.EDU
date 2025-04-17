@@ -4,6 +4,16 @@ from enum import Enum, auto, IntEnum
 from datetime import datetime
 
 
+class Category(str, Enum):
+    CS = 'Computer Science'
+    Math = 'Math'
+    Sport = 'Sport'
+    Life = 'Life'
+    Art = 'Art'
+    Language = 'Language'
+    Others = 'Others'
+
+
 class CourseStatus(Enum):
     DELETED = auto()
     NORMAL = auto()
@@ -61,15 +71,17 @@ class Course(ReplyTarget):
     student_count = db.Column(db.Integer, nullable=False, default=0)
     institution = db.Column(db.String(100), nullable=False)
 
+    category = db.Column(db.Enum(Category, nullable=False), default=Category.Others)
 
     __mapper_args__ = {
         'polymorphic_identity': 'course',
     }
 
     @classmethod
-    def get_courses(cls, status=None, level=None, teacher_id=None, page=1, per_page=20):
+    def get_courses(cls, status=None, level=None, teacher_id=None,category=None ,page=1, per_page=20):
         """
         获取课程列表，支持通过状态、等级和教师过滤，并分页返回
+        :param category:
         :param status: 课程状态（例如 CourseStatus.NORMAL）
         :param level: 课程等级（例如 CourseLevel.LEVEL_1）
         :param teacher_id: 教师 ID（可以过滤某个教师的课程）
@@ -91,12 +103,15 @@ class Course(ReplyTarget):
         if teacher_id:
             query = query.filter_by(teacher_id=teacher_id)
 
+        if category:
+            query = query.filter_by(category=category)
+
         # 分页
         return query.paginate(page=page, per_page=per_page, error_out=False)
 
     @classmethod
     def create_course(cls, author_id, course_name, description, institution, level,
-                      status=CourseStatus.NORMAL):
+                      status, category):
         """
         创建一个新课程
         :param author_id:
@@ -117,7 +132,8 @@ class Course(ReplyTarget):
             description=description,
             institution=institution,
             level=level,
-            status=status
+            status=status,
+            category=category
         )
         db.session.add(course)
         db.session.commit()
