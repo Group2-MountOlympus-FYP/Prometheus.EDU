@@ -26,12 +26,14 @@ export default function HomePage() {
           let allCourses: CourseCardInfo[] = [];
           for (const category of allCategories) {
             const data = await getCourseByCategory(category);
-            allCourses = [...allCourses, ...data];
+            const courses = await data.json();
+            allCourses = [...allCourses, ...courses];
           }
           setCourses(allCourses);
         } else {
           const data = await getCourseByCategory(selectedCategory);
-          setCourses(data);
+          const courses = await data.json();
+          setCourses(courses);
         }
       } catch (error) {
         console.error('failed:', error);

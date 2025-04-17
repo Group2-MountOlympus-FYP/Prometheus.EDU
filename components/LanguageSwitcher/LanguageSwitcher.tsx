@@ -1,14 +1,15 @@
 'use client'
 import { useState, useEffect } from "react";
 import { setLanguage, getLanguage } from "@/app/language";
+import { getText } from './Language'
 import { ActionIcon, Group, Image, Menu, UnstyledButton } from "@mantine/core";
 import { IconChevronDown } from "@tabler/icons-react";
 import { reloadWindow } from "@/app/api/General"; 
 import classes from "./LanguageSwitcher.module.css";
 
 const data = [
-  { label: "English", code: "GB", lang: "en", image: "/lang/gb.png" },
-  { label: "Chinese", code: "CN", lang: "zh", image: "/lang/cn.png" },
+  { label: getText("en"), code: "GB", lang: "en", image: "/lang/gb.png" },
+  { label: getText("zh"), code: "CN", lang: "zh", image: "/lang/cn.png" },
 ];
 
 export function LanguageSwitcher() {
