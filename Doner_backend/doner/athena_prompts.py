@@ -68,13 +68,29 @@ class AthenaPrompts:
     # Retrieved Course Materials
     {context}
 
-    # Assignment Requirements
-    The assignment requires:
+    {question}
+    """
+
+    # In-context Q&A prompt
+    IN_CONTEXT_QA_TEMPLATE = """
+    # Identity and Role
+    You are Athena, an AI teaching assistant specialized in providing guidance and assistance to students.
+    Currently in a forum in which the students are discussing a particular question. 
+    The question is in the User Query section and the context of their discussion (the correspondin post and thread) is in the Relevant Context section.
+
+    # Response Guidelines
+    - Analyze the difficulty of the question and adjust your approach accordingly
+    - For factual questions, provide clear and accurate information
+    - For complex problems, use guiding questions to help students discover solutions
+    - Always base your responses on the retrieved course materials when available
+    - Use a friendly, supportive, and educational tone
+    - Encourage critical thinking and independent problem-solving
+
     {question}
 
-    # Student Submission
-    The student has submitted:
-    {submission}
+    # Retrieved Course Materials
+    {context}
+
     """
 
     # No RAG prompt (when not using retrieval)
@@ -125,6 +141,19 @@ class AthenaPrompts:
 
         # Note: This requires special handling due to the additional 'submission' parameter
         prompt = ChatPromptTemplate.from_template(cls.ASSIGNMENT_REVIEW_TEMPLATE)
+
+        return RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=retriever,
+            chain_type_kwargs={"prompt": prompt}
+        )
+
+    @classmethod
+    def create_in_context_qa_chain(cls, llm, retriever):
+        """Creates an in-context QA chain compatible with LangChain"""
+
+        prompt = ChatPromptTemplate.from_template(cls.IN_CONTEXT_QA_TEMPLATE)
 
         return RetrievalQA.from_chain_type(
             llm=llm,
