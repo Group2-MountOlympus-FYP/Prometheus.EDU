@@ -170,17 +170,21 @@ class Athena:
 
         # The combined_query will be passed as the 'question' parameter
         # The actual submission will be extracted within the template itself
-        answer = Athena.assignment_review_chain.invoke({
-            "question": combined_query,
-            "submission": submitted_content  # This might not be used if the chain doesn't handle it
-        })
+        answer = Athena.assignment_review_chain.invoke(combined_query)
+        return answer
+
+
+    def generate_in_context(self, query: str, context: str):
+        """Generate answer based on the post context and user query"""
+        combined_query = f"User Question: {query}\n\nRelevant Context: {context}"
+        answer = Athena.context_chain.invoke(combined_query)
+
         return answer
 
 
 athena_client = Athena(api_key=os.getenv('GOOGLE_API_KEY', ''),
                         directory='study_materials',
                         model='gemini-2.0-flash')
-
 
 
 if __name__ == "__main__":
@@ -231,3 +235,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
+
