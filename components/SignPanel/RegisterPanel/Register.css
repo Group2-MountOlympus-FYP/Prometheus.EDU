@@ -4,10 +4,10 @@
 .register-text{
     text-align: right;
     width: 30%;
-    padding: 2vw 0.6vw 0.2vw 7vw
+    padding: 1vw 0.6vw 0vw 7vw
 }
 .register-inputbox{
-    padding: 2vw 2vw 0.2vw 0.6vw
+    padding: 1vw 2vw 0vw 0.6vw
 }
 .register-input{
     text-align: left;
@@ -55,7 +55,7 @@
 }
 #register-footer{
     text-align: center;
-    padding: 1.2vw 0 1vw;
+    padding: 1vw 0 0.8vw;
 }
 #register-footer span{
     text-align: center;
