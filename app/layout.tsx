@@ -29,7 +29,7 @@ export default function RootLayout({children}: { children: any }) {
         <body>
         <MantineProvider theme={theme}>
             <LoadingContextProvider>
-                <Notifications/>
+                <Notifications zIndex={10000}/>
                 <AppShell>
                     {children}
                 </AppShell>
