@@ -3,7 +3,11 @@ export async function publishPost(title: string, content: string, tags: number[]
     const formData = new FormData()
     formData.append('title', title)
     formData.append('content', content)
-    formData.append('tags', JSON.stringify(tags))
+
+    for(const tag of tags){
+        formData.append("tags", tag.toString())
+    }
+
     formData.append('lecture_id', String(lecture_id))
 
     formData.forEach((value, key) => {
