@@ -5,11 +5,14 @@ import { Text, Image, Loader } from '@mantine/core';
 import './UpdateUserInfo.css'
 import { notifications } from '@mantine/notifications';
 import { uploadAvatar } from '@/app/api/User/router';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { reloadWindow } from '@/app/api/General';
 import { getText } from '../Language';
+import { LoadingContext } from "@/components/Contexts/LoadingContext";
 
 export function UpdateAvatar(){
+    const { isLoading, setIsLoading } = useContext(LoadingContext)
+
     const [file, setFile] = useState<FileWithPath | null>(null)
     const [url, setURL] = useState<string | null>()
     const [loading, setLoading] = useState<boolean>(false)
@@ -26,9 +29,11 @@ export function UpdateAvatar(){
                 color: 'green',
             });
             setLoading(false)
+
+            setIsLoading(true)
             setTimeout(() => {
                 reloadWindow()
-            }, 1000);
+            }, 800);
         }catch(e){
             console.log(e)
         }

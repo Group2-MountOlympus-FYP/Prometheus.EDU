@@ -104,7 +104,7 @@ export function UserProfile(props:userDataProps){
                 </div>
             </Container>
             <Modal opened={opened} onClose={close} centered title={getText('updateProfile')}>
-                <UpdateUserInfoPanel></UpdateUserInfoPanel>
+                <UpdateUserInfoPanel currentUsername={props.username}></UpdateUserInfoPanel>
             </Modal>
             <Modal opened={avatarChangeOpen} onClose={closeAvatarChange} centered title={getText('changeAvatar')}>
                 <UpdateAvatar></UpdateAvatar>
