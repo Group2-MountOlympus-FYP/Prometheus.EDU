@@ -1,14 +1,17 @@
 'use client'
 
-import { useState } from "react"
+import { useState, useContext } from "react"
 import './Login.css'
 import { GetCSRF, getLocalStorage, reloadWindow, setLocalStorage } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
 import { Button, Grid, Input, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
+import { LoadingContext } from "@/components/Contexts/LoadingContext"
 
 export function LoginPanel(){
+    const { isLoading, setIsLoading } = useContext(LoadingContext)
+
     const [username, setUsername] = useState('')
     const [usernameError, setUsernameError] = useState<string>('')
     const [password, setPassword] = useState('')
@@ -47,6 +50,7 @@ export function LoginPanel(){
             notifications.show({
                 message: getText('login_success')
             })
+            setIsLoading(true)
             setTimeout(() => {
                 reloadWindow()
             }, 1000);
