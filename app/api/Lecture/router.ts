@@ -16,7 +16,7 @@ export async function getLectureDetailsById(id: number, page: number, per_page: 
     });
 
     if (!response.ok) {
-        throw new Error(`请求失败: ${response.status}`);
+      throw new Error(`课程获取失败，状态码: ${response.status}`);
     }
 
     return await response.json();

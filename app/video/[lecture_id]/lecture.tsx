@@ -10,6 +10,8 @@ import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
+import { notFound } from 'next/navigation';
+import { getLectureDetailsById } from "@/app/api/Lecture/router";
 
 interface LectureProps {
   lectureId: number;
@@ -31,11 +33,26 @@ export default function Lecture({ lectureId }: LectureProps){
   const searchParams = useSearchParams()
 
   const [activeTab, setActiveTab] = useState("posts");
-  const handleTabChange = (value: string | null) => {
-    if (typeof value === 'string') {
-      setActiveTab(value);
-    }
-  };
+
+
+  const [lectureData, setLectureData] = useState<any>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    getLectureDetailsById(lectureId, 1, 10)
+      .then((res) => {
+        // ✅ 判断课程是否存在（根据你的接口结构）
+        if (!res || res.detail === "Course not found") {
+          setError(true);
+        } else {
+          setLectureData(res);
+        }
+      })
+      .catch((err) => {
+        console.error("获取课程失败：", err);
+        setError(true);
+      });
+  }, [lectureId]);
 
 
   useEffect(() => {
@@ -67,6 +84,23 @@ export default function Lecture({ lectureId }: LectureProps){
       }
     }
   }, [])
+  const handleTabChange = (value: string | null) => {
+    if (typeof value === 'string') {
+      setActiveTab(value);
+    }
+  };
+  if (error) {
+    return (
+      <div style={{ textAlign: "center", marginTop: "100px" }}>
+        <h1>❌ 404 Not Found</h1>
+        <p>The lecture does not exist or has been deleted</p>
+      </div>
+    );
+  }
+
+  if (!lectureData) {
+    return <div style={{ textAlign: "center", marginTop: "100px" }}>Loading...</div>;
+  }
 
   return (
     <Container className='video-container' size={"fluid"}>
