@@ -3,7 +3,8 @@
 import { forwardRef, useEffect, useImperativeHandle } from "react"
 import { useEditor, EditorContent } from '@tiptap/react'
 import StarterKit from "@tiptap/starter-kit";
-import Image from '@tiptap/extension-image'
+import Image from '@tiptap/extension-image';
+import Mention from '@tiptap/extension-mention';
 import BulletList from "@tiptap/extension-bullet-list";
 import OrderedList from "@tiptap/extension-ordered-list";
 import ListItem from "@tiptap/extension-list-item";
@@ -14,7 +15,8 @@ import 'tippy.js/dist/tippy.css'
 import Blockquote from "@tiptap/extension-blockquote";
 import { TfiList } from "react-icons/tfi";
 import { TfiListOl } from "react-icons/tfi";
-import CodeBlock from "@tiptap/extension-code-block";
+import tippy, { Instance as TippyInstance } from 'tippy.js'
+
 
 export const CommentEditor = forwardRef((props, ref) => {
 
@@ -27,6 +29,18 @@ export const CommentEditor = forwardRef((props, ref) => {
             HTMLAttributes:{
               class: 'quote'
             }
+          }),
+          Mention.configure({
+            HTMLAttributes:{
+                class: 'mention',
+            },
+            renderHTML({node}){
+              return `👤 ${node.attrs.label}`
+            },
+            suggestion: suggestion,
+            renderText({ node }){
+              return  `👤 ${node.attrs.label}`
+            },
           }),
         ],
         content: '',
@@ -52,6 +66,17 @@ export const CommentEditor = forwardRef((props, ref) => {
           console.log(error)
         }       
         
+    }
+
+    //手动插入mention并且@Athena
+    const mentionAthena = () => {
+      editor?.commands.insertContent({
+        type:'mention',
+        attrs:{
+          label: 'Athena',
+          id: -1
+        }
+      })
     }
 
     useEffect(() => {
@@ -108,6 +133,7 @@ export const CommentEditor = forwardRef((props, ref) => {
           <button onClick={() => editor?.chain().focus().toggleUnderline().run()} className={editor?.isActive('underline') ? 'active' : ''}><u>U</u></button>
           <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={editor?.isActive('bulletList') ? 'active' : ''}><TfiList></TfiList></button>
           <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={editor?.isActive('orderedList') ? 'is-active' : ''}><TfiListOl></TfiListOl></button>
+          <button onClick={mentionAthena}>@Athena</button>
         </div>
   
         {/* 编辑器主体 */}
@@ -136,4 +162,124 @@ const uploadImage = async (file: File):Promise<string> => {
     }else{
       return ""
     }
+}
+
+
+const suggestion = {
+  char: '@',
+  items: async ({ query }: { query: string }) => {
+    //异步请求
+    if(query){
+      const users = await fetchUsers(query)
+      //console.log(users.users)
+      return users.users.map((user: { username: any; user_id: any; }) => ({
+        label: user.username,
+        id: user.user_id
+      }))
+    }else{
+      return []
+    }
+
+    // return users
+    //   .filter(item => item.label.toLowerCase().includes(query.toLowerCase()))
+    //   .slice(0, 5)
+  },
+  render: () => {
+    let component: HTMLDivElement
+    let popup: TippyInstance
+
+    return {
+      onStart: (props: any) => {
+        component = document.createElement('div')
+        component.className = 'mention-list'
+
+        props.items.forEach((item: any, index: number) => {
+          console.log(item)
+          const option = document.createElement('div')
+          option.className = 'mention-item'
+          option.textContent = item.label
+
+          option.addEventListener('click', () => {
+            props.command(item)
+          })
+
+          component.appendChild(option)
+        })
+
+        popup = tippy('body', {
+          getReferenceClientRect: props.clientRect,
+          appendTo: () => document.body,
+          content: component,
+          showOnCreate: true,
+          interactive: true,
+          trigger: 'manual',
+          placement: 'bottom-start',
+        })[0]
+      },
+
+      onUpdate(props: any) {
+        while (component.firstChild) {
+          component.removeChild(component.firstChild)
+        }
+
+        props.items.forEach((item: any) => {
+          const option = document.createElement('div')
+          option.className = 'mention-item'
+          option.textContent = item.label
+
+          option.addEventListener('click', () => {
+            props.command(item)
+          })
+
+          component.appendChild(option)
+        })
+
+        popup.setProps({
+          getReferenceClientRect: props.clientRect,
+        })
+      },
+
+      onKeyDown(props: any) {
+        if (props.event.key === 'Escape') {
+          popup?.hide()
+          return true
+        }
+        return false
+      },
+
+      onExit() {
+        popup?.destroy()
+      },
+    }
+  },
+}
+
+/*
+* mention触发时进行异步请求，搜索相关用户，每次输入字符都会触发
+*/
+const fetchUsers = async (query: string) => {
+  //创建搜索变量
+  const data = new URLSearchParams({
+    initial: query,
+    per_page: '5',
+  })
+  try{
+    
+    const url = `/backend/user/search-users?${data.toString()}`
+    const response = await fetch(url, {
+      method: 'GET'
+    })
+    
+    if(!response.ok){
+      throw new Error("Fetch user error!")
+    }
+
+    const userData = await response.json()
+    //处理用户数据
+    return userData
+
+  }catch(error){
+    console.error(error)
+  }
+  
 }
