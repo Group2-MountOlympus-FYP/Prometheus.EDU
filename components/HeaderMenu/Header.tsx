@@ -75,6 +75,7 @@ export default function Header() {
     {/* 登出 */}
     const handleLogout = async () =>{
         setIsLogin(false)
+        setIsLoading(true)
         try{
             await Logout()
         }catch(error){
