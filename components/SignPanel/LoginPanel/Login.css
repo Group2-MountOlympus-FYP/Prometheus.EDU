@@ -4,7 +4,7 @@
 }
 .login-text{
     text-align: right;
-    width: 30%;
+    width: 100%;
     padding: 2vw 0.6vw 0.2vw 7vw
 }
 .login-inputbox{
@@ -12,10 +12,9 @@
 }
 .login-input{
     text-align: left;
-    width: 70%;
-    border: 1.3px solid #3C4077;
+    width: 80%;
+    border: 1px solid #3C4077;
     border-radius: 4px;
-    padding: 2px 5px;
 }
 .login-input:focus{
     text-align: left;
@@ -33,9 +32,9 @@
 }
 #login-footer{
     text-align: center;
-    padding: 0.5vw 0 1.2vw;
+    padding: 0.5vw 0 0.8vw;
 }
-#login-footer button{
+#submit-button{
     text-align: center;
     padding: 2px 16px 5px 16px;
     background-color: #3C4077;
@@ -44,7 +43,7 @@
     border-radius: 4px;
     margin: 8px 0;
 }
-#login-footer button:hover{
+#submit-button:hover{
     text-align: center;
     padding: 2px 16px 5px 16px;
     background-color: #171C56;
@@ -53,7 +52,7 @@
     border-radius: 4px;
     margin: 8px 0;
 }
-#login-footer button:active{
+#submit-button:active{
     text-align: center;
     padding: 2px 16px 5px 16px;
     background-color: #777CB9;
@@ -61,10 +60,4 @@
     border: 1px solid #3C4077;
     border-radius: 4px;
     margin: 8px 0;
-}
-table{
-    width: 100%;
-}
-tr{
-    height: 50px;
 }
