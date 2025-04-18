@@ -20,7 +20,7 @@ export default function RootLayout({children}: { children: any }) {
         <html lang="en" suppressHydrationWarning>
         <head>
             <ColorSchemeScript/>
-            <link rel="shortcut icon" href="/carbon-ella-logo.png"/>
+            <link rel="shortcut icon" href="/website-logo.png"/>
             <meta
                 name="viewport"
                 content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
