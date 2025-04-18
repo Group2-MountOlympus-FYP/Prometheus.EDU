@@ -240,18 +240,20 @@ def generate_in_context():
     # 首先检查是否是JSON请求
     if request.is_json:
         data = request.get_json()
-        if not data or 'query' not in data or not data['query']:
+        if not data or 'query' not in data or not data['query'] or 'context' not in data or not data['context']:
             return jsonify({"error": "Invalid form data"}), 400
 
         query = data['query']
-        result = athena_client.generate_in_context(query)
+        context = data['context']
+        result = athena_client.generate_in_context(query, context)
         return jsonify({"result": result})
 
     # 如果不是JSON，尝试表单数据
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
-        result = athena_client.generate_in_context(query)
+        context = form.context.data
+        result = athena_client.generate_in_context(query, context)
         return jsonify({"result": result})
 
     return jsonify({"error": "Invalid form data"}), 400
