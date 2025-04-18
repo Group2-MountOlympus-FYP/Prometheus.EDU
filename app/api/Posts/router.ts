@@ -1,4 +1,4 @@
-export async function publishPost(title: string, content: string, tags: number[], lecture_id: number){
+export async function publishPost(title: string, content: string, tags: number[], lecture_id: number, mentionList?: any[]){
     const url = '/backend/post/publish'
     const formData = new FormData()
     formData.append('title', title)
@@ -9,6 +9,12 @@ export async function publishPost(title: string, content: string, tags: number[]
     }
 
     formData.append('lecture_id', String(lecture_id))
+
+    if(mentionList){
+        for(const mentionId of mentionList){
+            formData.append("mention_list", mentionId.toString())
+        }
+    }
 
     formData.forEach((value, key) => {
         console.log(`${key}: ${value}`);

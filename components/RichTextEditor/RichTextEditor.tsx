@@ -32,7 +32,7 @@ const users: UserItem[] = [
 ]
 
 export const RichTextEditor = forwardRef((props, ref) => {
-
+    const [mentionList, setMentionList] = useState<any[]>([])
     const editor = useEditor({
         extensions: [
           StarterKit,
@@ -57,6 +57,7 @@ export const RichTextEditor = forwardRef((props, ref) => {
                 class: 'mention',
             },
             renderHTML({node}){
+              //console.log(node)
               return `👤 ${node.attrs.label}`
             },
             suggestion: suggestion,
@@ -65,7 +66,36 @@ export const RichTextEditor = forwardRef((props, ref) => {
             },
           }),
         ],
+
+        //记录插入的Mention
+        onUpdate({ editor }){
+          const mentions = editor.state.doc.content.content
+            .flatMap(node => findMentionNodes(node))  // 自定义提取 mention 节点的方法
+            .map(node => node.attrs.id)
+          //console.log(mentions)
+          setMentionList(mentions)
+          //console.log(mentionList)
+        }
+
     })
+
+    function findMentionNodes(node: any): any[] {
+      const result: any[] = []
+      if (!node) return result
+    
+      if (node.type?.name === 'mention') {
+        result.push(node)
+      }
+    
+      if (node.content?.content?.length > 0) {
+        node.content.content.forEach((child: any) => {
+          result.push(...findMentionNodes(child))
+        })
+      }
+    
+      return result
+    }
+    
         
     const handleImageUpload = async (file: File) => {
         if (!file || !editor) return
@@ -141,6 +171,9 @@ export const RichTextEditor = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
       getText: () => {
         return editor?.getHTML()
+      },
+      getMentionList: () => {
+        return mentionList
       }
     }))
   

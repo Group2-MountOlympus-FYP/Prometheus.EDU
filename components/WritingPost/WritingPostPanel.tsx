@@ -11,6 +11,7 @@ interface WritingPostPanelProps {
 
 export type RichTextEditorRef = {
     getText: () => string
+    getMentionList: () => any[]
 }
 
 export function WritingPostPanel({ opened, onClose, lecture_id }: WritingPostPanelProps){
@@ -32,13 +33,18 @@ export function WritingPostPanel({ opened, onClose, lecture_id }: WritingPostPan
 
         const content = richText?.current?.getText()
         const postTitle = title
-        console.log(richText?.current?.getText());
+        const mentionList = richText?.current?.getMentionList()
+
+
+        //console.log(richText?.current?.getText());
         //console.log(`is AI included? ${containsAthenaMention(content)}`)
+
+
         let tags:number[] = []
         if(containsAthenaMention(content)){
             tags = [1]
         }
-        const response = await publishPost(postTitle, content?content:'', tags, lecture_id)
+        const response = await publishPost(postTitle, content?content:'', tags, lecture_id, mentionList)
         if(response.ok){
             alert('post success!')
         }
