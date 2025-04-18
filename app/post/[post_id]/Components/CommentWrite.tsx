@@ -25,10 +25,16 @@ export function CommentWrite(props: Props){
             return
         }
         setError("")
+
+        const mentionList = richText?.current?.getMentionList()
         const payload = new URLSearchParams({
             target_id: String(props.post_id),
             comment: richText?.current?.getText(),
+            mention_list: mentionList.toString(),
         })
+
+        //console.log(payload.toString())
+        //return
 
         try {
             const response = await fetch("/backend/post/comment", {
