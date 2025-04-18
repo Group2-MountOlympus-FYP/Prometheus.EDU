@@ -20,6 +20,7 @@ class Athena:
     qa_chain = None
     report_chain = None
     assignment_review_chain = None
+    in_context_qa_chain = None
 
     @staticmethod
     def load_files(directory: str):
@@ -133,6 +134,9 @@ class Athena:
         # Assignment review chain (with special handling)
         Athena.assignment_review_chain = AthenaPrompts.create_assignment_review_chain(Athena.llm, retriever)
 
+        # Reply user's question within posts
+        Athena.in_context_qa_chain = AthenaPrompts.create_in_context_qa_chain(Athena.llm, retriever)
+
 
     def generate(self, query: str):
         """Generate a response using the general QA chain"""
@@ -177,7 +181,7 @@ class Athena:
     def generate_in_context(self, query: str, context: str):
         """Generate answer based on the post context and user query"""
         combined_query = f"User Question: {query}\n\nRelevant Context: {context}"
-        answer = Athena.context_chain.invoke(combined_query)
+        answer = Athena.in_context_qa_chain.invoke(combined_query)
 
         return answer
 
