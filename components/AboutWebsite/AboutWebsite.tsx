@@ -15,7 +15,7 @@ export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
                 <div className={classes.intro}>
                     <div style={{ 
                         fontWeight: 'bolder', 
-                        fontSize: '2.5vw', 
+                        fontSize: '2.3vw',
                         color: 'white', 
                         display: 'flex', 
                         alignItems: 'center',
