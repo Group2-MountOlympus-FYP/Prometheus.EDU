@@ -6,6 +6,8 @@ import {theme} from '../theme';
 import Header from '@/components/HeaderMenu/Header';
 import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 import { Notifications } from '@mantine/notifications';
+import { LoadingContextProvider } from '@/components/Contexts/LoadingContext';
+import { AppShell } from './AppShell';
 
 export const metadata = {
     title: 'Prometheus.EDU',
@@ -13,11 +15,12 @@ export const metadata = {
 };
 
 export default function RootLayout({children}: { children: any }) {
+
     return (
         <html lang="en" suppressHydrationWarning>
         <head>
             <ColorSchemeScript/>
-            <link rel="shortcut icon" href="/carbon-ella-logo.png"/>
+            <link rel="shortcut icon" href="/website-logo.png"/>
             <meta
                 name="viewport"
                 content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no"
@@ -25,12 +28,12 @@ export default function RootLayout({children}: { children: any }) {
         </head>
         <body>
         <MantineProvider theme={theme}>
-            <Notifications/>
-            <Header/>
-            <div style={{marginTop: '7vh', marginBottom:'10vh'}}>
-                {children}
-            </div>
-            <FooterSimple/>
+            <LoadingContextProvider>
+                <Notifications zIndex={10000}/>
+                <AppShell>
+                    {children}
+                </AppShell>
+            </LoadingContextProvider>
         </MantineProvider>
         </body>
         </html>

@@ -23,6 +23,8 @@ export function UserProfile(props:userDataProps){
     const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false)
     const [avatarChangeOpen, {open: openAvatarChange, close: closeAvatarChange}] = useDisclosure()
 
+    const [passwordChangeOpened, {open:passwordChangeOpen, close:passwordChangeClose}] = useDisclosure()
+
     const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
     const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
     const setControlRef = (val: string) => (node: HTMLButtonElement) => {
@@ -45,7 +47,7 @@ export function UserProfile(props:userDataProps){
                     </div>
                     <Group className={style.centered} style={{"marginBottom": '8vh'}}>
                         <Button style={{backgroundColor:'#777CB9'}} onClick={open}>{getText('edit')}</Button>
-                        <Anchor component="button" type="button" style={{color:'#309AA8'}}>{getText("ChangePassword")}</Anchor>
+                        <Anchor component="button" type="button" style={{color:'#309AA8',cursor:'pointer'}} onClick={passwordChangeOpen}>{getText("ChangePassword")}</Anchor>
                     </Group>
                 </Grid.Col>
                 <Grid.Col span={6} style={{margin:'auto', display:'flex', justifyContent: 'flex-end'}}>
@@ -104,10 +106,13 @@ export function UserProfile(props:userDataProps){
                 </div>
             </Container>
             <Modal opened={opened} onClose={close} centered title={getText('updateProfile')}>
-                <UpdateUserInfoPanel></UpdateUserInfoPanel>
+                <UpdateUserInfoPanel currentUsername={props.username}></UpdateUserInfoPanel>
             </Modal>
             <Modal opened={avatarChangeOpen} onClose={closeAvatarChange} centered title={getText('changeAvatar')}>
                 <UpdateAvatar></UpdateAvatar>
+            </Modal>
+            <Modal opened={passwordChangeOpened} onClose={passwordChangeClose}>
+                
             </Modal>
         </Card>
     )

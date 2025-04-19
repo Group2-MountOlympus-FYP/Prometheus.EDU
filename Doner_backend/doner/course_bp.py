@@ -64,13 +64,16 @@ from .Image import Image
     }
 })
 def get_all_courses():
-    status = request.args.get('status')
-    level = request.args.get('level')
-    teacher_id = request.args.get('teacher_id')
+    data=request.args
+    teacher_id = data.get('teacher_id')
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
+    level = CourseLevel.__members__.get(data.get('level'), CourseLevel.LEVEL_1)
+    status = CourseStatus.__members__.get(data.get('status'), CourseStatus.NORMAL)
+    category = Category.__members__.get(data.get('category'), Category.Others)
 
-    courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, page=page, per_page=per_page)
+    courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, category=category, page=page,
+                                 per_page=per_page)
     return jsonify(CourseSchema(many=True).dump(courses))
 
 
@@ -110,6 +113,7 @@ def get_course_by_id(course_id):
     # 提取不重复的作者
     authors = {lecture["author"]["id"]: lecture["author"] for lecture in course_dict["lectures"]}
     course_dict["teachers"] = list(authors.values())  # 只保留字典中的值并转换为列表
+    course_dict["enrollment_count"] = len(course.enrollments)
 
     return jsonify(course_dict)
 
@@ -195,12 +199,15 @@ def create_course():
     data = request.form
     course_name = data.get('course_name')
     description = data.get('description')
-    level = CourseLevel.__members__.get(data.get('level', ''), CourseLevel.LEVEL_1)
-    status = CourseStatus.__members__.get(data.get('status', ''), CourseStatus.NORMAL)
+    level = CourseLevel.__members__.get(data.get('level'), CourseLevel.LEVEL_1)
+    status = CourseStatus.__members__.get(data.get('status'), CourseStatus.NORMAL)
     file = request.files.get('main_picture')
     institution = request.form.get('institution', "No institution")
-    course = Course.create_course(session['id'], course_name, description, institution, level, status)
-    Image.save_image(file, course)
+    category = Category.__members__.get(data.get('category'), Category.Others)
+
+    course = Course.create_course(session['id'], course_name, description, institution, level, status,category)
+    if file:
+        Image.save_image(file, course)
 
     return {"id": course.id}, 201
 

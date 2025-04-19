@@ -7,8 +7,9 @@ import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { getText } from './HeaderLanguage'
 import { SignPanel } from "../SignPanel/SignPanel"
 import { MessagePanel } from "../MessagePanel/MessagePanel"
-import { useState, useEffect } from "react"
-import { getLocalStorage, lockOverflow, reloadWindow, setLocalStorage, unlockOverflow } from "@/app/api/General"
+import { useState, useEffect, useContext } from "react"
+import { getLocalStorage, lockOverflow, reloadWindow, unlockOverflow } from "@/app/api/General"
+import { LoadingContext } from "../Contexts/LoadingContext"
 import { useRouter } from 'next/navigation'
 import {getUserProfile} from "@/app/api/User/router";
 import { Logout } from "@/app/api/Login/router"
@@ -26,11 +27,15 @@ const links = [
 ]
 
 export default function Header() {
+    const { isLoading, setIsLoading } = useContext(LoadingContext)
+
     const [avatar, setAvatar] = useState('')
     const [username, setUsername] = useState('')
     const [isLogin, setIsLogin] = useState<boolean>()
 
+
     useEffect(() => {
+        setIsLoading(true)
         const fetchUserInfo = async () => {
             if(getLocalStorage("isLogin") === "true"){
                 try {
@@ -38,13 +43,17 @@ export default function Header() {
                     setAvatar(userData.avatar)
                     setUsername(userData.username)
                     setIsLogin(true)
+
+                    setIsLoading(false)
                 }catch(error){
                     console.log(error)
                     setIsLogin(false)
                 }
             }else{
                 setIsLogin(false)
+                setIsLoading(false)
             }
+            setIsLoading(false)
         }
         fetchUserInfo()
     }, []);
@@ -68,6 +77,7 @@ export default function Header() {
     {/* 登出 */}
     const handleLogout = async () =>{
         setIsLogin(false)
+        setIsLoading(true)
         try{
             await Logout()
         }catch(error){

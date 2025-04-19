@@ -14,7 +14,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.enums import TA_CENTER
 
 
-
 athena_bp = Blueprint('athena', __name__)
 
 class QueryForm(FlaskForm):
@@ -29,7 +28,7 @@ def generate():
         data = request.get_json()
         if not data or 'query' not in data or not data['query']:
             return jsonify({"error": "Invalid form data"}), 400
-        
+
         query = data['query']
         result = athena_client.generate(query)
         return jsonify({"result": result})
@@ -51,7 +50,7 @@ def generate_without_rag():
         data = request.get_json()
         if not data or 'query' not in data or not data['query']:
             return jsonify({"error": "Invalid form data"}), 400
-        
+
         query = data['query']
         result = athena_client.generate_without_rag(query)
         return jsonify({"result": result})
@@ -71,7 +70,7 @@ def retrieve_documents_only():
         data = request.get_json()
         if not data or 'query' not in data or not data['query']:
             return jsonify({"error": "Invalid form data"}), 400
-        
+
         query = data['query']
         documents = athena_client.retrieve_documents_only(query)
         docs_content = [doc.page_content for doc in documents]
@@ -158,60 +157,17 @@ def build_pdf(report_text: str) -> BytesIO:
     return buffer
 
 
-# @athena_bp.route('/generate_report', methods=['POST'])
-# def generate_report():
-#     """
-#     基于 RAG 的生成报告接口 (PDF)
-#     ---
-#     tags:
-#       - TA Client
-#     summary: 基于 RAG 生成带有分步骤说明的 PDF 报告
-#     description: 提供问题查询，返回一个包含详细分步骤说明的 PDF 报告。
-#     parameters:
-#       - name: query
-#         in: formData
-#         type: string
-#         required: true
-#         description: 用户查询问题
-#     responses:
-#       200:
-#         description: 成功返回生成的 PDF 报告
-#         schema:
-#           type: file
-#     """
-#     form = QueryForm()
-#     if not form.validate_on_submit():
-#         return jsonify({"error": "Invalid form data"}), 400
-#
-#     # 1. Extract user query
-#     query = form.query.data.strip()
-#
-#     # 2. Generate the step-by-step report text from your RAG pipeline
-#     report_text = athena_client.generate_report(query)['result']
-#
-#     # 3. Build a nicely formatted PDF
-#     pdf_buffer = build_pdf(report_text)
-#
-#     # 4. Send the PDF back as a file
-#     return send_file(
-#         pdf_buffer,
-#         as_attachment=True,
-#         download_name="ta_report.pdf",
-#         mimetype='application/pdf'
-#     )
-
-
 @athena_bp.route('/generate_report', methods=['POST'])
 def generate_report():
     if request.is_json:
         data = request.get_json()
         if not data or 'query' not in data or not data['query']:
             return jsonify({"error": "Invalid form data"}), 400
-        
+
         query = data['query']
         report_text = athena_client.generate_report(query)['result']
         pdf_buffer = build_pdf(report_text)
-        
+
         return send_file(
             pdf_buffer,
             as_attachment=True,
@@ -233,3 +189,29 @@ def generate_report():
         download_name="ta_report.pdf",
         mimetype='application/pdf'
     )
+
+
+@athena_bp.route('/generate_in_context', methods=['POST'])
+def generate_in_context():
+    """基于 RAG 的生成接口"""
+    # 首先检查是否是JSON请求
+    if request.is_json:
+        data = request.get_json()
+        if not data or 'query' not in data or not data['query'] or 'context' not in data or not data['context']:
+            return jsonify({"error": "Invalid form data"}), 400
+
+        query = data['query']
+        context = data['context']
+        result = athena_client.generate_in_context(query, context)
+        return jsonify({"result": result})
+
+    # 如果不是JSON，尝试表单数据
+    form = QueryForm()
+    if form.validate_on_submit():
+        query = form.query.data
+        context = form.context.data
+        result = athena_client.generate_in_context(query, context)
+        return jsonify({"result": result})
+
+    return jsonify({"error": "Invalid form data"}), 400
+
