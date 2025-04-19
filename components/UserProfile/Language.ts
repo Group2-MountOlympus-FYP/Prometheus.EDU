@@ -28,6 +28,9 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         changeAvatar: 'Change Avatar',
         noPostYet: 'You don\'t have post',
         noCourseYet: 'You don\'t have courses',
+        changePassword: 'Change Password',
+        currentPassword: 'Current Password',
+        newPassword: 'New Password',
       },
       zh: {
         UsernameExist: '用户名已存在！',
@@ -52,6 +55,9 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         changeAvatar: '修改头像',
         noPostYet: '您没有发帖',
         noCourseYet: '您没有课程',
+        changePassword: '修改密码',
+        currentPassword: '当前密码',
+        newPassword: '新密码',
       },
 }
 

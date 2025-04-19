@@ -7,6 +7,7 @@ import style from './UserProfile.module.css'
 import { useDisclosure } from "@mantine/hooks";
 import { UpdateAvatar } from "./UpdateUserInfo/UpdateAvatar";
 import { getText } from "./Language";
+import { ChangePasswordPanel } from "@/app/Profile/Components/ChangePassword";
 
 interface userDataProps{
     username: string,
@@ -111,8 +112,8 @@ export function UserProfile(props:userDataProps){
             <Modal opened={avatarChangeOpen} onClose={closeAvatarChange} centered title={getText('changeAvatar')}>
                 <UpdateAvatar></UpdateAvatar>
             </Modal>
-            <Modal opened={passwordChangeOpened} onClose={passwordChangeClose}>
-                
+            <Modal opened={passwordChangeOpened} onClose={passwordChangeClose} title={getText('changePassword')} centered>
+                <ChangePasswordPanel></ChangePasswordPanel>
             </Modal>
         </Card>
     )
