@@ -65,49 +65,22 @@
 .links:hover{
     color: #777CB9;
 }
-.msgPanel{
-    width: 40vw;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    z-index: 1000;
-    box-shadow: 8px 8px 7px rgb(0, 0, 0, 0.25);
-    border-radius: 15px;
-}
-.msgPanel.show{
-    opacity: 1;
-    visibility: visible;
-    display: block;
-    animation: editPanelMoveIn 0.5s ease-in-out;
-}
-.signPanel{
-    width: 40vw;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: white;
-    z-index: 1000;
-    box-shadow: 8px 8px 7px rgb(0, 0, 0, 0.25);
-    border-radius: 15px;
-}
-.signPanel.show{
-    opacity: 1;
-    visibility: visible;
-    display: block;
-    animation: editPanelMoveIn 0.5s ease-in-out;
-}
-.overlay{
-    width: 100%;
-    height: 100vh;
-    background-color: rgba(0,0,0,0.5);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 5;
-}
 .select{
     z-index: 1001;
+}
+
+.message-box{
+    position: relative;
+    height: 100%;
+}
+.messageImg{
+    background-image: url(./../../public/message.png);
+    background-size: cover;
+    height: 5vh;
+    width: 5vh;
+    display: flex;
+    position: absolute;
+    top: 292%;
+    left: 32.5%;
+    z-index: 99999;
 }
