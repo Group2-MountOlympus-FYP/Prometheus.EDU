@@ -8,8 +8,10 @@ import { getText } from "./Language"
 import { Button, Grid, Input, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { LoadingContext } from "@/components/Contexts/LoadingContext"
+import { SessionContext } from "@/components/Contexts/SessionContext"
 
 export function LoginPanel(){
+    const { isLogin, setIsLogin } = useContext(SessionContext)
     const { isLoading, setIsLoading } = useContext(LoadingContext)
 
     const [username, setUsername] = useState('')
@@ -45,7 +47,9 @@ export function LoginPanel(){
                 setPasswordError(getText('password_error'))
                 return
             }
+            
             setLocalStorage('isLogin', 'true')
+            setIsLogin(true)
 
             notifications.show({
                 message: getText('login_success')
