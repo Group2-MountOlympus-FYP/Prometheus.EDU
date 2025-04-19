@@ -1,26 +1,30 @@
-.msgPanel-bg{
+.content-box{
     width: 100%;
-    padding: 20px 45px 50px 45px;
+    height: 45vh;
+    padding: 0.5vh 1vw 5vh 1vw;
 }
-.msgTitle{
-    text-align: center;
+.message-item {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 1vh 0;
 }
-.message{
-    width: 100%;
-    font-size: clamp(16px, 3vw, 30px);
-    margin-right: 10px;
+
+.message-content{
+    color: gray;
+}
+.sender-name{
+    font-weight: 500;
+    color: #309AA8;
+}
+.message-type{
+    font-weight: 700;
+    color: #777CB9;
+    padding-left: 0.5vw;
+}
+.timestamp{
+    padding-left: 0.5vw;
 }
 
 .placeholder{
     width: 100%;
 }
-.exit-button{
-    width: 100%;
-    display: flex;
-}
-#exitbutton{
-    margin-left: auto;
-    margin-right: 1.5vw;
-    margin-top: 2vh;
-    cursor: pointer;
-}
+

@@ -1,52 +1,51 @@
 'use client'
-import { useDisclosure } from '@mantine/hooks';
-import { Modal, Button, ScrollArea } from '@mantine/core';
 import './MessagePanel.css'
-import { getText } from "./MessageLanguage"
 import { IoCloseSharp } from "react-icons/io5";
 
-// 类型定义
-type msgPanelProps = {
-    isOpen: boolean;
-    onClose: () => void;
-    onExitClick?: () => void;
-};
 
-export function MessagePanel({ isOpen, onClose, onExitClick = () => {} }: msgPanelProps) {
+export function MessagePanel() {
 
-    const content = Array(100)
-        .fill(0)
-        .map((_, index) => <p key={index}>Modal with scroll</p>);
+    const messages = [
+        {
+          id: 1,
+          user: 'Peyby',
+          type: 'replies', // or 'mentions'
+          timestamp: '2025-04-17 10:30',
+          isRead: false,
+          content: 'Thanks for your comment!',
+        },
+        {
+          id: 2,
+          user: 'Peybo',
+          type: '@',
+          timestamp: '2025-04-17 09:45',
+          isRead: true,
+          content: 'Please check this update.',
+        },
+      ];
+      
+    const content = messages.map((msg) => (
+        <div key={msg.id} className={`message-item ${msg.isRead ? 'read' : 'unread'}`}>
+          <div className="message-header">
+            <span className="sender-name">{msg.user}</span>
+            <span className="message-type">{msg.type === 'replies' ? 'replied to you' : '@ you'}</span>
+            <span className="timestamp">at {msg.timestamp}</span>
+          </div>
+          <div className="message-content">
+            {msg.content}
+          </div>
+        </div>
+    ));
 
     return (
-        <Modal
-            opened={isOpen}
-            onClose={onClose}
-            title="Header is sticky"
-            scrollAreaComponent={ScrollArea.Autosize}
-        >
-            {/* <div className='exit-button'>
-                <IoCloseSharp id="exitbutton" size={28} onClick={onExitClick}></IoCloseSharp>
-            </div> */}
+        <div>
+            {/* <div className="message-img"></div> */}
 
-            {content}
-
-            <div className="msgPanel-bg">
-                <div className="msgTitle">
-                    <span className="message">{getText('message')}</span>
-                </div>
-
-                <table>
-                    <tbody>
-                        <tr>
-                            <td colSpan={3}>
-                                <span>some messages</span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div className="placeholder"></div>
+            <div className="content-box">
+                {content}
             </div>
-        </Modal>
-    );
+
+            <div className="placeholder"></div>
+        </div>
+    )
 }
