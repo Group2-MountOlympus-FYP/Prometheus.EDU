@@ -13,7 +13,7 @@ export function MyPosts(props: Props){
                         key={post.id}
                         title={post.title}
                         publishDate={post.created_at}
-                        replyNum={post.comments.length}
+                        replyNum={post.children.length}
                         postId={post.id}
                         author={post.author.username}
                         authorId={post.author.id}

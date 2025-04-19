@@ -27,7 +27,12 @@ class ReplyTarget(db.Model):
     deleted = db.Column(db.Boolean, default=False, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    mentions = db.relationship('Mention', back_populates='target', cascade='all, delete-orphan')
     __mapper_args__ = {
         'polymorphic_identity': 'reply_target',
         'polymorphic_on': 'type'
     }
+
+    @property
+    def is_at_ai(self):
+        return any(mention.user_id == 134 for mention in self.mentions)

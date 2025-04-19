@@ -92,6 +92,8 @@ Our project aligns with several UN Sustainable Development Goals (SDGs), includi
       cd Doner_backend
       donerenv\Scripts\activate
       flask run
+      celery -A run.celery_app worker --loglevel=INFO
+
       ```
 
 ### Login to the admin dashboard
