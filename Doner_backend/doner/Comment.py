@@ -45,9 +45,7 @@ class Comment(ReplyTarget):
             return False
         return any(tag.name == 'Assigment' for tag in self.parent_target.tags)
 
-    @property
-    def is_at_ai(self):
-        return any(mention.user_id == 134 for mention in self.mentions)
+
 
     @staticmethod
     def comment(target_id, comment_text, author_id):

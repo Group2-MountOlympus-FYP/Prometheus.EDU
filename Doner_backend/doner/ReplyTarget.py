@@ -32,3 +32,7 @@ class ReplyTarget(db.Model):
         'polymorphic_identity': 'reply_target',
         'polymorphic_on': 'type'
     }
+
+    @property
+    def is_at_ai(self):
+        return any(mention.user_id == 134 for mention in self.mentions)

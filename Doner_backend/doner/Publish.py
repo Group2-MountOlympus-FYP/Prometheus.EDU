@@ -31,12 +31,11 @@ def async_review_assignment(parent_dict_str, comment_content, comment_id):
 
 
 @shared_task()
-def generate_in_context(query, context,comment_id):
-
-   ai_reply = athena_client.generate_in_context(query, context)
-   if 'result' in ai_reply:
-       # 自动评论结果（用系统用户，比如ID 134）
-       Comment.comment(comment_id, ai_reply['result'], 134)
+def generate_in_context(query, context, comment_id):
+    ai_reply = athena_client.generate_in_context(query, context)
+    if 'result' in ai_reply:
+        # 自动评论结果（用系统用户，比如ID 134）
+        Comment.comment(comment_id, ai_reply['result'], 134)
 
 
 @post_bp.before_request
@@ -121,6 +120,7 @@ def publish():
         users = User.query.filter(User.id.in_(mention)).all()
         new_post.mentions = [Mention(user=u) for u in users]
 
+
     images_to_add = []
 
     for file in files:
@@ -128,6 +128,9 @@ def publish():
             images_to_add.append(Image.save_image(file, new_post))
 
     new_post.addPost(images_to_add)
+    if new_post.is_at_ai:
+        generate_in_context(new_post.content, LectureSchema().dump(new_post.lecture), new_post.id)
+
     ActivityLog.log_post(session['id'], new_post.id)
     return jsonify(PostSchema().dump(new_post))
 
@@ -330,7 +333,7 @@ def comment():
         async_review_assignment.delay(str(parent_dict), comment.content, comment.id)
     elif comment.is_at_ai:
         post = Post.query.get(comment.get_post_id())
-        generate_in_context.delay(comment.content, str(PostSchema.dump(post)),comment.id)
+        generate_in_context.delay(comment.content, str(PostSchema().dump(post)), comment.id)
 
     return CommentSchema().dump(comment)
 
