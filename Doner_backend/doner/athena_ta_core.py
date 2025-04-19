@@ -1,8 +1,7 @@
 import datetime
 import os
 import time
-import logging
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 
 from bs4 import BeautifulSoup
@@ -13,12 +12,6 @@ from langchain.schema import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 
 from .athena_prompts import AthenaPrompts
-
-
-# Set up logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger(__name__)
-
 
 
 def resolve_path(path: str) -> str:
@@ -63,19 +56,17 @@ class DocumentLoader:
 
         for root, _, files in os.walk(directory):
             for filename in files:
-                if not filename.endswith(supported_extensions):
-                    logger.warning(f"Unsupported file format: {filename}")
+                if filename.endswith('.DS_Store') or not filename.endswith(supported_extensions):
                     continue
 
                 filepath = os.path.join(root, filename)
-                print(f'current filepath: {filepath}')
 
                 try:
                     document_text = DocumentLoader._load_file(filepath, filename)
                     if document_text:
                         documents.append(document_text)
                 except Exception as e:
-                    logger.error(f"Error processing file {filepath}: {str(e)}")
+                    raise Exception(f"Error processing file {filepath}: {str(e)}")
 
         return documents
 
@@ -86,7 +77,7 @@ class DocumentLoader:
                 soup = BeautifulSoup(file, 'html.parser')
                 text = soup.get_text(separator='\n')
                 return text
-        elif filename.endswith('.md', '.txt'):
+        elif filename.endswith(('.md', '.txt')):
             with open(filepath, 'r', encoding='utf-8') as file:
                 text = file.read()
                 return text
@@ -126,11 +117,10 @@ class VectorStoreManager:
                 else:
                     vector_store.add_documents(split_docs)
 
-                logger.info(f'Processed batch {i//config.batch_size + 1}/{len(documents)//config.batch_size + 1}')
+                print(f'Processed batch {i//config.batch_size + 1}/{len(documents)//config.batch_size + 1}')
 
             return vector_store
         except Exception as e:
-            logger.error(f"Error in create_vector_store: {str(e)}")
             raise ValueError(f"Vector store creation failed: {str(e)}")
 
     def load_or_create_vector_store(self, documents: List[str], config: AthenaConfig) -> FAISS:
@@ -138,22 +128,21 @@ class VectorStoreManager:
 
         vector_store_path = config.vector_store_path
         if not os.path.isabs(vector_store_path):
-            vector_store_path = os.path.join(os.getcwd(), vector_store_path)
+            vector_store_path = os.path.join(os.path.dirname(__file__), vector_store_path)
 
         if os.path.exists(config.vector_store_path):
-            logger.info(f"Loading vector store from {config.vector_store_path}")
             return FAISS.load_local(
                 config.vector_store_path,
                 embeddings=self.embeddings,
                 allow_dangerous_deserialization=True
             )
         else:
-            logger.info("Vector store not found. Creating new vector store...")
+            print("Vector store not found. Creating new vector store...")
             vector_store = self.create_vector_store(documents, config)
 
             if vector_store is not None:
                 vector_store.save_local(config.vector_store_path)
-                logger.info(f"Vector store saved to {config.vector_store_path}")
+                print(f"Vector store saved to {config.vector_store_path}")
             else:
                 raise ValueError("Vector store creation returned None")
  
@@ -203,15 +192,12 @@ class Athena:
     def _validate_config(self):
         """Validate the configuration"""
         if not self.config.api_key:
-            logger.error("API Key not set. Athena Intelligence not available. Peylix is watching you 👁️.")
-            raise ValueError("API Key is required")
+            raise ValueError("API Key is required. Athena Intelligence not available. Peylix is watching you 👁️.")
 
         if not os.path.exists(self.config.resolve_directory):
-            logger.error(f"Directory not found: {self.config.resolve_directory}")
             raise ValueError(f"Directory not found: {self.config.resolve_directory}")
 
         if self.config.model != "gemini-2.0-flash":
-            logger.error(f"LLM model not supported: {self.config.model}")
             raise ValueError(f"Only gemini-2.0-flash model is currently supported")
 
 
@@ -272,7 +258,6 @@ class Athena:
         return self.chain_manager.get_chain("in_context_qa").invoke(combined_query)
 
 
-
 # Initialize with environment variable
 def create_athena_client():
     api_key = os.getenv('GOOGLE_API_KEY', '')
@@ -285,8 +270,7 @@ def create_athena_client():
         )
         return athena_client
     except Exception as e:
-        logger.error(f"Failed to initialize Athena client: {str(e)}")
-        raise
+        raise Exception(f"Failed to initialize Athena client: {str(e)}")
 
 # Create the client instance
 athena_client = create_athena_client()
@@ -295,21 +279,25 @@ athena_client = create_athena_client()
 if __name__ == "__main__":
     api_key = os.getenv('GOOGLE_API_KEY', '')
 
-    logger.info("RAG Module Activated")
-    logger.info("Type 'exit' or 'quit' to terminate the program")
+    print("RAG Module Activated")
+    print("Type 'exit' or 'quit' to terminate the program")
 
     if api_key:
-        logger.info("API Key is set")
+        print("API Key is set")
     else:
-        logger.error("API Key is not set")
+        print("API Key is not set")
+        exit(1)
 
-
-    athena = Athena(api_key=api_key, directory='study_materials', model='gemini-2.0-flash')
+    try:
+        athena = Athena(api_key=api_key, directory='study_materials', model='gemini-2.0-flash')
+    except Exception as e:
+        print(f"Error initializing Athena: {e}")
+        exit(1)
 
     while True:
         query = input("Enter your query: ")
         if query.lower() in ['exit', 'quit']:
-            logger.info("Goodbye!")
+            print("Goodbye!")
             break
 
         try:
@@ -325,9 +313,8 @@ if __name__ == "__main__":
             print(answer['result'])
             print("\n" + "=" * 50 + "\n")
 
-            logger.info(f"Total time: {total_time:.2f} seconds")
+            print(f"Total time: {total_time:.2f} seconds")
 
         except Exception as e:
-            logger.error(f"An error occurred: {e}")
+            print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
-
