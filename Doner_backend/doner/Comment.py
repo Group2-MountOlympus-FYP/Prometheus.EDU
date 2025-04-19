@@ -5,13 +5,14 @@ from datetime import datetime
 from .ActivityLog import ActivityLog
 from sqlalchemy.orm import undefer
 
+
 class Comment(ReplyTarget):
     __tablename__ = 'comment'
     id = db.Column(db.Integer, db.ForeignKey('reply_target.id'), primary_key=True)
     content = db.Column(db.Text, nullable=False)
     parent_target_id = db.Column(db.Integer, db.ForeignKey('reply_target.id'))
     parent_target = db.relationship('ReplyTarget', foreign_keys=[parent_target_id], backref='children')
-    read = db.Column(db.Boolean, default=False,nullable=False)
+    read = db.Column(db.Boolean, default=False, nullable=False)
 
     __mapper_args__ = {
         'polymorphic_identity': 'comment',
@@ -43,6 +44,10 @@ class Comment(ReplyTarget):
         if not self.parent_target.type == 'post':
             return False
         return any(tag.name == 'Assigment' for tag in self.parent_target.tags)
+
+    @property
+    def is_at_ai(self):
+        return any(mention.user_id == 134 for mention in self.mentions)
 
     @staticmethod
     def comment(target_id, comment_text, author_id):

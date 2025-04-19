@@ -31,8 +31,12 @@ def async_review_assignment(parent_dict_str, comment_content, comment_id):
 
 
 @shared_task()
-def review_assignment_async(parent_dict, comment_content):
-    return athena_client.review_assignment(str(parent_dict), comment_content)
+def generate_in_context(query, context,comment_id):
+
+   ai_reply = athena_client.generate_in_context(query, context)
+   if 'result' in ai_reply:
+       # 自动评论结果（用系统用户，比如ID 134）
+       Comment.comment(comment_id, ai_reply['result'], 134)
 
 
 @post_bp.before_request
@@ -114,7 +118,8 @@ def publish():
     if tags:
         new_post.tags = Tag.query.filter(Tag.id.in_(tags)).all()
     if mention:
-        new_post.mention = User.query.filter(User.id.in_(mention)).all()
+        users = User.query.filter(User.id.in_(mention)).all()
+        new_post.mentions = [Mention(user=u) for u in users]
 
     images_to_add = []
 
@@ -310,13 +315,22 @@ def follow():
 def comment():
     target_id = request.form['target_id']
     comment_text = request.form['comment']
-
+    mention = request.form.getlist('mention_list')
     comment = Comment.comment(target_id, comment_text, session['id'])
+
+    if mention:
+        users = User.query.filter(User.id.in_(mention)).all()
+        comment.mentions = [Mention(user=u) for u in users]
+        db.session.commit()
+
     if comment.is_assignment_submission:
         parent = comment.parent_target
         parent_dict = {"Title": parent.title, "Content": parent.content}
 
         async_review_assignment.delay(str(parent_dict), comment.content, comment.id)
+    elif comment.is_at_ai:
+        post = Post.query.get(comment.get_post_id())
+        generate_in_context.delay(comment.content, str(PostSchema.dump(post)),comment.id)
 
     return CommentSchema().dump(comment)
 
@@ -508,7 +522,7 @@ def get_notifications():
             "type": "mentioned",
             "created_at": mention.created_at,
             "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(mention.user),
-            "post_id": mention.post_id,
+            "post_id": mention.target_id,
             "read": mention.read
 
         })

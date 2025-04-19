@@ -1,6 +1,6 @@
 'use client'
 
-import { Button, Group, Modal } from "@mantine/core"
+import {Button, Group, Dialog, Paper, Collapse} from "@mantine/core"
 import { useRef, useState } from "react"
 import { CommentEditor } from "./CommentEditor"
 import { RichTextEditorRef } from "@/components/WritingPost/WritingPostPanel"
@@ -10,12 +10,15 @@ interface Props{
     post_id: number,
     opened: boolean;
     onClose: () => void;
+    onSuccess: (c: any) => void;
 }
 
 export function CommentWrite(props: Props){
     const [error, setError] = useState("")
 
     const richText = useRef<RichTextEditorRef>()
+
+
 
     const handleCommentSubmit = async (event:any) => {
         event.preventDefault()
@@ -46,17 +49,23 @@ export function CommentWrite(props: Props){
             })
 
             if (response.ok) {
+
                 notifications.show({
                     title: 'Successful',
                     message: 'Comment submitted successfully.'
                 })
                 props.onClose()
+
+                const newComment = await response.json();
+                props.onSuccess?.(newComment);
             } else {
                 notifications.show({
                     title: 'Error',
                     message: `Failed to submit comment, status code: ${response.status}`
                 })
             }
+
+
         } catch (error) {
             console.error("Error submitting comment:", error)
             notifications.show({
@@ -64,15 +73,38 @@ export function CommentWrite(props: Props){
                 message: 'Error submitting comment.'
             })
         }
+
+
     }
+    const handleClose = () => {
+        close();
+        props.onClose();
+    };
 
     return (
-        <Modal opened={props.opened} onClose={props.onClose} title="Comment" centered>
-            <CommentEditor ref={richText}></CommentEditor>
-            <Group mt="md">
-                <Button variant="outline" onClick={props.onClose}>Cancel</Button>
-                <Button type="submit" onClick={handleCommentSubmit}>Submit Comment</Button>
-            </Group>
-        </Modal>
-    )
+        <>
+            {/* 这里留一个 anchor，让页面流在折叠时占位 */}
+            <Collapse in={props.opened}>
+                <Paper
+                    withBorder
+                    shadow="md"
+                    radius="md"
+                    p="md"
+                    mt="md"
+                >
+                    <CommentEditor ref={richText} />
+
+                    <Group mt="md" justify="flex-end">
+                        <Button variant="outline" onClick={handleClose}>
+                            Cancel
+                        </Button>
+                        <Button onClick={handleCommentSubmit}>
+                            Submit Comment
+                        </Button>
+                    </Group>
+                </Paper>
+            </Collapse>
+        </>
+    );
+
 }

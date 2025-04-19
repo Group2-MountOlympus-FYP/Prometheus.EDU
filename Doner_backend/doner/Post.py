@@ -10,7 +10,7 @@ class Post(ReplyTarget):
     content = db.Column(db.Text, nullable=False)
     lecture_id = db.Column(db.Integer, db.ForeignKey('lecture.id'))
     lecture = db.relationship('Lecture',  backref='posts', foreign_keys=lecture_id)
-    mentions = db.relationship('Mention', back_populates='post', cascade='all, delete-orphan')
+
 
 
 
@@ -63,23 +63,6 @@ class Post(ReplyTarget):
     
     def get_all_comments(self):
         return Comment.query.filter_by(parent_target_id=self.id).all()
-    
-    @property
-    def comments(self):
-        return Comment.query.filter_by(parent_target_id=self.id).all()
-    
-    @property
-    def comments_count(self):
-        return len(self.comments)
 
-    def as_dict(self):
-        return {
-            "author_name": self.author_name,
-            "author_avatar_url": self.author_avatar_url,
-            "short_content": self.short_content,
-            "like_count": self.get_like_count(),
-            "favorit_count": self.get_favorit_count(),
-            "comments_count": self.comments_count
-        }
             
      
