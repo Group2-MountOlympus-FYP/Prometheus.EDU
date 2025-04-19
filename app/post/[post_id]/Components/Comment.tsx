@@ -1,27 +1,52 @@
 'use client'
-import { Modal, Stack, Text, Group, Card, Avatar } from "@mantine/core"
-import Link from "next/link"
+import {Avatar, Button, Group, Paper, Text, TypographyStylesProvider} from '@mantine/core';
+import classes from './CommentHtml.module.css';
+import { formatDistanceToNow } from 'date-fns';
+import {CommentWrite} from "@/app/post/[post_id]/Components/CommentWrite";
+import {useDisclosure} from "@mantine/hooks";
 
 interface Props{
-    author_id: number
+    author_id: any
     created_at: string
     content: string
     id: number
+    onReplyAdded: any
 }
 
-export function Comment(props: Props){
+
+
+export function Comment(props: Props) {
+    const createdAgo = formatDistanceToNow(new Date(props.created_at), { addSuffix: true });
+    const [opened, { toggle, close }] = useDisclosure(false);
     return (
-            <Card shadow="xs" padding="sm" radius="md" withBorder>
-                <Group wrap={"nowrap"}>
-                    <Avatar size="sm" src={`/api/user/avatar/${props.author_id}`}/>
-                    <Text size="sm" color="dimmed" ml="md">
-                        {props.created_at} ago
+            <>
+            <Group>
+                <Avatar
+                    src={props.author_id.avatar}
+                    radius="xl"
+                />
+                <div>
+                    <Text fz="sm">{props.author_id.username}</Text>
+                    <Text fz="xs" c="dimmed">
+                        Created {createdAgo}
                     </Text>
-                </Group>
-                <Text mt="xs">{props.content}</Text>
-                <Link href={`/backend/post/comment/${props.id}`}>
-                    extend
-                </Link>
-            </Card>
-    )
+                </div>
+                <Button mt="md" onClick={toggle} style={{ marginLeft: "auto" }}>
+                    Comment
+                </Button>
+            </Group>
+            <TypographyStylesProvider className={classes.body}>
+                <div
+                    className={classes.content}
+                    dangerouslySetInnerHTML={{
+                        __html:
+                            props.content,
+                    }}
+                />
+            </TypographyStylesProvider>
+
+
+            <CommentWrite opened={opened} onClose={close} post_id={props.id} onSuccess={props.onReplyAdded} />
+            </>
+    );
 }

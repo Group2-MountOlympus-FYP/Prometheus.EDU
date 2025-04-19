@@ -38,7 +38,7 @@ class PostSchema(SQLAlchemyAutoSchema):
         include_relationships = True
 
     images = Nested(ImageSchema, many=True, )
-    comments = Nested(CommentSchema, many=True)
+    children = Nested(CommentSchema, many=True)
     author = Nested('UserSchema', only=['username', 'avatar', 'id'])
 
 
