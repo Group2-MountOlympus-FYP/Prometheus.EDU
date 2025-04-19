@@ -157,49 +157,6 @@ def build_pdf(report_text: str) -> BytesIO:
     return buffer
 
 
-# @athena_bp.route('/generate_report', methods=['POST'])
-# def generate_report():
-#     """
-#     基于 RAG 的生成报告接口 (PDF)
-#     ---
-#     tags:
-#       - TA Client
-#     summary: 基于 RAG 生成带有分步骤说明的 PDF 报告
-#     description: 提供问题查询，返回一个包含详细分步骤说明的 PDF 报告。
-#     parameters:
-#       - name: query
-#         in: formData
-#         type: string
-#         required: true
-#         description: 用户查询问题
-#     responses:
-#       200:
-#         description: 成功返回生成的 PDF 报告
-#         schema:
-#           type: file
-#     """
-#     form = QueryForm()
-#     if not form.validate_on_submit():
-#         return jsonify({"error": "Invalid form data"}), 400
-#
-#     # 1. Extract user query
-#     query = form.query.data.strip()
-#
-#     # 2. Generate the step-by-step report text from your RAG pipeline
-#     report_text = athena_client.generate_report(query)['result']
-#
-#     # 3. Build a nicely formatted PDF
-#     pdf_buffer = build_pdf(report_text)
-#
-#     # 4. Send the PDF back as a file
-#     return send_file(
-#         pdf_buffer,
-#         as_attachment=True,
-#         download_name="ta_report.pdf",
-#         mimetype='application/pdf'
-#     )
-
-
 @athena_bp.route('/generate_report', methods=['POST'])
 def generate_report():
     if request.is_json:
