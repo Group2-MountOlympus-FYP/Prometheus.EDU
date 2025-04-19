@@ -1,4 +1,4 @@
-from flask import Blueprint, redirect,request, jsonify, session, make_response
+from flask import Blueprint, redirect, request, jsonify, session, make_response
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, DateField, SelectField, BooleanField
 from wtforms.validators import InputRequired, EqualTo, Email
@@ -7,9 +7,9 @@ from werkzeug.security import generate_password_hash
 
 from .User import *
 
-
 from .ActivityLog import ActivityLog
 from .decorator import login_required
+
 login_bp = Blueprint('login', __name__)
 
 
@@ -453,3 +453,23 @@ def get_user_name_by_id():
             return jsonify(error="User not found"), 404
     else:
         return jsonify(error="User not logged in"), 401
+
+
+@login_bp.route('/password_reset', methods=['POST'])
+@login_required
+def password_reset():
+    user = get_current_user()
+    old_password = request.form.get('old_password')
+    if user.verify_password(old_password):
+        new_password = request.form.get('new_password')
+        if new_password:
+            if new_password != old_password:
+                user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha256', salt_length=8)
+                db.session.commit()
+                return "New password has been reset"
+            else:
+                return "New password cannot be the same as old password", 403
+        else:
+            return "empty new password", 403
+    else:
+        return "wrong old password", 403
