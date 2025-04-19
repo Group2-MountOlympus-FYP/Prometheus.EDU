@@ -38,23 +38,20 @@ export default function Header() {
 
     useEffect(() => {
         setIsLoading(true)
+        console.log(isLogin)
         const fetchUserInfo = async () => {
-            if(isLogin){
-                try {
-                    const userData = await getUserProfile()
-                    setAvatar(userData.avatar)
-                    setUsername(userData.username)
-                    setIsLogin(true)
+            try {
+                const userData = await getUserProfile()
+                setAvatar(userData.avatar)
+                setUsername(userData.username)
+                setIsLogin(true)
 
-                    setIsLoading(false)
-                }catch(error){
-                    console.log(error)
-                    setIsLogin(false)
-                }
-            }else{
-                setIsLogin(false)
                 setIsLoading(false)
+            }catch(error){
+                console.log(error)
+                setIsLogin(false)
             }
+            
             setIsLoading(false)
         }
         fetchUserInfo()
