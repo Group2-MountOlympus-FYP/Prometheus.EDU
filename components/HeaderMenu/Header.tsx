@@ -1,7 +1,7 @@
 'use client'
 
 import { SearchBar } from "../SearchBar/SearchBar"
-import { Group, Burger, ActionIcon, Avatar, Modal, Menu } from "@mantine/core"
+import { Group, Burger, ActionIcon, Avatar, Modal, Menu, ScrollArea } from "@mantine/core"
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { getText } from './HeaderLanguage'
@@ -50,9 +50,8 @@ export default function Header() {
     }, []);
 
     // 弹出消息弹窗
-    const [isMsgOpen, setIsMsgOpen] = useState(false);
-    const [isLoginPanelOpen, setIsPanelOpen] = useState(false)
-    const [loginPanelOpened, {open: loginOpen, close: loginClose}] = useDisclosure()
+    const [MsgPanelOpened, {open: msgOpen, close: msgClose}] = useDisclosure();
+    const [loginPanelOpened, {open: loginOpen, close: loginClose}] = useDisclosure();
 
     const router = useRouter();
 
@@ -118,19 +117,38 @@ export default function Header() {
                         {items}
                     </Group>
                     <Group className={classes.links}>
-                        <span onClick={() => {setIsMsgOpen(true);lockOverflow()}} style={{ paddingRight: "1.4vw" }}>
+                        <span onClick={msgOpen} style={{ paddingRight: "1.4vw" }}>
                             {getText('message')}
                         </span>
-                        <MessagePanel
-                            isOpen={isMsgOpen}
-                            onClose={() => setIsMsgOpen(false)}
-                            onExitClick={() => console.log('Exit clicked')}
-                        />
                     </Group>
+                    {/* 消息弹窗 */}
+                    <div className='message-box'>
+                        {MsgPanelOpened && <div className={classes.messageImg}/>}
+                        <Modal opened={MsgPanelOpened} onClose={msgClose}
+                            title={getText('message')}
+                            scrollAreaComponent={ScrollArea.Autosize}
+                            centered={false}
+                            yOffset={"20vh"}
+                            size={"lg"}
+                            styles={{
+                                header: {
+                                    backgroundColor: '#DEE0EF',
+                                },
+                                title: {
+                                    fontSize: '1.5vw',
+                                    fontWeight: 'bold',
+                                    color: '#3C4077',
+                                    textAlign: 'left',
+                                    paddingLeft: '3.5vw',
+                                },
+                                }}
+                        >
+                            <MessagePanel></MessagePanel>
+                        </Modal>
+                    </div>
 
                     {/* 登录状态下显示头像 */}
                     <Group >
-                        
                         <Menu zIndex={1001} shadow={"md"}>
                             <Menu.Target>
                                 <Avatar src={avatar} style={{ cursor: "pointer" }}></Avatar>
@@ -153,7 +171,6 @@ export default function Header() {
                 )}
             </div>
             <div style={{height: '0', border: 'none' , borderBottom: '1px solid grey'}}></div>
-            <div hidden={!isLoginPanelOpen} className={`${classes.overlay} ${isLoginPanelOpen ? 'show' : ''}`}></div>
         </header>
 
             <Modal opened={loginPanelOpened} onClose={loginClose} centered size={"lg"}>
