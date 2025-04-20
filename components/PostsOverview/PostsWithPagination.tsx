@@ -15,7 +15,7 @@ interface PostInResponse{
     author_id: number;
     author_name: string;
     author_avatar_path: string;
-    comments: object[];
+    children: object[];
 }
 interface Post{
     postId: number;
@@ -70,7 +70,7 @@ export function PostsWithPagination(props:postsPaginationProps){
                         authorId: post.author_id,
                         author: post.author_name,
                         avatarPath: post.author_avatar_path,
-                        replyNum: post.comments.length
+                        replyNum: post.children.length
                     }))
                     //
                     console.log(extratedData)
