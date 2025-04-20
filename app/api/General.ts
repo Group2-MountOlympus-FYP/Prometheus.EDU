@@ -17,13 +17,11 @@ export async function GetCSRF() {
 
 export function GetCookie(name:string) {
     if(typeof window !== undefined){
-        const cookies = document.cookie.split('; ');
-        for (const cookie of cookies) {
-            const [cookieName, cookieValue] = cookie.split('=');
-            if (cookieName === name) {
-                return decodeURIComponent(cookieValue); // 解码值
-            }
-        }
+        const value = document.cookie
+            .split('; ')
+            .find(row => row.startsWith(name + '='))
+            ?.split('=')[1]
+        return value ? decodeURIComponent(value) : null
     }
     return null; // 如果未找到，返回 null
 }

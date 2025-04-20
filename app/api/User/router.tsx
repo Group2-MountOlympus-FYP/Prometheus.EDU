@@ -93,3 +93,21 @@ export async function getMyPosts(){
         throw new Error("Get Posts Error")
     }
 }
+
+export async function changePassword(old: string, newPassword: string){
+    const url = '/backend/login/password_reset'
+
+    const data = new FormData()
+    data.append("old_password", old)
+    data.append("new_password", newPassword)
+
+    const response = await fetch(url, {
+        method: 'POST',
+        body: data
+    })
+    if(response.status == 200 || response.status == 403){
+        return response
+    }else{
+        throw new Error("Change password error!")
+    }
+}
