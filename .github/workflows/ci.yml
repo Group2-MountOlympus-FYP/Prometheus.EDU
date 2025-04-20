@@ -28,6 +28,6 @@ jobs:
           SECRET_ENV: ${{ secrets.secrets_env }}
         run: |
           cd Doner_backend
-          source donerenv/bin/activate
+          source ~/doner/bin/activate
           echo "$SECRET_ENV" > .env
           pytest
