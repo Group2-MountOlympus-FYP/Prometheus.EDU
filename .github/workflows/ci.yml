@@ -6,39 +6,29 @@ on:
     branches-ignore:
       - main
 
-
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, flask, python312]   # <‑‑ 关键
 
     steps:
-      # 检出代码
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
-      # 设置 Python 环境
-      - name: Set up Python
-        uses: actions/setup-python@v2
-        with:
-          python-version: '3.12'
-
-      - name: Setup, Install, and Test
+      # ⚠️ 只在第一次或依赖变化时安装依赖
+      - name: Ensure venv & deps
+        run: |
+          cd Doner_backend
+          if [ ! -d donerenv ]; then
+            echo "Creating virtualenv…"
+            python3.12 -m venv donerenv
+          fi
+          source donerenv/bin/activate
+          pip install --upgrade pip
+          pip install --upgrade -r requirements.txt
+      - name: Run tests
         env:
           SECRET_ENV: ${{ secrets.secrets_env }}
         run: |
           cd Doner_backend
-          
-          # 创建虚拟环境并激活
-          python -m venv donerenv
           source donerenv/bin/activate
-          
-          # 安装依赖（不安装依赖项的依赖）
-          pip install --no-deps -r requirements.txt
-          
-          # 安全写入 .env 文件（防止特殊字符破坏格式，且不打印内容）
           echo "$SECRET_ENV" > .env
-          
-          # 运行 Pytest
           pytest
-        shell: bash  # 确保使用 bash，这样 source 可以正常工作
-
