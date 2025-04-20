@@ -17,11 +17,11 @@ jobs:
       - name: Ensure venv & deps
         run: |
           cd Doner_backend
-          if [ ! -d donerenv ]; then
-            echo "Creating virtualenv…"
-            python3.12 -m venv donerenv
+          VENV_DIR=$HOME/doner
+          if [ ! -d "$VENV_DIR" ]; then
+            python3.12 -m venv "$VENV_DIR"
           fi
-          source donerenv/bin/activate
+          source "$VENV_DIR/bin/activate"
           pip install --upgrade -r requirements.txt --no-deps
       - name: Run tests
         env:
