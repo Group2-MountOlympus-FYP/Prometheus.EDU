@@ -3,11 +3,10 @@ import '@mantine/notifications/styles.css';
 
 import {ColorSchemeScript, MantineProvider} from '@mantine/core';
 import {theme} from '../theme';
-import Header from '@/components/HeaderMenu/Header';
-import { FooterSimple } from '@/components/FooterSimple/FooterSimple';
 import { Notifications } from '@mantine/notifications';
 import { LoadingContextProvider } from '@/components/Contexts/LoadingContext';
 import { AppShell } from './AppShell';
+import { SessionContextProvider } from '@/components/Contexts/SessionContext';
 
 export const metadata = {
     title: 'Prometheus.EDU',
@@ -28,12 +27,14 @@ export default function RootLayout({children}: { children: any }) {
         </head>
         <body>
         <MantineProvider theme={theme}>
-            <LoadingContextProvider>
-                <Notifications zIndex={10000}/>
-                <AppShell>
-                    {children}
-                </AppShell>
-            </LoadingContextProvider>
+            <SessionContextProvider>
+                <LoadingContextProvider>
+                    <Notifications zIndex={10000}/>
+                    <AppShell>
+                        {children}
+                    </AppShell>
+                </LoadingContextProvider>
+            </SessionContextProvider>
         </MantineProvider>
         </body>
         </html>
