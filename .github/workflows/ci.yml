@@ -8,7 +8,7 @@ on:
 
 jobs:
   pytest:
-    runs-on: [self-hosted]   # <‑‑ 关键
+    runs-on: self-hosted   # <‑‑ 关键
 
     steps:
       - uses: actions/checkout@v4
