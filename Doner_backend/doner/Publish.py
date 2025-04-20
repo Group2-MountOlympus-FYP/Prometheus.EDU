@@ -511,24 +511,32 @@ def get_notifications():
     notifications = []
 
     for comment in user_reply:
+        post_id = comment.get_post_id()
+        post_title = Post.query.get(post_id).title
         notifications.append({
             "id": comment.id,
             "type": "replied",
             "created_at": comment.created_at,
             "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(comment.author),
-            "post_id": comment.get_post_id(),
+            "post_id": post_id,
+            "post_title": post_title,
             "read": comment.read,
             "content": comment.content,
             "comment_id": comment.id
         })
 
     for mention in user_mention:
+        post_id = mention.target_id
+        post_title = ""
+        if mention.target.type == "post":
+            post_title = Post.query.get(post_id).title
         notifications.append({
             "id": mention.id,
             "type": "mentioned",
             "created_at": mention.created_at,
             "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(mention.user),
-            "post_id": mention.target_id,
+            "post_id": post_id,
+            "post_title": post_title,
             "read": mention.read
 
         })
