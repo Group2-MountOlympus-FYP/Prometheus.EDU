@@ -275,6 +275,9 @@ def follow():
     return result
 
 
+def is_valid_list(mention_list):
+    return any(m.strip() != '' for m in mention_list)
+
 @post_bp.route('/comment', methods=['POST'])
 @swag_from({
     "responses": {
@@ -321,7 +324,7 @@ def comment():
     mention = request.form.getlist('mention_list')
     comment = Comment.comment(target_id, comment_text, session['id'])
 
-    if mention:
+    if is_valid_list(mention):
         users = User.query.filter(User.id.in_(mention)).all()
         comment.mentions = [Mention(user=u) for u in users]
         db.session.commit()
