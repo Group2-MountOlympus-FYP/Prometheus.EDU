@@ -1,10 +1,9 @@
 from dotenv import load_dotenv
+
+load_dotenv(override=True)
 from doner import create_app, register_extensions
 from doner.extensions import db
 from flasgger import Swagger
-
-
-load_dotenv(override=True)
 
 app, celery_app = create_app()
 register_extensions(app)

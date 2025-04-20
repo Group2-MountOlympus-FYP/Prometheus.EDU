@@ -275,6 +275,9 @@ def follow():
     return result
 
 
+def is_valid_list(mention_list):
+    return any(m.strip() != '' for m in mention_list)
+
 @post_bp.route('/comment', methods=['POST'])
 @swag_from({
     "responses": {
@@ -321,7 +324,7 @@ def comment():
     mention = request.form.getlist('mention_list')
     comment = Comment.comment(target_id, comment_text, session['id'])
 
-    if mention:
+    if is_valid_list(mention):
         users = User.query.filter(User.id.in_(mention)).all()
         comment.mentions = [Mention(user=u) for u in users]
         db.session.commit()
@@ -508,24 +511,32 @@ def get_notifications():
     notifications = []
 
     for comment in user_reply:
+        post_id = comment.get_post_id()
+        post_title = Post.query.get(post_id).title
         notifications.append({
             "id": comment.id,
             "type": "replied",
             "created_at": comment.created_at,
             "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(comment.author),
-            "post_id": comment.get_post_id(),
+            "post_id": post_id,
+            "post_title": post_title,
             "read": comment.read,
             "content": comment.content,
             "comment_id": comment.id
         })
 
     for mention in user_mention:
+        post_id = mention.target_id
+        post_title = ""
+        if mention.target.type == "post":
+            post_title = Post.query.get(post_id).title
         notifications.append({
             "id": mention.id,
             "type": "mentioned",
             "created_at": mention.created_at,
             "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(mention.user),
-            "post_id": mention.target_id,
+            "post_id": post_id,
+            "post_title": post_title,
             "read": mention.read
 
         })
