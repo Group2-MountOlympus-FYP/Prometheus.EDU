@@ -19,7 +19,7 @@ jobs:
           cd Doner_backend
           if [ ! -d donerenv ]; then
             echo "Creating virtualenv…"
-            python3 -m venv donerenv
+            python3.12 -m venv donerenv
           fi
           source donerenv/bin/activate
           pip install --upgrade -r requirements.txt --no-deps
