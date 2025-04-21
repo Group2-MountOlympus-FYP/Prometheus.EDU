@@ -43,7 +43,8 @@ export function LoginPanel(){
         //console.log(csrf)
 
         try{
-            const data = await Login(username, password, csrf, isRemember)
+            const res = await Login(username, password, csrf, isRemember)
+            const data = await res.json()
             if(data.message){
                 setPasswordError(getText('password_error'))
                 return
