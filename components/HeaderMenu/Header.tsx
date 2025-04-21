@@ -1,7 +1,7 @@
 'use client'
 
 import { SearchBar } from "../SearchBar/SearchBar"
-import { Group, Burger, ActionIcon, Avatar, Modal, Menu, ScrollArea } from "@mantine/core"
+import { Group, Avatar, Modal, Menu, ScrollArea } from "@mantine/core"
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { getText } from './HeaderLanguage'
@@ -12,7 +12,6 @@ import { getUserInfo, reloadWindow } from "@/app/api/General"
 import { LoadingContext } from "../Contexts/LoadingContext"
 import { SessionContext } from "../Contexts/SessionContext"
 import { useRouter } from 'next/navigation'
-import { getUserProfile } from "@/app/api/User/router";
 import { Logout } from "@/app/api/Login/router"
 import { useDisclosure } from "@mantine/hooks"
 
