@@ -2,11 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, Text, Title, Skeleton } from '@mantine/core';
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import { useRouter } from 'next/navigation';
+import { getText } from "./language";
 
 interface VideoInfo {
   id: number;
   title: string;
-  lastUpdated: string;
+  video_time: string;
 }
 
 interface VideoListProps {
@@ -32,7 +33,7 @@ const VideoList: React.FC<VideoListProps> = ({currentCourseId, currentLectureId 
         const processedList: VideoInfo[] = filtered.map((item: any) => ({
           id: item.id,
           title: item.name || item.title || '无标题',
-          lastUpdated: item.created_at || '未知时间',
+          video_time: item.video_time || '未知时长',
         }));
 
         setVideoList(processedList);
@@ -54,7 +55,7 @@ const VideoList: React.FC<VideoListProps> = ({currentCourseId, currentLectureId 
   return (
     <Container>
       <Title order={2} style={{ marginBottom: '20px' }}>
-        Lecture List
+        {getText('Lecture_List')}
       </Title>
 
       {loading ? (
@@ -81,7 +82,7 @@ const VideoList: React.FC<VideoListProps> = ({currentCourseId, currentLectureId 
                 >
                   <Title order={4}>{video.title}</Title>
                   <Text size="sm" color="gray">
-                    更新时间: {video.lastUpdated}
+                    {getText('Lecture_time')}: {video.video_time}
                   </Text>
                 </Card>
               </Grid.Col>
@@ -89,7 +90,7 @@ const VideoList: React.FC<VideoListProps> = ({currentCourseId, currentLectureId 
           </Grid>
         </div>
       ) : (
-        <Text color="red">暂无其他视频</Text>
+        <Text color="red"> {getText('No_lecture')}</Text>
       )}
     </Container>
   );

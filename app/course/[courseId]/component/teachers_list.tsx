@@ -8,10 +8,10 @@ interface Lecturer {
 }
 
 interface LecturerListProps {
-  lectureId?: number; // 可选参数
+  lectureId: number; // 可选参数
 }
 
-const LecturerList: React.FC<LecturerListProps> = ({ lectureId = 115 }) => {
+const LecturerList: React.FC<LecturerListProps> = ({ lectureId }) => {
   const [lecturers, setLecturers] = useState<Lecturer[]>([]);
 
   useEffect(() => {
