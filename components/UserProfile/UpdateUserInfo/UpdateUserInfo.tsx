@@ -54,12 +54,10 @@ export function UpdateUserInfoPanel({currentUsername}: {currentUsername: string}
         try{
             setIsLoading(true)
             const response = await updateProfile(username, dayjs(birthDate).format('YYYY-MM-DD'), gender)
-            if(response == true){
-                notifications.show({
-                    title: "Update success",
-                    message: "Update success"
-                })
-            }
+            notifications.show({
+                title: "Update success",
+                message: "Update success"
+            })
             setTimeout(() => {
                 reloadWindow()
             }, 500);
