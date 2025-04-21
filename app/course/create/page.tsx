@@ -7,19 +7,17 @@ import {
     Button,
     TextInput,
     Textarea,
-    FileInput,
     Select,
     Stack,
     Group,
-    rem,
-    Center,
 } from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {showNotification} from "@mantine/notifications";
 import {useRouter} from "next/navigation";
 import {createCourse} from "@/app/api/Course/router";
 import {Dropzone, IMAGE_MIME_TYPE} from '@mantine/dropzone';
-import {IconUpload, IconPhoto, IconX} from '@tabler/icons-react';
+import {IconUpload} from '@tabler/icons-react';
+import { getText } from "@/components/CookieConsent/language"; // ✅ 引入双语方法
 
 const CourseCreate: React.FC = () => {
     const router = useRouter();
@@ -36,7 +34,6 @@ const CourseCreate: React.FC = () => {
     });
 
     const [loading, setLoading] = useState(false);
-
     const [imagePreview, setImagePreview] = useState<string | null>(null);
 
     const courseLevelOptions = [
@@ -54,15 +51,14 @@ const CourseCreate: React.FC = () => {
     ];
 
     const categoryOptions = [
-        {value: "CS", label: "Computer Science"},
-        {value: "Math", label: "Math"},
-        {value: "Sport", label: "Sport"},
-        {value: "Life", label: "Life"},
-        {value: "Art", label: "Art"},
-        {value: "Language", label: "Language"},
-        {value: "Others", label: "Others"},
+        {value: "CS", label: getText("cs")},
+        {value: "Math", label: getText("math")},
+        {value: "Sport", label: getText("sport")},
+        {value: "Life", label: getText("life")},
+        {value: "Art", label: getText("art")},
+        {value: "Language", label: getText("language")},
+        {value: "Others", label: getText("others")},
     ];
-
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
@@ -83,15 +79,15 @@ const CourseCreate: React.FC = () => {
             const data = await createCourse(formData);
 
             showNotification({
-                title: "Successful",
-                message: `Course creation success！ID: ${data.id}`,
+                title: getText("success"),
+                message: `${getText("courseCreated")} ID: ${data.id}`,
                 color: "green",
             });
             router.push(`/course/${data.id}`);
         } catch (error: any) {
             showNotification({
-                title: "Error",
-                message: error.message || "An error occurred",
+                title: getText("error"),
+                message: error.message || getText("courseCreateFailed"),
                 color: "red",
             });
         } finally {
@@ -102,19 +98,18 @@ const CourseCreate: React.FC = () => {
     return (
         <Container size="sm" mt={200}>
             <Title order={2} ta="center" mb="xl" size="2.5rem">
-                Add New Course
+                {getText("addNewCourse")}
             </Title>
 
             <Text size="xl" mt="md" mb="xl" ta="center">
-                Please fill in the information below to create a new course.
+                {getText("fillCourseInfo")}
             </Text>
 
             <form onSubmit={handleSubmit}>
                 <Stack spacing={40}>
-
                     <TextInput
-                        label="Course Name"
-                        placeholder="Enter the course name"
+                        label={getText("courseName")}
+                        placeholder={getText("enterCourseName")}
                         size="lg"
                         {...form.getInputProps("course_name")}
                         required
@@ -123,7 +118,7 @@ const CourseCreate: React.FC = () => {
 
                     <div>
                         <Text fw={500} mt={30} mb={20}>
-                            Upload Course Picture
+                            {getText("uploadCoursePicture")}
                         </Text>
 
                         <Dropzone
@@ -134,8 +129,8 @@ const CourseCreate: React.FC = () => {
                             }}
                             onReject={() =>
                                 showNotification({
-                                    title: "Upload failed",
-                                    message: "Please upload a valid image file.",
+                                    title: getText("uploadFailed"),
+                                    message: getText("invalidImageFile"),
                                     color: "red",
                                 })
                             }
@@ -147,10 +142,10 @@ const CourseCreate: React.FC = () => {
                                 <IconUpload size={80} stroke={1.5}/>
                                 <div>
                                     <Text size="lg" inline>
-                                        Drag image here or click to upload course picture
+                                        {getText("dragOrClickToUpload")}
                                     </Text>
                                     <Text size="sm" c="dimmed" mt={7}>
-                                        Only image files, max size 5MB.
+                                        {getText("imageFileNote")}
                                     </Text>
                                 </div>
                             </Group>
@@ -166,8 +161,8 @@ const CourseCreate: React.FC = () => {
                     </div>
 
                     <Textarea
-                        label="Description"
-                        placeholder="Enter course description"
+                        label={getText("description")}
+                        placeholder={getText("enterCourseDescription")}
                         autosize
                         minRows={3}
                         size="lg"
@@ -177,8 +172,8 @@ const CourseCreate: React.FC = () => {
                     />
 
                     <Select
-                        label="Course Level"
-                        placeholder="Select course level"
+                        label={getText("courseLevel")}
+                        placeholder={getText("selectCourseLevel")}
                         data={courseLevelOptions}
                         size="lg"
                         {...form.getInputProps("level")}
@@ -187,8 +182,8 @@ const CourseCreate: React.FC = () => {
                     />
 
                     <Select
-                        label="Course Status"
-                        placeholder="Select course status"
+                        label={getText("courseStatus")}
+                        placeholder={getText("selectCourseStatus")}
                         data={courseStatusOptions}
                         size="lg"
                         {...form.getInputProps("status")}
@@ -197,8 +192,8 @@ const CourseCreate: React.FC = () => {
                     />
 
                     <Select
-                        label="Course Category"
-                        placeholder="Select course category"
+                        label={getText("courseCategory")}
+                        placeholder={getText("selectCourseCategory")}
                         data={categoryOptions}
                         size="lg"
                         {...form.getInputProps("category")}
@@ -206,10 +201,9 @@ const CourseCreate: React.FC = () => {
                         mt="xl"
                     />
 
-
                     <Group justify="center" mt={80}>
                         <Button type="submit" size="lg" loading={loading}>
-                            Create Course
+                            {getText("createCourse")}
                         </Button>
                     </Group>
                 </Stack>
