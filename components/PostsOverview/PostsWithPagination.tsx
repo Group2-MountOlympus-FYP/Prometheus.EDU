@@ -58,22 +58,23 @@ export function PostsWithPagination(props:postsPaginationProps){
             try{
                 if(props.lecture_id){
                     const response = await getLectureDetailsById(props.lecture_id,activePage,15)
-                    console.log('返回数据成功')
+                    //console.log('返回数据成功')
                     const data = response
                     setTotalPages(data.total_page)
+                    //console.log(data)
                     //将接收到的数据映射到数组中
                     //只保留需要的数据，剩下的数据全部丢弃
-                    const extratedData = data.posts.map((post: PostInResponse) => ({
+                    const extratedData = data.posts.map((post: any) => ({
                         postId: post.id,
                         publishDate: post.created_at,
                         title: post.title,
-                        authorId: post.author_id,
-                        author: post.author_name,
-                        avatarPath: post.author_avatar_path,
+                        authorId: post.author.id,
+                        author: post.author.username,
+                        avatarPath: post.author.avatar,
                         replyNum: post.children.length
                     }))
                     //
-                    console.log(extratedData)
+                    //console.log(extratedData)
                     //
                     setPosts(extratedData)
                 }
@@ -86,7 +87,7 @@ export function PostsWithPagination(props:postsPaginationProps){
     }, [])
 
     return (
-        <div>
+        <div style={{width:'63vw'}}>
             {
                 posts.map((post, key) => (
                     <PostsOverview 
@@ -101,9 +102,7 @@ export function PostsWithPagination(props:postsPaginationProps){
                     ></PostsOverview>
                 ))
             }
-            <div className={style.paginationDiv}>
-                <Pagination total={totalPages} value={activePage} onChange={setActivePage} className={style.pagination}></Pagination>
-            </div>
+            
         </div>
     )
 }

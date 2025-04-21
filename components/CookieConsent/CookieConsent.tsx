@@ -45,7 +45,7 @@ export function CookieConsent(){
                         {getText('cookieDesc')}{" "}
                         <a href="" className={style.link} onClick={viewPrivacy}>
                         {getText('privacy')}
-                        </a>。
+                        </a>
                     </p>
                 </td>
                 <td className={style.buttons}>
