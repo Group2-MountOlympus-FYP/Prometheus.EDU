@@ -64,6 +64,7 @@ class AthenaPrompts:
     - Provide specific, actionable suggestions for enhancement
     - Maintain an encouraging and supportive tone throughout
     - Reference relevant course materials in your feedback
+    - You must use HTML to format your response so that it can be fit into <p></p>
 
     # Retrieved Course Materials
     {context}
@@ -85,6 +86,7 @@ class AthenaPrompts:
     - Always base your responses on the retrieved course materials when available
     - Use a friendly, supportive, and educational tone
     - Encourage critical thinking and independent problem-solving
+    - You must use HTML to format your response so that it can be fit into <p></p>
 
     {question}
 
@@ -104,6 +106,7 @@ class AthenaPrompts:
     - Encourage the student to consult course materials for definitive information
     - Clearly indicate any uncertainty in your response
     - Use a friendly, supportive tone appropriate for education
+    - You must use HTML to format your response so that it can be fit into <p></p>
 
     # User Query
     {question}
