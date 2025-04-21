@@ -2,13 +2,14 @@
 
 import { useState, useContext } from "react"
 import './Login.css'
-import { GetCSRF, getLocalStorage, reloadWindow, setLocalStorage } from "@/app/api/General"
+import {GetCSRF, getLocalStorage, reloadWindow, setLocalStorage, setUserInfo} from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
 import { Button, Grid, Input, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { LoadingContext } from "@/components/Contexts/LoadingContext"
 import { SessionContext } from "@/components/Contexts/SessionContext"
+import {getUserProfile} from "@/app/api/User/router";
 
 export function LoginPanel(){
     const { isLogin, setIsLogin } = useContext(SessionContext)
@@ -33,13 +34,13 @@ export function LoginPanel(){
     const handleLogin = async (e:any) => {
         e.preventDefault()
         let csrf
-        const response = await GetCSRF()
-        if(!response){
-            alert("Error!")
+        try{
+            csrf = await GetCSRF()
+        }catch(e){
+            console.log(e)
             return
         }
-        csrf = getLocalStorage("csrf_token")
-        console.log(csrf)
+        //console.log(csrf)
 
         try{
             const data = await Login(username, password, csrf, isRemember)
@@ -48,13 +49,27 @@ export function LoginPanel(){
                 return
             }
             
-            setLocalStorage('isLogin', 'true')
-            setIsLogin(true)
+            //setLocalStorage('isLogin', 'true')
+            //setIsLogin(true)
+
+            //开始加载
+            setIsLoading(true)
+
+            const userData = await getUserProfile()
+
+            //向本地设置userInfo
+            setUserInfo({
+                username: userData.username,
+                birthDate: userData.birthdate,
+                gender: userData.gender,
+                avatar: userData.avatar,
+            })
 
             notifications.show({
                 message: getText('login_success')
             })
-            setIsLoading(true)
+
+            //刷新页面
             setTimeout(() => {
                 reloadWindow()
             }, 1000);
