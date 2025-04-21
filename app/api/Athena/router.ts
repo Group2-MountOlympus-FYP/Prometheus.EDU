@@ -1,3 +1,5 @@
+import { Fetch } from "@/app/api/General";
+
 /**
  * 向RAG系统发送查询请求
  * @param query 用户查询问题
@@ -13,15 +15,9 @@ export async function generateAnswer(query: string) {
     const url = `/backend/athena/generate`;
     
     try {
-        const response = await fetch(url, {
+        const response = await Fetch(url, {
             method: 'POST',
             body: JSON.stringify(payload),
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            mode: 'cors',
-            credentials: 'include',
-            cache: 'no-cache',
         });
         
         // 检查响应状态
@@ -117,7 +113,7 @@ export async function generateReport(query: string) {
     const url = `/backend/athena/generate_report`;
     
     try {
-        const response = await fetch(url, {
+        const response = await Fetch(url, {
             method: 'POST',
             body: JSON.stringify(payload),
             headers: {
