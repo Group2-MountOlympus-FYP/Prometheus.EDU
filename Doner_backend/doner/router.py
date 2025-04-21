@@ -86,7 +86,11 @@ def setRoot(app):
         target_id_func=lambda: get_current_user().id if get_current_user() else None
     )
     def profile_page():
-        user = get_current_user()
+        user_id=request.args.get('user_id')
+        if user_id:
+            user = User.query.get(user_id)
+        else:
+            user = get_current_user()
         return jsonify(UserSchema(exclude=["password_hash"]).dump(user))
 
     @app.route('/my_likes')
