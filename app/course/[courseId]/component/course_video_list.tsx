@@ -12,7 +12,7 @@ interface VideoListProps {
   currentLectureId: number;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
+const VideoList: React.FC<VideoListProps> = ({ currentLectureId }) => {
   const [videoList, setVideoList] = useState<VideoInfo[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [skeletonCount, setSkeletonCount] = useState<number>(3);
