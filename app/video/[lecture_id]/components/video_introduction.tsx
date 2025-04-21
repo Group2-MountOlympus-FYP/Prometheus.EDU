@@ -9,10 +9,10 @@ interface VideoInfo {
 
 // 接受 lectureId 作为 props（默认是 120）
 interface VideoInfoComponentProps {
-    lectureId?: number;
+    lectureId: number;
 }
 
-const VideoInfoComponent: React.FC<VideoInfoComponentProps> = ({ lectureId = 120 }) => {
+const VideoInfoComponent: React.FC<VideoInfoComponentProps> = ({ lectureId }) => {
     const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
 
     useEffect(() => {

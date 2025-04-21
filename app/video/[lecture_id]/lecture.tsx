@@ -1,96 +1,57 @@
-"use client"
-import { useEffect, useState, useRef } from "react"
-import { useDisclosure } from "@mantine/hooks";
-import { Grid, Skeleton, Container, Button, Tabs, Pagination } from '@mantine/core';
-import { WritingPostPanel } from "@/components/WritingPost/WritingPostPanel";
-import { PostsWithPagination } from "@/components/PostsOverview/PostsWithPagination";
-import { useSearchParams } from "next/navigation";
-import './page.css'
+'use client';
+
+import { useEffect, useState, useRef } from 'react';
+import { useDisclosure } from '@mantine/hooks';
+import { Grid, Skeleton, Container, Button, Tabs } from '@mantine/core';
+import { WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
+import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
+import { useSearchParams } from 'next/navigation';
+import './page.css';
 import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
-import { getLectureDetailsById } from "@/app/api/Lecture/router";
+import { getLectureDetailsById } from '@/app/api/Lecture/router';
 
 interface LectureProps {
   lectureId: number;
 }
 
-
-export default function Lecture({ lectureId }: LectureProps){
-
-  //用于判断组件是否离开屏幕
-  const videoRef = useRef<HTMLDivElement>(null)
-  const [isVideoLeaveWindow, setIsVideoLeaveWindow] = useState(false)
-  //控制发帖按钮
-  const [opened, {open, close}] = useDisclosure(false)
-
-  const [titleLoading, setTitleLoading] = useState(true)
-  const [videoSelectorLoading, setVideoSelectorLoading] = useState(true)
-  const [postsLoading, setPostsLoading] = useState(false)
-
-  const searchParams = useSearchParams()
-
-  const [activeTab, setActiveTab] = useState("posts");
-
-
+export default function Lecture({ lectureId }: LectureProps) {
+  const videoRef = useRef<HTMLDivElement>(null);
+  const [isVideoLeaveWindow, setIsVideoLeaveWindow] = useState(false);
+  const [opened, { open, close }] = useDisclosure(false);
+  const [activeTab, setActiveTab] = useState('posts');
   const [lectureData, setLectureData] = useState<any>(null);
   const [error, setError] = useState(false);
+  const [postsLoading, setPostsLoading] = useState(false);
 
   useEffect(() => {
     getLectureDetailsById(lectureId, 1, 10)
       .then((res) => {
-        // ✅ 判断课程是否存在（根据你的接口结构）
-        if (!res || res.detail === "Course not found") {
+        if (!res || res.detail === 'Course not found') {
           setError(true);
         } else {
           setLectureData(res);
         }
       })
-      .catch((err) => {
-        console.error("获取课程失败：", err);
-        setError(true);
-      });
+      .catch(() => setError(true));
   }, [lectureId]);
 
-
   useEffect(() => {
-    //为视频挂上ref
     const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0]
-        // 如果 entry.isIntersecting 为 false，说明目标元素离开视口了
-        if(entry.isIntersecting){
-          //console.log('元素进入视口或回来了');
-          setIsVideoLeaveWindow(false)
-        }
-        else{
-          //console.log('元素离开视口，滚过去了');
-          setIsVideoLeaveWindow(true)
-        }
-      },
-      {
-        root: null, // 视口
-        threshold: 0.5, // 只要有交叉就触发
-      }
-    )
-    if(videoRef.current){
-      observer.observe(videoRef.current)
-    }
+      ([entry]) => setIsVideoLeaveWindow(!entry.isIntersecting),
+      { threshold: 0.5 }
+    );
+    if (videoRef.current) observer.observe(videoRef.current);
     return () => {
-      if(videoRef.current){
-        observer.unobserve(videoRef.current)
-      }
-    }
-  }, [])
-  const handleTabChange = (value: string | null) => {
-    if (typeof value === 'string') {
-      setActiveTab(value);
-    }
-  };
+      if (videoRef.current) observer.unobserve(videoRef.current);
+    };
+  }, []);
+
   if (error) {
     return (
-      <div style={{ textAlign: "center", marginTop: "100px" }}>
+      <div style={{ textAlign: 'center', marginTop: '100px' }}>
         <h1>❌ 404 Not Found</h1>
         <p>The lecture does not exist or has been deleted</p>
       </div>
@@ -98,104 +59,107 @@ export default function Lecture({ lectureId }: LectureProps){
   }
 
   if (!lectureData) {
-    return <div style={{ textAlign: "center", marginTop: "100px" }}>Loading...</div>;
+    return <div style={{ textAlign: 'center', marginTop: '100px' }}>Loading...</div>;
   }
 
   return (
-    <Container className='video-container' size={"fluid"}>
-      <div style={{width:'100%', display:'block'}}>
-        <div>
-          <VideoHeader lectureId={lectureId}></VideoHeader>
-        </div>
-
-      </div>
+    <Container className="video-container" size="fluid">
+      <VideoHeader lectureId={lectureId} />
 
       <Grid className="video-grid" ref={videoRef}>
         <Grid.Col span={8}>
-          <VideoPlayer></VideoPlayer>
-          <div>
-            <VideoIntro lectureId={lectureId}></VideoIntro>
-          </div>
+          <VideoPlayer videoUrl={lectureData.video_url} />
+          <VideoIntro lectureId={lectureId} />
         </Grid.Col>
         <Grid.Col span={4}>
-          <div>
-            <VideoList currentCourseId={lectureData.course} currentLectureId={lectureId} />
-
-          </div>
-
+          <VideoList currentCourseId={lectureData.course} currentLectureId={lectureId} />
         </Grid.Col>
       </Grid>
-      <div>
-        <div hidden={postsLoading}>
-          <Tabs color='#3C4077' variant="pills" defaultValue={"posts"} className="tabs" value={activeTab} onChange={handleTabChange}>
-            <Tabs.List className="tabs-list">
-              <Tabs.Tab value="posts">Posts</Tabs.Tab>
-              <Tabs.Tab value="Matrials">Materials</Tabs.Tab>
-              <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
-            </Tabs.List>
-            <Tabs.Panel value="posts">
-              <PostsWithPagination lecture_id={lectureId}/>
-            </Tabs.Panel>
-            <Tabs.Panel value="Matrials">
-              <Material lectureId={lectureId}/>
-            </Tabs.Panel>
-            <Tabs.Panel value="Assignments">
-              Assignments
-            </Tabs.Panel>
-          </Tabs>
 
+      <div hidden={postsLoading}>
+        <Tabs
+          color="#3C4077"
+          variant="pills"
+          defaultValue="posts"
+          className="tabs"
+          value={activeTab}
+          onChange={(val) => val && setActiveTab(val)}
+        >
+          <Tabs.List className="tabs-list">
+            <Tabs.Tab value="posts">Posts</Tabs.Tab>
+            <Tabs.Tab value="Matrials">Materials</Tabs.Tab>
+            <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
+          </Tabs.List>
+
+          <Tabs.Panel value="posts">
+            <PostsWithPagination lecture_id={lectureId} />
+          </Tabs.Panel>
+          <Tabs.Panel value="Matrials">
+            <Material lectureId={lectureId} />
+          </Tabs.Panel>
+          <Tabs.Panel value="Assignments">Assignments</Tabs.Panel>
+        </Tabs>
+
+        {activeTab === 'posts' && (
           <div className="post-panel">
-            {/* 👇 只有在 Posts 标签下显示按钮 */}
-            {activeTab === "posts" && (
-              <div className="post-panel">
-                <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId} />
-                <Button
-                  onClick={open}
-                  id={`${isVideoLeaveWindow ? "normal" : "right-corner"}`}
-                  className="post-button"
-                >
-                  Open to write post
-                </Button>
-              </div>
-            )}
-
+            <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId} />
+            <Button
+              onClick={open}
+              id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
+              className="post-button"
+            >
+              Open to write post
+            </Button>
           </div>
-        </div>
-        <Skeleton height={'500px'} animate={true} hidden={!postsLoading}></Skeleton>
+        )}
       </div>
+
+      <Skeleton height={'500px'} animate={true} hidden={!postsLoading} />
     </Container>
-  )
+  );
 }
 
-const VideoSelector = ( {onLoadComplete}: {onLoadComplete: () => void } ) => {
-  useEffect(() => {
-    //加载完成
-    //onLoadComplete()
-  })
-  return (
-    <div>
+type VideoTypes = 'video/mp4' | 'video/quicktime';
 
-    </div>
-  )
+interface VideoPlayerProps {
+  videoUrl: string;
 }
 
-type VideoTypes = 'video/mp4'
-interface videoPlayerProps{
+function VideoPlayer({ videoUrl }: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [videoType, setVideoType] = useState<VideoTypes>('video/mp4'); // 默认 mp4 更稳
 
-}
-
-//视频播放组件
-function VideoPlayer(props:videoPlayerProps){
-  const baseURL = 'http://127.0.0.1:5000/video/'
-  const [videoUrl, setVideoUrl] = useState('test.mp4');
-  const [videoType, setVideoType] = useState<VideoTypes>('video/mp4')
+  const handleError = () => {
+    const error = videoRef.current?.error;
+    if (error) {
+      const message =
+        {
+          1: '视频加载被用户中止',
+          2: '网络错误',
+          3: '解码失败（格式可能不支持）',
+          4: '视频格式不支持或服务器响应错误',
+        }[error.code] || '未知错误';
+      console.error('[VIDEO ERROR]', message);
+    }
+  };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center' }}>
-      <video controls width="100%" style={{margin:'auto', textAlign:'center'}}>
-        <source src={baseURL+videoUrl} type={videoType} />
+      <video
+        ref={videoRef}
+        controls
+        width="100%"
+        onError={handleError}
+        style={{
+          margin: 'auto',
+          textAlign: 'center',
+          backgroundColor: 'black',
+          minHeight: '240px',
+        }}
+      >
+        <source src={videoUrl} type={videoType} />
         Your browser does not support the video tag.
       </video>
     </div>
-  )
+  );
 }
