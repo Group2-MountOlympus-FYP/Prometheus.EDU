@@ -125,7 +125,7 @@ export const RichTextEditor = forwardRef((props, ref) => {
         type:'mention',
         attrs:{
           label: 'Athena',
-          id: -1
+          id: 134,
         }
       })
     }
