@@ -8,7 +8,7 @@ import { getText } from './HeaderLanguage'
 import { SignPanel } from "../SignPanel/SignPanel"
 import { MessagePanel } from "../MessagePanel/MessagePanel"
 import { useState, useEffect, useContext } from "react"
-import { getLocalStorage, lockOverflow, reloadWindow, unlockOverflow } from "@/app/api/General"
+import { reloadWindow } from "@/app/api/General"
 import { LoadingContext } from "../Contexts/LoadingContext"
 import { SessionContext } from "../Contexts/SessionContext"
 import { useRouter } from 'next/navigation'
@@ -38,7 +38,7 @@ export default function Header() {
 
     useEffect(() => {
         setIsLoading(true)
-        console.log(isLogin)
+        //console.log(isLogin)
         const fetchUserInfo = async () => {
             try {
                 const userData = await getUserProfile()
