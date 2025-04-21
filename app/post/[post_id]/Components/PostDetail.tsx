@@ -15,13 +15,9 @@ export async function PostDetail(props: Props){
     const url = `http://127.0.0.1:5000/post/${props.post_id}`;
 
     // 明确类型并赋初值
-    let content: string = '';
     let title: string = '';
-    let createTime: string = '';
-    let comments: any[] = [];
     let post;
 
-    let author,id;
     try {
         const response = await fetch(url, {
             method: 'GET', headers: {cookie: cookieHeader},
@@ -31,12 +27,7 @@ export async function PostDetail(props: Props){
 
         const jsonData = await response.json();
 
-        content = jsonData.content;
         title = jsonData.title;
-        createTime = jsonData.created_at;
-        comments = jsonData.children;
-        author = jsonData.author;
-        id = jsonData.id;
         post = jsonData;
         console.log(post);
     } catch (err) {

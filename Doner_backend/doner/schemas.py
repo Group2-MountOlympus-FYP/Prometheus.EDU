@@ -42,9 +42,6 @@ class PostSchema(SQLAlchemyAutoSchema):
     author = Nested('UserSchema', only=['username', 'avatar', 'id'])
 
 
-class LightCourseSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Course
 
 
 class EnrollmentSchema(SQLAlchemyAutoSchema):
@@ -52,7 +49,7 @@ class EnrollmentSchema(SQLAlchemyAutoSchema):
         model = Enrollment
         include_relationships = True
 
-    course = Nested(LightCourseSchema)
+    course = Nested("CourseSchema")
 
 
 class UserSchema(SQLAlchemyAutoSchema):
