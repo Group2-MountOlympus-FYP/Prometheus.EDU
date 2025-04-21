@@ -87,7 +87,7 @@ export function PostsWithPagination(props:postsPaginationProps){
     }, [])
 
     return (
-        <div>
+        <div style={{width:'63vw'}}>
             {
                 posts.map((post, key) => (
                     <PostsOverview 
