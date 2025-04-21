@@ -3,10 +3,31 @@
     height: 45vh;
     padding: 0.5vh 1vw 5vh 1vw;
 }
-.message-item {
-    border-bottom: 1px solid #e0e0e0;
-    padding: 1vh 0;
+/* 浅蓝色背景 + 未读圆点 */
+.message-item.unread {
+    background-color: #e6f4ff; /* 浅蓝色 */
+    padding-left: 16px;
+    position: relative;
 }
+
+/* 小圆点样式 */
+.message-item.unread::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: #007aff; /* 蓝色小圆点 */
+    border-radius: 50%;
+    position: absolute;
+    left: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* 已读状态（无背景/无圆点） */
+.message-item.read {
+    background-color: transparent;
+}
+
 
 .message-content{
     color: gray;
