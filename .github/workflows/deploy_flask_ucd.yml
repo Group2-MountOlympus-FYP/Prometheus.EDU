@@ -58,7 +58,7 @@ jobs:
         
           pip install -r Doner_backend/requirements.txt --no-deps
           
-          echo "$SECRET_ENV" > Doner_backend/.env
+          echo "$SECRET_ENV" > /home/student/Prometheus.EDU/Doner_backend/.env
         
           echo ${{ secrets.SERVER_PASSWORD }} | sudo -S supervisorctl restart doner
 
