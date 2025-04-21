@@ -31,6 +31,7 @@ const CourseCreate: React.FC = () => {
             status: "NORMAL",
             institution: "No institution",
             main_picture: null,
+            category: "Others",
         },
     });
 
@@ -52,6 +53,17 @@ const CourseCreate: React.FC = () => {
         {value: "VIP", label: "VIP"},
     ];
 
+    const categoryOptions = [
+        {value: "CS", label: "Computer Science"},
+        {value: "Math", label: "Math"},
+        {value: "Sport", label: "Sport"},
+        {value: "Life", label: "Life"},
+        {value: "Art", label: "Art"},
+        {value: "Language", label: "Language"},
+        {value: "Others", label: "Others"},
+    ];
+
+
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
         setLoading(true);
@@ -63,6 +75,7 @@ const CourseCreate: React.FC = () => {
             formData.append("level", form.values.level);
             formData.append("status", form.values.status);
             formData.append("institution", form.values.institution);
+            formData.append("category", form.values.category);
             if (form.values.main_picture) {
                 formData.append("main_picture", form.values.main_picture);
             }
@@ -179,6 +192,16 @@ const CourseCreate: React.FC = () => {
                         data={courseStatusOptions}
                         size="lg"
                         {...form.getInputProps("status")}
+                        required
+                        mt="xl"
+                    />
+
+                    <Select
+                        label="Course Category"
+                        placeholder="Select course category"
+                        data={categoryOptions}
+                        size="lg"
+                        {...form.getInputProps("category")}
                         required
                         mt="xl"
                     />
