@@ -71,7 +71,7 @@ const LectureCreatePage = () => {
                 color: "green",
             });
 
-            router.push(`/lecture/${data.id}`);
+            router.push(`/video/${data.id}`);
         } catch (error: any) {
             showNotification({
                 title: "Error",
