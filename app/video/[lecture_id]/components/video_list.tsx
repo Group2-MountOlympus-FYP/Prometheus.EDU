@@ -10,10 +10,12 @@ interface VideoInfo {
 }
 
 interface VideoListProps {
+  currentCourseId: number;
   currentLectureId: number;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
+
+const VideoList: React.FC<VideoListProps> = ({currentCourseId, currentLectureId  }) => {
   const router = useRouter();
   const [videoList, setVideoList] = useState<VideoInfo[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,22 +23,19 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
 
   useEffect(() => {
     setLoading(true);
-    getCourseDetailsById(115)
+    getCourseDetailsById(currentCourseId)
       .then((data) => {
         const rawVideos = data.lectures || data.videos || [];
-        const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId);
+        const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId); // 只排除当前 lecture
 
         setSkeletonCount(Math.min(filtered.length, 3));
-        const processedList: VideoInfo[] = rawVideos
-          .filter((item: any) => Number(item.id) !== currentLectureId)
+        const processedList: VideoInfo[] = filtered.map((item: any) => ({
+          id: item.id,
+          title: item.name || item.title || '无标题',
+          lastUpdated: item.created_at || '未知时间',
+        }));
 
-          .map((item: any) => ({
-            id: item.id,
-            title: item.name || item.title || '无标题',
-            lastUpdated: item.created_at || '未知时间',
-          }));
         setVideoList(processedList);
-
       })
       .catch((err) => {
         console.error("出错了：", err);
@@ -45,7 +44,8 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentLectureId]);
+  }, [currentCourseId, currentLectureId]);
+
 
   const handleCardClick = (id: number) => {
     router.push(`/video/${id}`);

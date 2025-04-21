@@ -10,7 +10,6 @@ import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
-import { notFound } from 'next/navigation';
 import { getLectureDetailsById } from "@/app/api/Lecture/router";
 
 interface LectureProps {
@@ -120,7 +119,8 @@ export default function Lecture({ lectureId }: LectureProps){
         </Grid.Col>
         <Grid.Col span={4}>
           <div>
-            <VideoList currentLectureId={lectureId}></VideoList>
+            <VideoList currentCourseId={lectureData.course} currentLectureId={lectureId} />
+
           </div>
 
         </Grid.Col>
