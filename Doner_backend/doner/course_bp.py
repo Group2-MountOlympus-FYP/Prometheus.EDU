@@ -301,6 +301,7 @@ def add_lecture(course_id):
 
 
 @course_bp.route('/get_lecture_detail', methods=['GET'])
+@login_required
 def get_lecture_detail():
     lecture_id = request.args.get('lecture_id')
     lecture = Lecture.query.get_or_404(lecture_id)

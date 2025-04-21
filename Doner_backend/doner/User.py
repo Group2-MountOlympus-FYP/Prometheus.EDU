@@ -54,6 +54,7 @@ class User(db.Model):
     nickname = db.Column(db.String(80), default='default nickname')
     status = db.Column(db.Enum(UserStatus), default=UserStatus.NORMAL)
     deleted = db.Column(db.Boolean, default=False, nullable=False)
+    posts = db.relationship('Post', backref='post_author', lazy='dynamic')
 
     def addUser(self):
         db.session.add(self)
