@@ -19,7 +19,7 @@ export function PostsOverview(props: PostOverviewProps){
 
     const toAtuhorProfile = () => {
         if(props.authorId){
-            
+            router.push(`/Profile/${props.authorId}`)
         }
     }
 
