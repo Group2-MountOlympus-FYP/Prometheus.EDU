@@ -25,7 +25,7 @@ export function RegisterPanel(){
     const [opened , { open, close }] = useDisclosure(false)
 
     const handelDateChane = (e:any) => {
-        setDate(e.targer.value)
+        setDate(e.target.value)
     }
 
     const handelPassword = (e:any) => {

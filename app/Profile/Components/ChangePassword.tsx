@@ -18,19 +18,17 @@ export function ChangePasswordPanel(){
 
         try{
             const response = await changePassword(currentPassword, newPassword)
-            if(response.status == 200){
+            const data = await response.json()
+
+            if(data.code == 0){
                 //成功
                 notifications.show({
                     message: getText("passwordChangeSuccess")
                 })
-            }else{
-                const data = await response.text()
-                //console.log(data)
-                if(data === "wrong old password"){
-                    setCurrentPasswordError(getText("currentPasswordError"))
-                }else{
-                    setNewPasswordError(getText("newPasswordError"))
-                }
+            }else if(data.code == 1){
+                setNewPasswordError(getText("newPasswordError"))
+            }else if(data.code == 3){
+                setCurrentPasswordError(getText("currentPasswordError"))
             }
             
         }catch(e){

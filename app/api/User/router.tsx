@@ -1,4 +1,4 @@
-import {Fetch} from "../General";
+import { Fetch } from "../General";
 
 //用户相关接口调用
 export type genders = "male" | "female" | "other";
@@ -11,9 +11,15 @@ export interface userProfile{
     gender: genders,
     id: number,
     username: string,
+    posts: any[],
 }
-export async function getUserProfile(): Promise<userProfile> {
-    const url = '/backend/my_profile';
+export async function getUserProfile(user_id?:number): Promise<userProfile> {
+    let url = ''
+    if(user_id){
+        url = `/backend/my_profile?user_id=${user_id}`
+    }else{
+        url = '/backend/my_profile';
+    }
 
     const response = await Fetch(url, {
         method: 'GET',
@@ -52,7 +58,7 @@ export async function uploadAvatar(file:File){
 export async function getMyComments(){
     const url = '/backend/post/comment/all'
 
-    const response = await fetch(url, {
+    const response = await Fetch(url, {
         method: 'GET'
     })
     if(response.ok){
