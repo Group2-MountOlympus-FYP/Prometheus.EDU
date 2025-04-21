@@ -3,7 +3,7 @@ import React, { useState, useContext } from 'react';
 import { LoadingContext } from '@/components/Contexts/LoadingContext';
 import './Register.css'
 import { CheckUsernameExist, RegisterUser } from '@/app/api/Register/router';
-import { GetCSRF, getLocalStorage, reloadWindow } from '@/app/api/General';
+import { GetCSRF, reloadWindow } from '@/app/api/General';
 import { getText } from './language';
 import { Modal } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
@@ -73,15 +73,14 @@ export function RegisterPanel(){
         }
         
         setIsLoading(true)
-        const response = await GetCSRF()
-        if(response == true){
-            
-        }else{
-            alert("error!")
+        let csrf
+        try{
+            csrf = await GetCSRF()
+        }catch(e){
+            console.log(e)
             return
         }
 
-        let csrf = getLocalStorage("csrf_token")
         //处理gender
         let genderStr
         if(gender == 0){
