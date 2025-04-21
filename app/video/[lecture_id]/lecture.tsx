@@ -12,6 +12,7 @@ import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
+import { getText } from "./components/language";
 
 interface LectureProps {
   lectureId: number;
@@ -52,14 +53,14 @@ export default function Lecture({ lectureId }: LectureProps) {
   if (error) {
     return (
       <div style={{ textAlign: 'center', marginTop: '100px' }}>
-        <h1>❌ 404 Not Found</h1>
-        <p>The lecture does not exist or has been deleted</p>
+        <h1>❌ {getText('Lecture_404')}</h1>
+        <p>{getText('Lecture_exist')}</p>
       </div>
     );
   }
 
   if (!lectureData) {
-    return <div style={{ textAlign: 'center', marginTop: '100px' }}>Loading...</div>;
+    return <div style={{ textAlign: 'center', marginTop: '100px' }}>{getText('Loading')}</div>;
   }
 
   return (
@@ -86,9 +87,9 @@ export default function Lecture({ lectureId }: LectureProps) {
           onChange={(val) => val && setActiveTab(val)}
         >
           <Tabs.List className="tabs-list">
-            <Tabs.Tab value="posts">Posts</Tabs.Tab>
-            <Tabs.Tab value="Matrials">Materials</Tabs.Tab>
-            <Tabs.Tab value="Assignments">Assignments</Tabs.Tab>
+            <Tabs.Tab value="posts">{getText('post')}</Tabs.Tab>
+            <Tabs.Tab value="Matrials">{getText('material')}</Tabs.Tab>
+            <Tabs.Tab value="Assignments">{getText('assignment')}</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="posts">
@@ -108,7 +109,7 @@ export default function Lecture({ lectureId }: LectureProps) {
               id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
               className="post-button"
             >
-              Open to write post
+              {getText('write_post')}
             </Button>
           </div>
         )}

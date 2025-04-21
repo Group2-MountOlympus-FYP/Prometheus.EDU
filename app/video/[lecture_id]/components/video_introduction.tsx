@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Title, Text, Button, Skeleton } from '@mantine/core';
 import {getLectureDetailsById} from "@/app/api/Lecture/router";
+import { getText } from "./language";
 
 interface VideoInfo {
     description: string;
@@ -22,7 +23,6 @@ const VideoInfoComponent: React.FC<VideoInfoComponentProps> = ({ lectureId }) =>
                 const info: VideoInfo = {
                     description : data.description || '无标题',
                     videoId: String(data.id),
-
                 };
                 setVideoInfo(info); // ✅ 填到状态中
             })
@@ -34,12 +34,12 @@ const VideoInfoComponent: React.FC<VideoInfoComponentProps> = ({ lectureId }) =>
   return (
       <Container size="lg" style={{ paddingTop: '20px' }}>
         <Title order={1} style={{ textAlign: 'left', marginBottom: '20px' }}>
-          Lecture Overview
+          {getText('Lecture_Overview')}
         </Title>
 
           <div>
             <Text size="md" style={{ marginBottom: '20px' }}>
-               {videoInfo ? videoInfo.description : '加载中...'}
+              {videoInfo ? videoInfo.description : getText('Loading')}
             </Text>
 
           </div>
