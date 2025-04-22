@@ -17,6 +17,7 @@ interface userDataProps{
     tabsValue: string | null,
     onTabsChange: (value: string | null) => void,
     isLoading: boolean,
+    isSelf: boolean,
 }
 
 export function UserProfile(props:userDataProps){
@@ -46,14 +47,18 @@ export function UserProfile(props:userDataProps){
                         <Text className={style.text}><strong>{getText('birthdate')}: </strong>{props.birthDate}</Text>
                         <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>Student</span></Text>
                     </div>
-                    <Group className={style.centered} style={{"marginBottom": '5.5vh'}}>
+                    { props.isSelf?
+                    <Group className={style.centered} style={{"marginBottom": '8vh'}}>
                         <Button style={{backgroundColor:'#777CB9'}} onClick={open}>{getText('edit')}</Button>
                         <Anchor component="button" type="button" style={{color:'#309AA8',cursor:'pointer'}} onClick={passwordChangeOpen}>{getText("ChangePassword")}</Anchor>
                     </Group>
+                    :
+                    <div></div>
+                    }
                 </Grid.Col>
                 <Grid.Col span={6} style={{margin:'auto', display:'flex', justifyContent: 'flex-end'}}>
                     <div className={style.avatarRing}>
-                        <div className={`${style.overlay} ${isMouseOnAvatar ? style.overlayVisible : ''}`}>Change Avatar</div>
+                        <div className={`${style.overlay} ${isMouseOnAvatar && props.isSelf ? style.overlayVisible : ''}`}>Change Avatar</div>
                         <Avatar src={props.avatar} size={180} className={style.avatar}
                             onMouseEnter={() => setIsMouseOnAvatar(true)}
                             onMouseLeave={() => setIsMouseOnAvatar(false)}

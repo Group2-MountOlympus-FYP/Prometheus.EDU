@@ -9,11 +9,10 @@ import { getText } from './HeaderLanguage'
 import { SignPanel } from "../SignPanel/SignPanel"
 import { MessagePanel } from "../MessagePanel/MessagePanel"
 import { useState, useEffect, useContext } from "react"
-import { reloadWindow } from "@/app/api/General"
+import { getUserInfo, reloadWindow } from "@/app/api/General"
 import { LoadingContext } from "../Contexts/LoadingContext"
 import { SessionContext } from "../Contexts/SessionContext"
 import { useRouter } from 'next/navigation'
-import {getUserProfile} from "@/app/api/User/router";
 import { Logout } from "@/app/api/Login/router"
 import { useDisclosure } from "@mantine/hooks"
 import { GradientText } from "../GradientText/HeaderText"
@@ -37,11 +36,20 @@ export default function Header() {
 
 
     useEffect(() => {
+        //加载
         setIsLoading(true)
-        console.log(isLogin)
+        //console.log(isLogin)
         const fetchUserInfo = async () => {
             try {
-                const userData = await getUserProfile()
+                const userData = getUserInfo()
+                if(userData === null){
+                    //当userData为null时说明用户没有登陆
+                    setIsLogin(false)
+                    //停止加载
+                    setIsLoading(false)
+                    return
+                }
+
                 setAvatar(userData.avatar)
                 setUsername(userData.username)
                 setIsLogin(true)

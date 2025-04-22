@@ -86,7 +86,11 @@ def setRoot(app):
         target_id_func=lambda: get_current_user().id if get_current_user() else None
     )
     def profile_page():
-        user = get_current_user()
+        user_id = request.args.get('user_id')
+        if user_id:
+            user = User.query.get(user_id)
+        else:
+            user = get_current_user()
         return jsonify(UserSchema(exclude=["password_hash"]).dump(user))
 
     @app.route('/my_likes')
@@ -345,8 +349,8 @@ def setRoot(app):
                     "example": {
                         "users": [
                             {
-                            "username": "王洋",
-                            "user_id": 13
+                                "username": "王洋",
+                                "user_id": 13
                             }
                         ]
                     }
@@ -568,8 +572,9 @@ class BaseAdminView(ModelView):
 class UserAdminModelView(ModelView):
     column_exclude_list = ('password_hash',)
     column_display_pk = True  # 显示主键，避免自动解析外键
-    form_columns = ('id','username','birthdate','gender','nickname','password', 'status','deleted')  # 只显示 ID 作为表单字段（避免所有字段）
-    column_searchable_list = ('id', 'username','birthdate','gender','nickname','deleted')
+    form_columns = (
+    'id', 'username', 'birthdate', 'gender', 'nickname', 'password', 'status', 'deleted')  # 只显示 ID 作为表单字段（避免所有字段）
+    column_searchable_list = ('id', 'username', 'birthdate', 'gender', 'nickname', 'deleted')
     form_extra_fields = {
         'password': PasswordField('Password')
     }
@@ -641,6 +646,7 @@ class ActivityLogView(BaseAdminView):
     column_list = ('id', 'user_id', 'action', 'target_type', 'target_id', 'timestamp')  # 只列出具体字段
     form_excluded_columns = ('user',)
 
+
 class CourseAdminModelView(BaseAdminView):
     form_columns = ('course_name', 'description', 'level', 'status', 'institution')
     form_overrides = {
@@ -672,6 +678,7 @@ class CourseAdminModelView(BaseAdminView):
             flash(f'删除失败：{ex}', 'error')
             db.session.rollback()
             return False
+
 
 def init_admin(app):
     admin = Admin(app, name='Admin Panel', template_mode='bootstrap3', index_view=MyAdminIndexView())

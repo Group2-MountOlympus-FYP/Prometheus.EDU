@@ -12,7 +12,7 @@ export function AppShell({ children }: { children: React.ReactNode }){
     return(
         <div>
                 <LoadingOverlay visible={isLoading} zIndex={9999} loaderProps={{ color: '#777CB9', type: 'bars' }}
-                overlayProps={{ radius: 'sm', blur: 10 }}></LoadingOverlay> :
+                    overlayProps={{ radius: 'sm', blur: 10 }}></LoadingOverlay> :
                 <div>
                     <Header/>
                     <div style={{marginTop: '7vh', marginBottom:'10vh'}}>

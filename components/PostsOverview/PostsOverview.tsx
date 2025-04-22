@@ -19,7 +19,7 @@ export function PostsOverview(props: PostOverviewProps){
 
     const toAtuhorProfile = () => {
         if(props.authorId){
-            
+            router.push(`/Profile/${props.authorId}`)
         }
     }
 
@@ -32,7 +32,7 @@ export function PostsOverview(props: PostOverviewProps){
             <Grid.Col span={0.5}>
                 <Avatar src={props.avatarPath} className={style.avatar} onClick={toAtuhorProfile}></Avatar>
             </Grid.Col>
-            <Grid.Col span={10.5}>
+            <Grid.Col span={11.5}>
                 <table>
                     <tbody>
                         <tr style={{height: "3vh"}}>

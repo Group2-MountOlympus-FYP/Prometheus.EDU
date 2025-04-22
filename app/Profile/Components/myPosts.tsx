@@ -6,7 +6,7 @@ interface Props {
 }
 export function MyPosts(props: Props){
     return (
-        <div style={{margin:'auto', width:'80vw'}}>
+        <div style={{margin:'auto', width:'70vw'}}>
             {
                 props.posts.map((post:any, index:number) => (
                     <PostsOverview

@@ -9,22 +9,20 @@ import {
     Button,
     Group,
     Stack,
-    FileInput,
 } from "@mantine/core";
-import {Dropzone, IMAGE_MIME_TYPE, MIME_TYPES} from "@mantine/dropzone";
+import {Dropzone, MIME_TYPES} from "@mantine/dropzone";
 import {IconUpload} from "@tabler/icons-react";
 import {useForm} from "@mantine/form";
-import {useRouter, useSearchParams} from "next/navigation";
+import {useRouter, useParams} from "next/navigation";
 import {useState} from "react";
 import {showNotification} from "@mantine/notifications";
 import {createLecture} from "@/app/api/Lecture/router";
-import {useParams} from 'next/navigation';
+import {getText} from "@/components/CookieConsent/language";
 
 const LectureCreatePage = () => {
     const router = useRouter();
     const params = useParams();
     const course_id = parseInt(params.courseId);
-    console.log("params:", params);
 
     const form = useForm({
         initialValues: {
@@ -44,8 +42,8 @@ const LectureCreatePage = () => {
 
         if (!form.values.video) {
             showNotification({
-                title: "Error",
-                message: "Please upload a video for the lecture.",
+                title: getText("error"),
+                message: getText("pleaseUploadVideo"),
                 color: "red",
             });
             setLoading(false);
@@ -66,16 +64,16 @@ const LectureCreatePage = () => {
             const data = await createLecture(course_id, formData);
 
             showNotification({
-                title: "Lecture Created",
-                message: `Lecture ID: ${data.id}`,
+                title: getText("lectureCreated"),
+                message: `${getText("lectureID")}: ${data.id}`,
                 color: "green",
             });
 
-            router.push(`/lecture/${data.id}`);
+            router.push(`/video/${data.id}`);
         } catch (error: any) {
             showNotification({
-                title: "Error",
-                message: error.message || "Failed to create lecture",
+                title: getText("error"),
+                message: error.message || getText("createFailed"),
                 color: "red",
             });
         } finally {
@@ -86,16 +84,16 @@ const LectureCreatePage = () => {
     return (
         <Container size="sm" mt={200}>
             <Title order={2} ta="center" mb="xl" size="2.5rem">
-                Add New Lecture
+                {getText("addNewLecture")}
             </Title>
             <Text size="lg" mb="lg" ta="center">
-                Please fill in the information below to create a new lecture.
+                {getText("pleaseFillInfo")}
             </Text>
 
             <form onSubmit={handleSubmit}>
                 <Stack spacing={40}>
                     <TextInput
-                        label="Lecture Name"
+                        label={getText("lectureName")}
                         size="lg"
                         withAsterisk
                         {...form.getInputProps("name")}
@@ -103,7 +101,7 @@ const LectureCreatePage = () => {
                     />
 
                     <Textarea
-                        label="Lecture Description"
+                        label={getText("lectureDesc")}
                         size="lg"
                         autosize
                         minRows={4}
@@ -114,7 +112,7 @@ const LectureCreatePage = () => {
 
                     <div>
                         <Text fw={500} mt={30} mb={20}>
-                            Upload Lecture Video
+                            {getText("uploadVideo")}
                         </Text>
                         <Dropzone
                             onDrop={(files) => {
@@ -124,8 +122,8 @@ const LectureCreatePage = () => {
                             }}
                             onReject={() =>
                                 showNotification({
-                                    title: "Upload failed",
-                                    message: "Please upload a valid video file.",
+                                    title: getText("uploadFailed"),
+                                    message: getText("invalidVideoFile"),
                                     color: "red",
                                 })
                             }
@@ -137,10 +135,10 @@ const LectureCreatePage = () => {
                                 <IconUpload size={40} stroke={1.5}/>
                                 <div>
                                     <Text size="lg" inline>
-                                        Drag video here or click to upload
+                                        {getText("dragOrClick")}
                                     </Text>
                                     <Text size="sm" c="dimmed" mt={7}>
-                                        Only MP4/WebM, max size 500MB.
+                                        {getText("videoHint")}
                                     </Text>
                                 </div>
                             </Group>
@@ -157,7 +155,7 @@ const LectureCreatePage = () => {
 
                     <Group position="center" mt={80}>
                         <Button type="submit" loading={loading} size="lg">
-                            Create Lecture
+                            {getText("createLecture")}
                         </Button>
                     </Group>
                 </Stack>

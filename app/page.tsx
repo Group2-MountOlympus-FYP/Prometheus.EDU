@@ -3,7 +3,6 @@
 import { AboutWebSite } from '@/components/AboutWebsite/AboutWebsite';
 import { CourseCard } from '@/components/CourseCard/CourseCard';
 import { useEffect, useState } from 'react';
-import { getText } from './language'
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';

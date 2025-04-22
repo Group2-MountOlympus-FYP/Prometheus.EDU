@@ -1,51 +1,91 @@
-'use client'
-import './MessagePanel.css'
-import { IoCloseSharp } from "react-icons/io5";
+'use client';
 
+import { useEffect, useState } from 'react';
+import './MessagePanel.css';
+import { getNotifications, markNotificationAsRead } from '@/app/api/Notification/router';
+import Link from 'next/link';
+
+interface Notification {
+  id: number;
+  post_id: number;
+  comment_id: number;
+  post_title: string;
+  type: string;
+  content: string;
+  created_at: string;
+  read: boolean;
+  created_by: {
+    id: number;
+    username: string;
+    avatar: string;
+  };
+}
 
 export function MessagePanel() {
+  const [messages, setMessages] = useState<Notification[]>([]);
 
-    const messages = [
-        {
-          id: 1,
-          user: 'Peyby',
-          type: 'replies', // or 'mentions'
-          timestamp: '2025-04-17 10:30',
-          isRead: false,
-          content: 'Thanks for your comment!',
-        },
-        {
-          id: 2,
-          user: 'Peybo',
-          type: '@',
-          timestamp: '2025-04-17 09:45',
-          isRead: true,
-          content: 'Please check this update.',
-        },
-      ];
-      
-    const content = messages.map((msg) => (
-        <div key={msg.id} className={`message-item ${msg.isRead ? 'read' : 'unread'}`}>
-          <div className="message-header">
-            <span className="sender-name">{msg.user}</span>
-            <span className="message-type">{msg.type === 'replies' ? 'replied to you' : '@ you'}</span>
-            <span className="timestamp">at {msg.timestamp} :</span>
-          </div>
-          <div className="message-content">
-            {msg.content}
-          </div>
-        </div>
-    ));
+  useEffect(() => {
+    let isMounted = true;
 
-    return (
-        <div>
-            {/* <div className="message-img"></div> */}
+    async function fetchMessages() {
+      try {
+        const data = await getNotifications();
+        const filtered = data.filter((msg: Notification) => msg.post_id !== null);
+        if (isMounted) {
+          setMessages(filtered);
+        }
+      } catch (err) {
+        console.error('获取通知失败:', err);
+      }
+    }
 
-            <div className="content-box">
-                {content}
-            </div>
+    fetchMessages();
 
-            <div className="placeholder"></div>
-        </div>
-    )
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const handleMarkAsRead = async (id: number) => {
+    try {
+      await markNotificationAsRead(id);
+      setMessages((prev) =>
+        prev.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
+      );
+    } catch (err) {
+      console.error(`标记通知 ${id} 为已读失败:`, err);
+    }
+  };
+
+  const content = messages.map((msg) => (
+    <div
+      key={msg.id}
+      className={`message-item ${msg.read ? 'read' : 'unread'}`}
+      onClick={() => {
+        if (!msg.read) {
+          handleMarkAsRead(msg.id);
+        }
+      }}
+    >
+      <div className="message-header">
+        <span className="sender-name">{msg.created_by.username}</span>
+        <span className="message-type">
+          {msg.type === 'replied' ? 'replied to you' : '@ you'}
+        </span>
+        <span className="timestamp">at {new Date(msg.created_at).toLocaleString()}</span>
+      </div>
+      <div className="message-content">
+        <Link href={`/post/${msg.post_id}`} className="post-title-link">
+          {msg.post_title || '[未命名帖子]'}
+        </Link>
+      </div>
+    </div>
+  ));
+
+  return (
+    <div>
+      <div className="content-box">{content}</div>
+      <div className="placeholder"></div>
+    </div>
+  );
 }

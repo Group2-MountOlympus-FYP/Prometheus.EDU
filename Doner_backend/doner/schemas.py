@@ -4,7 +4,7 @@ from marshmallow_sqlalchemy.fields import Nested
 from marshmallow.fields import Integer, String, Float, Boolean, List, Dict
 
 from .Course import Course, Enrollment
-from .ReplyTarget import Tag,ReplyTarget
+from .ReplyTarget import Tag, ReplyTarget
 from .User import User
 from .Post import Post
 from .Comment import Comment
@@ -14,7 +14,6 @@ from .Lecture import Lecture, Resource
 from .Mention import Mention
 import yaml
 import os
-
 
 
 class CommentSchema(SQLAlchemyAutoSchema):
@@ -42,25 +41,22 @@ class PostSchema(SQLAlchemyAutoSchema):
     author = Nested('UserSchema', only=['username', 'avatar', 'id'])
 
 
-class LightCourseSchema(SQLAlchemyAutoSchema):
-    class Meta:
-        model = Course
-
-
 class EnrollmentSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Enrollment
         include_relationships = True
 
-    course = Nested(LightCourseSchema)
+    course = Nested("CourseSchema")
 
 
 class UserSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = User
         include_relationships = True
+        exclude = ["activities", "content"]
 
     enrollments = Nested(EnrollmentSchema, many=True)
+    posts = Nested(PostSchema, many=True)
 
 
 class ActivityLogSchema(SQLAlchemyAutoSchema):
@@ -89,12 +85,13 @@ class LectureSchema(SQLAlchemyAutoSchema):
     author = Nested(UserSchema, only=['username', 'avatar', 'id'])
     images = Nested(ImageSchema, many=True, only=['url'])
 
+
 class CourseSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = Course
         include_relationships = True
 
-    lectures = Nested(LectureSchema, many=True,exclude=['posts'])
+    lectures = Nested(LectureSchema, many=True, exclude=['posts'])
     images = Nested(ImageSchema, many=True, only=['url'])
 
 
@@ -168,8 +165,8 @@ def save_dict_as_yaml(name, schema_dict):
     with open(save_path, "w") as file:
         file.write(schema_yaml)
 
-if __name__ == "__main__":
 
+if __name__ == "__main__":
     save_dict_as_yaml("definitions", {
         "Post": get_schema_dict(PostSchema),
         "User": get_schema_dict(UserSchema),
