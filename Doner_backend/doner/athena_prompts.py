@@ -106,7 +106,7 @@ class AthenaPrompts:
     - Consider course levels and prerequisites when recommending courses
     - Provide a diverse set of recommendations when appropriate
     - Explain why each course is recommended for the user
-    - Format your recommendations clearly with course IDs, names, and brief descriptions
+    - Format your recommendations clearly with course IDs and names in JSON
 
     # Retrieved Course Information
     {context}
