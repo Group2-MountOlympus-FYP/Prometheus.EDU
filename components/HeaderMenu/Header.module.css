@@ -44,9 +44,9 @@
     object-fit: cover;
 }
 .webName{
-    font-family: "Comic Sans MS", "Comic Sans", cursive;
+    font-family: "Fredoka", "Comic Sans", cursive;
     color: #0D283C;
-    font-size: 2.5vh;
+    font-size: 2.8vh;
     font-weight: 800;
     padding: 0 1.5vh;
     margin: -1vh -0.2vw;
@@ -58,12 +58,16 @@
     border-radius: var(--mantine-radius-sm);
     text-decoration: none;
     color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
-    font-size: var(--mantine-font-size-sm);
+    font-size: 1vw;
     font-weight: 500;
     cursor: pointer;
 }
 .links:hover{
     color: #777CB9;
+    /* transform: scale(1.1); */
+}
+.athenaLink:hover{
+    transform: scale(1.1);
 }
 .select{
     z-index: 1001;
@@ -73,14 +77,12 @@
     position: relative;
     height: 100%;
 }
-.messageImg{
+.messageImg {
     background-image: url(./../../public/message.png);
-    background-size: cover;
-    height: 5vh;
-    width: 5vh;
-    display: flex;
-    position: absolute;
-    top: 292%;
-    left: 32.5%;
-    z-index: 99999;
-}
+    background-size: contain;
+    background-repeat: no-repeat;
+    height: 2.5vw;
+    width: 2.5vw;
+    flex-shrink: 0;
+  }
+  

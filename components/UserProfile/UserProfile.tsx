@@ -48,7 +48,7 @@ export function UserProfile(props:userDataProps){
                         <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>Student</span></Text>
                     </div>
                     { props.isSelf?
-                    <Group className={style.centered} style={{"marginBottom": '8vh'}}>
+                    <Group className={style.centered} style={{"marginBottom": '5.5vh'}}>
                         <Button style={{backgroundColor:'#777CB9'}} onClick={open}>{getText('edit')}</Button>
                         <Anchor component="button" type="button" style={{color:'#309AA8',cursor:'pointer'}} onClick={passwordChangeOpen}>{getText("ChangePassword")}</Anchor>
                     </Group>

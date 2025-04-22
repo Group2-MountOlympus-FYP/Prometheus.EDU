@@ -5,7 +5,6 @@ type Language = 'en' | 'zh';
 
 let currentLanguage: Language = 'en'; // 默认语言设置为 'en'
 
-
 export function setLanguage(lang: Language){
   currentLanguage = lang;
   setLocalStorage('language' , lang)
@@ -20,3 +19,22 @@ export function getLanguage():Language{
   //console.error('language wrong!')
   return 'en' 
 }
+
+
+type Translations = {
+  [key: string]: string;
+};
+
+const translations: {[ key in 'en' | 'zh' ]: Translations} = {
+  en: {
+      categories: "Categories",
+    },
+  zh: {
+      categories: "课程分类",
+  },
+}
+
+export const getText = (key: string): string => {
+  const lang = getLanguage();
+  return translations[lang][key] || key; // 如果没有找到对应的文本，返回key本身
+};
