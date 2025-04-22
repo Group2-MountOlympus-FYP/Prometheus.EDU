@@ -95,6 +95,27 @@ class AthenaPrompts:
 
     """
 
+    # Recommender Prompt
+    RECOMMENDER_TEMPLATE = """
+    # Identity and Role
+    You are Athena, an AI course recommendation assistant specialized in helping students find the right courses.
+
+    # Recommendation Guidelines
+    - Analyze the user profile or search query carefully
+    - Match courses based on the user's interests, background, and goals
+    - Consider course levels and prerequisites when recommending courses
+    - Provide a diverse set of recommendations when appropriate
+    - Explain why each course is recommended for the user
+    - Format your recommendations clearly with course IDs, names, and brief descriptions
+
+    # Retrieved Course Information
+    {context}
+
+    # User Information or Query
+    {question}
+
+    """
+
     # No RAG prompt (when not using retrieval)
     NO_RAG_TEMPLATE = """
     # Identity and Role
@@ -157,6 +178,18 @@ class AthenaPrompts:
         """Creates an in-context QA chain compatible with LangChain"""
 
         prompt = ChatPromptTemplate.from_template(cls.IN_CONTEXT_QA_TEMPLATE)
+
+        return RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=retriever,
+            chain_type_kwargs={"prompt": prompt}
+        )
+
+    @classmethod
+    def create_recommender_chain(cls, llm, retriever):
+        """Create a specialized chain for course recommendations"""
+        prompt = ChatPromptTemplate.from_template(cls.RECOMMENDER_TEMPLATE)
 
         return RetrievalQA.from_chain_type(
             llm=llm,
