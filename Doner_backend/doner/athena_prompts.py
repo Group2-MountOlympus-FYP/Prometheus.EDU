@@ -64,6 +64,7 @@ class AthenaPrompts:
     - Provide specific, actionable suggestions for enhancement
     - Maintain an encouraging and supportive tone throughout
     - Reference relevant course materials in your feedback
+    - You must use HTML to format your response so that it can be fit into <p></p>
 
     # Retrieved Course Materials
     {context}
@@ -85,11 +86,33 @@ class AthenaPrompts:
     - Always base your responses on the retrieved course materials when available
     - Use a friendly, supportive, and educational tone
     - Encourage critical thinking and independent problem-solving
+    - You must use HTML to format your response so that it can be fit into <p></p>
 
     {question}
 
     # Retrieved Course Materials
     {context}
+
+    """
+
+    # Recommender Prompt
+    RECOMMENDER_TEMPLATE = """
+    # Identity and Role
+    You are Athena, an AI course recommendation assistant specialized in helping students find the right courses.
+
+    # Recommendation Guidelines
+    - Analyze the user profile or search query carefully
+    - Match courses based on the user's interests, background, and goals
+    - Consider course levels and prerequisites when recommending courses
+    - Provide a diverse set of recommendations when appropriate
+    - Explain why each course is recommended for the user
+    - Format your recommendations clearly with course IDs, names, and brief descriptions
+
+    # Retrieved Course Information
+    {context}
+
+    # User Information or Query
+    {question}
 
     """
 
@@ -104,6 +127,7 @@ class AthenaPrompts:
     - Encourage the student to consult course materials for definitive information
     - Clearly indicate any uncertainty in your response
     - Use a friendly, supportive tone appropriate for education
+    - You must use HTML to format your response so that it can be fit into <p></p>
 
     # User Query
     {question}
@@ -154,6 +178,18 @@ class AthenaPrompts:
         """Creates an in-context QA chain compatible with LangChain"""
 
         prompt = ChatPromptTemplate.from_template(cls.IN_CONTEXT_QA_TEMPLATE)
+
+        return RetrievalQA.from_chain_type(
+            llm=llm,
+            chain_type="stuff",
+            retriever=retriever,
+            chain_type_kwargs={"prompt": prompt}
+        )
+
+    @classmethod
+    def create_recommender_chain(cls, llm, retriever):
+        """Create a specialized chain for course recommendations"""
+        prompt = ChatPromptTemplate.from_template(cls.RECOMMENDER_TEMPLATE)
 
         return RetrievalQA.from_chain_type(
             llm=llm,
