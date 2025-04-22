@@ -29,7 +29,7 @@ export function MessagePanel() {
           <div className="message-header">
             <span className="sender-name">{msg.user}</span>
             <span className="message-type">{msg.type === 'replies' ? 'replied to you' : '@ you'}</span>
-            <span className="timestamp">at {msg.timestamp}</span>
+            <span className="timestamp">at {msg.timestamp} :</span>
           </div>
           <div className="message-content">
             {msg.content}

@@ -10,7 +10,7 @@ export async function getCourseByCategory(category: string) {
         throw new Error(`failed: ${response.status}`);
     }
 
-    return await response;
+    return response;
 }
 
 export async function createCourse(data: FormData) {
