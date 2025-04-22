@@ -23,6 +23,7 @@ export function GradientText({
       fw={weight}
       variant="gradient"
       gradient={{ from, to, deg }}
+      lh={1.4}
     >
       {children}
     </Text>
