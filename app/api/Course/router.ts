@@ -1,7 +1,7 @@
 import { Fetch } from "@/app/api/General";
 
 export async function getCourseByCategory(category: string) {
-    const url = `/backend/course/${category}`;  // 正确路径拼接
+    const url = `/backend/course/all?category=${category}`;  // 正确路径拼接
 
     const response = await Fetch(url, {
         method: 'GET',
