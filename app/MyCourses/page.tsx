@@ -58,9 +58,19 @@ export default function MyCoursesPage() {
     <Stack p="lg">
       <Text size="xl" fw={700}>My Courses</Text>
       {courses.map((item, idx) => (
-        <Card key={idx} shadow="sm" padding="lg" radius="md" withBorder
-              onClick={() => router.push(`/video/120`)}>
-          <Group align="flex-start" justify="space-between">
+        <Card
+          key={idx}
+          shadow="sm"
+          padding="lg"
+          radius="md"
+          withBorder
+          onClick={() => {
+
+              router.push(`/course/${item.course.id}`);
+          }}
+        >
+
+        <Group align="flex-start" justify="space-between">
             <Stack gap="xs">
               <Text fw={600} size="lg">{item.course.course_name}</Text>
               <Text size="sm" c="dimmed">{item.course.institution}</Text>

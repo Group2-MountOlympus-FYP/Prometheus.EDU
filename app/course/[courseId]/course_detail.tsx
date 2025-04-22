@@ -15,6 +15,7 @@ import VideoList from "./component/course_video_list";
 import Teachers_list from "@/app/course/[courseId]/component/teachers_list";
 import CourseHeader from "@/app/course/[courseId]/component/course_card";
 import { getCourseDetailsById } from "@/app/api/Course/router";
+import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
 
 interface CourseProps {
   courseId: number;
@@ -24,6 +25,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [courseData, setCourseData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
     getCourseDetailsById(courseId)
@@ -40,6 +42,13 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
       })
       .finally(() => setLoading(false));
   }, [courseId]);
+
+  useEffect(() => {
+    checkEnrollmentStatus(courseId)
+      .then((status) => setIsEnrolled(status))
+      .catch(() => setIsEnrolled(false));
+  }, [courseId]);
+
 
   if (loading) {
     return <div style={{ textAlign: "center", marginTop: "100px" }}>Loading...</div>;
@@ -59,20 +68,20 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
       {/* Header */}
       <Grid align="center" gutter="xl" className="course-header">
         <Grid.Col span={8}>
-          <CourseHeader lectureId={courseId} />
+          <CourseHeader courseId={courseId} />
         </Grid.Col>
       </Grid>
 
       {/* Lecturers */}
       <Group wrap="wrap">
-        <Teachers_list lectureId={courseId} />
+        <Teachers_list courseId={courseId} />
       </Group>
 
       <Divider my="xl" />
 
       {/* Syllabus */}
       <Stack>
-        <VideoList currentLectureId={courseId} />
+        <VideoList currentCourseId={courseId} isEnrolled={isEnrolled} />
       </Stack>
     </Container>
   );

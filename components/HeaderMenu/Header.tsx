@@ -16,6 +16,7 @@ import { useRouter } from 'next/navigation'
 import { Logout } from "@/app/api/Login/router"
 import { useDisclosure } from "@mantine/hooks"
 import { GradientText } from "../GradientText/HeaderText"
+import { redirectWindow } from "@/app/api/General";
 
 type headerProps = {
     onLoginClick?: () => void
@@ -87,6 +88,7 @@ export default function Header() {
         setIsLoading(true)
         try{
             await Logout()
+            redirectWindow("/")
         }catch(error){
             console.log(error)
         }
