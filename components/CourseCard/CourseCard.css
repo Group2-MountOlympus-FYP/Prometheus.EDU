@@ -13,6 +13,7 @@
     display: block;
     align-items: center;
     width: 20vw;
+    height: 20vw;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -27,6 +28,8 @@
 }
 .course-info-for-profile {
     text-align: left;
+    width: 18vw;
+    margin: auto;
 }
 
 .course-image {
@@ -45,12 +48,24 @@
     font-size: 1.5vw;
     font-weight: bold;
     margin: 0;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .course-category {
     font-size: 0.9vw;
     color: #666;
     margin: 5px 0;
+
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .institute-name {
@@ -58,8 +73,10 @@
     align-items: center;
     font-size: 1vw;
     color: #444;
-}
 
-.play-icon {
-    margin-right: 5px;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

@@ -5,6 +5,7 @@ import { CourseCard } from '@/components/CourseCard/CourseCard';
 import { useEffect, useState } from 'react';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
+import { getText } from './language'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 import Link from 'next/link';
 import { getCourseByCategory } from '@/app/api/Course/router';
@@ -50,7 +51,7 @@ export default function HomePage() {
 
         {/* 课程分类 */}
         <div className={classes.categoriesContainer}>
-          <span className={classes.categoriesTitle}> Categories </span>
+          <span className={classes.categoriesTitle}> {getText('categories')} </span>
           <div className={classes.categoriesList}>
             {categories.map((category, index) => (
               <button
