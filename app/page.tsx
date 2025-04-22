@@ -5,6 +5,7 @@ import { CourseCard } from '@/components/CourseCard/CourseCard';
 import { useEffect, useState } from 'react';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
+import { getText } from './language'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 import Link from 'next/link';
 import { getCourseByCategory } from '@/app/api/Course/router';
