@@ -14,7 +14,7 @@ import { getCourseByCategory } from '@/app/api/Course/router';
 export default function HomePage() {
   const categories: string[] = ['All','Computer Science', 'Math', 'Sports', 'Life', 'Art', 'Language', 'Others'];
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [courses, setCourses] = useState<CourseCardInfo[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
 
   // 监听分类变化，获取课程数据
   useEffect(() => {
@@ -29,6 +29,7 @@ export default function HomePage() {
             const courses = await data.json();
             allCourses = [...allCourses, ...courses];
           }
+          //console.log(allCourses)
           setCourses(allCourses);
         } else {
           const data = await getCourseByCategory(selectedCategory);
@@ -69,12 +70,21 @@ export default function HomePage() {
         <div className={classes.courseList}>
           {courses.map((course, index) => (
             <Link
-              href={`/course/${course.courseId}`}
+              href={`/course/${course.id}`}
               key={index}
               style={{ textDecoration: 'none' }}
               className={classes.courseLink}
             >
-              <CourseCard {...course} />
+              <CourseCard
+                key={course.id}
+                courseId={course.id}
+                name={course.course_name}
+                institute={course.institution}
+                category={course.category}
+                className="courseCard"
+                url={course.images?.[0]?.url}
+                id={course.id}
+              />
             </Link>
           ))}
         </div>

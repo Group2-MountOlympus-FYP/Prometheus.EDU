@@ -81,7 +81,7 @@ export function Profile(props: ProfileProps) {
                     //console.log("Getting course...")
                     const response = await getMyCourses()
                     const data = await response.json()
-                    //console.log(data)
+                    console.log(data)
                     setCourses(data)
                 }catch(e){
                     console.log(e)
