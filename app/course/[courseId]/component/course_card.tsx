@@ -12,16 +12,16 @@ import {checkEnrollmentStatus} from "@/app/api/MyCourses/router";
 
 
 interface CourseHeaderProps {
-  lectureId: number;
+  courseId: number;
 }
 
-const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId }) => {
+const CourseHeader: React.FC<CourseHeaderProps> = ({ courseId }) => {
   const [data, setData] = useState<any>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
 
 
   useEffect(() => {
-    getCourseDetailsById(lectureId)
+    getCourseDetailsById(courseId)
       .then((res) => {
         setData(res);
       })
@@ -29,14 +29,14 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId }) => {
         console.error("加载课程信息失败", err);
       });
 
-    checkEnrollmentStatus(lectureId)
+    checkEnrollmentStatus(courseId)
       .then((isEnrolled) => {
         setIsEnrolled(isEnrolled);
       })
       .catch((err) => {
         console.error("检查报名状态失败", err);
       });
-  }, [lectureId]);
+  }, [courseId]);
 
 
   if (!data) return null;
@@ -65,9 +65,9 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId }) => {
             className="enroll-button"
             onClick={async () => {
               try {
-                await enrollCourseById(lectureId);
+                await enrollCourseById(courseId);
                 // ✅ 报名成功后重新验证是否报名（确保后端写入成功）
-                const confirmed = await checkEnrollmentStatus(lectureId);
+                const confirmed = await checkEnrollmentStatus(courseId);
                 setIsEnrolled(confirmed);
                 alert("报名成功！");
               } catch (err) {

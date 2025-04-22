@@ -1,33 +1,38 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, Text, Title, Skeleton } from '@mantine/core';
 import { getCourseDetailsById } from '@/app/api/Course/router';
+import { useRouter } from 'next/navigation';
 
-interface VideoInfo {
+interface Lecture {
   id: number;
   title: string;
   lastUpdated: string;
 }
 
 interface VideoListProps {
-  currentLectureId: number;
+  currentCourseId: number;
+  isEnrolled: boolean;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ currentLectureId }) => {
-  const [videoList, setVideoList] = useState<VideoInfo[] | null>(null);
+const VideoList: React.FC<VideoListProps> = ({ currentCourseId, isEnrolled }) => {
+  const [videoList, setVideoList] = useState<Lecture[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [skeletonCount, setSkeletonCount] = useState<number>(3);
+  const router = useRouter();
 
   useEffect(() => {
     setLoading(true);
-    getCourseDetailsById(currentLectureId)
+    getCourseDetailsById(currentCourseId)
       .then((data) => {
         console.log('课程列表数据：', data);
         const rawVideos = data.lectures || data.videos || [];
-        const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId);
+        const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentCourseId);
 
         setSkeletonCount(Math.min(filtered.length, 3));
 
-        const processedList: VideoInfo[] = filtered.map((item: any) => ({
+        const processedList: Lecture[] = filtered.map((item: any) => ({
           id: item.id,
           title: item.name || item.title || '无标题',
           lastUpdated: item.created_at || '未知时间',
@@ -42,7 +47,11 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentLectureId]);
+  }, [currentCourseId]);
+
+  const handleCardClick = (id: number) => {
+    router.push(`/video/${id}`);
+  };
 
   return (
     <Container>
@@ -69,9 +78,15 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId }) => {
                 shadow="sm"
                 padding="lg"
                 style={{
-                  cursor: 'default', // 鼠标样式改为默认
-                  pointerEvents: 'none', // 彻底禁止点击
+                  cursor: isEnrolled ? 'pointer' : 'not-allowed',
+                  pointerEvents: isEnrolled ? 'auto' : 'none',
                 }}
+                onClick={() => {
+                  if (isEnrolled) {
+                    handleCardClick(video.id)
+                  }
+                }}
+
               >
                 <Title order={4}>{video.title}</Title>
                 <Text size="sm" color="gray">

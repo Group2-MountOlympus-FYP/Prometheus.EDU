@@ -8,14 +8,14 @@ interface Lecturer {
 }
 
 interface LecturerListProps {
-  lectureId: number; // 可选参数
+  courseId: number; // 可选参数
 }
 
-const LecturerList: React.FC<LecturerListProps> = ({ lectureId }) => {
+const LecturerList: React.FC<LecturerListProps> = ({ courseId }) => {
   const [lecturers, setLecturers] = useState<Lecturer[]>([]);
 
   useEffect(() => {
-    getCourseDetailsById(lectureId)
+    getCourseDetailsById(courseId)
       .then((data) => {
         if (data.teachers && Array.isArray(data.teachers)) {
           setLecturers(data.teachers);
@@ -26,7 +26,7 @@ const LecturerList: React.FC<LecturerListProps> = ({ lectureId }) => {
       .catch((err) => {
         console.error("获取讲师信息失败：", err);
       });
-  }, [lectureId]);
+  }, [courseId]);
 
   return (
     <>
