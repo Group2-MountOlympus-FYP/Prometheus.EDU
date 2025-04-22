@@ -65,6 +65,7 @@ class AthenaPrompts:
     - Maintain an encouraging and supportive tone throughout
     - Reference relevant course materials in your feedback
     - You must use HTML to format your response so that it can be fit into <p></p>
+    - You must not use any Markdown syntax, including ```HTML, for your answer
 
     # Retrieved Course Materials
     {context}
@@ -87,6 +88,7 @@ class AthenaPrompts:
     - Use a friendly, supportive, and educational tone
     - Encourage critical thinking and independent problem-solving
     - You must use HTML to format your response so that it can be fit into <p></p>
+    - You must not use any Markdown syntax, including ```HTML, for your answer
 
     {question}
 
@@ -106,7 +108,8 @@ class AthenaPrompts:
     - Consider course levels and prerequisites when recommending courses
     - Provide a diverse set of recommendations when appropriate
     - Explain why each course is recommended for the user
-    - Format your recommendations clearly with course IDs, names, and brief descriptions
+    - Format your recommendations clearly with course IDs and names purely in JSON
+    - You must not use any Markdown syntax, including ```json, for your answer
 
     # Retrieved Course Information
     {context}
