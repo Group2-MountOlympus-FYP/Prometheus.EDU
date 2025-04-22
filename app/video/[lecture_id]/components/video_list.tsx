@@ -2,18 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, Text, Title, Skeleton } from '@mantine/core';
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import { useRouter } from 'next/navigation';
+import { getText } from "./language";
 
 interface VideoInfo {
   id: number;
   title: string;
-  lastUpdated: string;
+  video_time: string;
 }
 
 interface VideoListProps {
+  currentCourseId: number;
   currentLectureId: number;
 }
 
-const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
+
+const VideoList: React.FC<VideoListProps> = ({currentCourseId, currentLectureId  }) => {
   const router = useRouter();
   const [videoList, setVideoList] = useState<VideoInfo[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -21,22 +24,19 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
 
   useEffect(() => {
     setLoading(true);
-    getCourseDetailsById(115)
+    getCourseDetailsById(currentCourseId)
       .then((data) => {
         const rawVideos = data.lectures || data.videos || [];
-        const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId);
+        const filtered = rawVideos.filter((item: any) => Number(item.id) !== currentLectureId); // 只排除当前 lecture
 
         setSkeletonCount(Math.min(filtered.length, 3));
-        const processedList: VideoInfo[] = rawVideos
-          .filter((item: any) => Number(item.id) !== currentLectureId)
+        const processedList: VideoInfo[] = filtered.map((item: any) => ({
+          id: item.id,
+          title: item.name || item.title || '无标题',
+          video_time: item.video_time || '未知时长',
+        }));
 
-          .map((item: any) => ({
-            id: item.id,
-            title: item.name || item.title || '无标题',
-            lastUpdated: item.created_at || '未知时间',
-          }));
         setVideoList(processedList);
-
       })
       .catch((err) => {
         console.error("出错了：", err);
@@ -45,7 +45,8 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
       .finally(() => {
         setLoading(false);
       });
-  }, [currentLectureId]);
+  }, [currentCourseId, currentLectureId]);
+
 
   const handleCardClick = (id: number) => {
     router.push(`/video/${id}`);
@@ -54,7 +55,7 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
   return (
     <Container>
       <Title order={2} style={{ marginBottom: '20px' }}>
-        Lecture List
+        {getText('Lecture_List')}
       </Title>
 
       {loading ? (
@@ -81,7 +82,7 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
                 >
                   <Title order={4}>{video.title}</Title>
                   <Text size="sm" color="gray">
-                    更新时间: {video.lastUpdated}
+                    {getText('Lecture_time')}: {video.video_time}
                   </Text>
                 </Card>
               </Grid.Col>
@@ -89,7 +90,7 @@ const VideoList: React.FC<VideoListProps> = ({ currentLectureId = 115 }) => {
           </Grid>
         </div>
       ) : (
-        <Text color="red">暂无其他视频</Text>
+        <Text color="red"> {getText('No_lecture')}</Text>
       )}
     </Container>
   );

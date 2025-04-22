@@ -4,6 +4,9 @@
 .authorName{
     cursor: pointer;
 }
+.authorName:hover{
+    text-decoration: underline;
+}
 .paper{
     border: '1px solid';
     border-color: #777cb9

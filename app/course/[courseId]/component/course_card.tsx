@@ -12,10 +12,10 @@ import {checkEnrollmentStatus} from "@/app/api/MyCourses/router";
 
 
 interface CourseHeaderProps {
-  lectureId?: number;
+  lectureId: number;
 }
 
-const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
+const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId }) => {
   const [data, setData] = useState<any>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
 
@@ -102,7 +102,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ lectureId = 115 }) => {
       <div className="course_right">
         <Image
           className="course_image"
-          src={typeof data.images?.[0] === "string" ? data.images[0] : "/course_pic.png"}
+          src={data.images?.[0]?.url || "/course_pic.png"}
           alt="Course Image"
           radius="md"
         />

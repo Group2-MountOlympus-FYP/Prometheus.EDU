@@ -70,5 +70,10 @@
     box-shadow: none;
     -webkit-box-shadow: none;
 }
-
+.cookieConsent{
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+}
 

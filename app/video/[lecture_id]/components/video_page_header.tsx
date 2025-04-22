@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Container, Grid, Card, Text } from '@mantine/core';
 import {getLectureDetailsById} from "@/app/api/Lecture/router";
+import { format } from 'date-fns';
+import { getText } from "./language";
+
 
 // 接口类型定义
 interface VideoInfo {
@@ -11,10 +14,10 @@ interface VideoInfo {
 
 // 接受 lectureId 作为 props（默认是 120）
 interface VideoHeaderProps {
-    lectureId?: number;
+    lectureId: number;
 }
 
-const VideoHeader: React.FC<VideoHeaderProps> = ({ lectureId = 120 }) => {
+const VideoHeader: React.FC<VideoHeaderProps> = ({ lectureId }) => {
     const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
 
     useEffect(() => {
@@ -39,13 +42,20 @@ const VideoHeader: React.FC<VideoHeaderProps> = ({ lectureId = 120 }) => {
                 <Grid.Col span={6}>
                     <Card>
                         <Text>
-                            Lecture {videoInfo?.videoId}: {videoInfo ? videoInfo.name : '加载中...'}
+                            {getText('Lecture_name')} {videoInfo?.videoId}: {videoInfo ? videoInfo.name : getText('Loading')}
                         </Text>
                     </Card>
                 </Grid.Col>
                 <Grid.Col span={6}>
                     <Card>
-                        <Text>{videoInfo ? videoInfo.lastUpdated : '加载中...'}</Text>
+
+                        <Text>
+                            {videoInfo
+                              ? `${getText('Lecture_date')}: ${format(new Date(videoInfo.lastUpdated), 'yyyy-MM-dd')}`
+                              : getText('Loading')}
+                        </Text>
+
+
                     </Card>
                 </Grid.Col>
             </Grid>

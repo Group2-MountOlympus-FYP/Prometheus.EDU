@@ -1,3 +1,5 @@
+import { Fetch } from "@/app/api/General";
+
 export async function CheckUsernameExist(username:string){
     const url = '/backend/login/verify-username'
     const formData = new URLSearchParams()
@@ -8,17 +10,8 @@ export async function CheckUsernameExist(username:string){
         formData.append(key,value)
     }
     // console.log(JSON.stringify(data))
-    const response = await fetch(url, {
+    const response = await Fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'same-origin',
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Accept": "*/*"
-        },
-        redirect: "follow",
-        referrerPolicy: 'no-referrer',
         body: formData
     })
     return response
@@ -40,15 +33,8 @@ export async function RegisterUser(username:string, password:string, gender:stri
     
     //console.log(formData.toString())
 
-    const response = await fetch(url, {
+    const response = await Fetch(url, {
         method: 'POST',
-        mode: 'cors',
-        cache: 'no-cache',
-        credentials: 'include', //发送和接收cookie
-        headers: {
-            "Content-Type": "application/x-www-form-urlencoded",
-            "Accept": "*/*"
-        },
         body: formData
     })
     return response

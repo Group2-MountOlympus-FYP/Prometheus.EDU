@@ -466,10 +466,10 @@ def password_reset():
             if new_password != old_password:
                 user.password_hash = generate_password_hash(new_password, method='pbkdf2:sha256', salt_length=8)
                 db.session.commit()
-                return "New password has been reset"
+                return jsonify({'code': 0, 'message': "New password has been reset"})
             else:
-                return "New password cannot be the same as old password", 403
+                return jsonify({"code": 1, 'message': "New password cannot be the same as old password"})
         else:
-            return "empty new password", 403
+            return jsonify({"code": 2, 'message': "empty new password"})
     else:
-        return "wrong old password", 403
+        return jsonify({"code": 3, 'message': "wrong old password"})

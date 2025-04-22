@@ -1,30 +1,30 @@
 'use client'
 
 import { SearchBar } from "../SearchBar/SearchBar"
-import { Group, Burger, ActionIcon, Avatar, Modal, Menu, ScrollArea } from "@mantine/core"
+import { Group, Avatar, Modal, Menu, ScrollArea } from "@mantine/core"
+import '@fontsource/fredoka';
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { getText } from './HeaderLanguage'
 import { SignPanel } from "../SignPanel/SignPanel"
 import { MessagePanel } from "../MessagePanel/MessagePanel"
 import { useState, useEffect, useContext } from "react"
-import { getLocalStorage, lockOverflow, reloadWindow, unlockOverflow } from "@/app/api/General"
+import { getUserInfo, reloadWindow } from "@/app/api/General"
 import { LoadingContext } from "../Contexts/LoadingContext"
 import { SessionContext } from "../Contexts/SessionContext"
 import { useRouter } from 'next/navigation'
-import {getUserProfile} from "@/app/api/User/router";
 import { Logout } from "@/app/api/Login/router"
 import { useDisclosure } from "@mantine/hooks"
+import { GradientText } from "../GradientText/HeaderText"
 
 type headerProps = {
     onLoginClick?: () => void
 }
 
+const athenaLabel = getText('athena');
 const links = [
-    // { link: '/', label: 'Homepage' },
-    { link: '/athena_chat', label: getText('athena') },
+    { link: '/athena_chat', label: athenaLabel, special: true },
     { link: '/MyCourses', label: getText('myCourses') },
-    // { link: '/', label: 'Message' }
 ]
 
 export default function Header() {
@@ -33,15 +33,23 @@ export default function Header() {
 
     const [avatar, setAvatar] = useState('')
     const [username, setUsername] = useState('')
-    //const [isLogin, setIsLogin] = useState<boolean>()
 
 
     useEffect(() => {
+        //加载
         setIsLoading(true)
-        console.log(isLogin)
+        //console.log(isLogin)
         const fetchUserInfo = async () => {
             try {
-                const userData = await getUserProfile()
+                const userData = getUserInfo()
+                if(userData === null){
+                    //当userData为null时说明用户没有登陆
+                    setIsLogin(false)
+                    //停止加载
+                    setIsLoading(false)
+                    return
+                }
+
                 setAvatar(userData.avatar)
                 setUsername(userData.username)
                 setIsLogin(true)
@@ -95,7 +103,11 @@ export default function Header() {
         onClick={() => router.push(link.link, { scroll: false })}
         style={{ cursor: 'pointer' }}
       >
-          {link.label}
+        {link.label === athenaLabel ? (
+        <GradientText className={classes.athenaLink}>{link.label}</GradientText>
+        ) : (
+        link.label
+        )}
       </span>
     ));
 
@@ -132,13 +144,19 @@ export default function Header() {
                     </Group>
                     {/* 消息弹窗 */}
                     <div className='message-box'>
-                        {MsgPanelOpened && <div className={classes.messageImg}/>}
-                        <Modal opened={MsgPanelOpened} onClose={msgClose}
-                            title={getText('message')}
+                        <Modal
+                            opened={MsgPanelOpened}
+                            onClose={msgClose}
                             scrollAreaComponent={ScrollArea.Autosize}
                             centered={false}
                             yOffset={"20vh"}
                             size={"lg"}
+                            title={
+                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                <div className={classes.messageImg} />
+                                <span style={{ paddingLeft: '0.75vw' }}>{getText('message')}</span>
+                                </div>
+                            }
                             styles={{
                                 header: {
                                     backgroundColor: '#DEE0EF',
@@ -148,11 +166,11 @@ export default function Header() {
                                     fontWeight: 'bold',
                                     color: '#3C4077',
                                     textAlign: 'left',
-                                    paddingLeft: '3.5vw',
+                                    paddingLeft: 0,
                                 },
-                                }}
-                        >
-                            <MessagePanel></MessagePanel>
+                            }}
+                            >
+                            <MessagePanel />
                         </Modal>
                     </div>
 
