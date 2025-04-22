@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { getCourseByCategory } from '@/app/api/Course/router';
-import { useRouter } from 'next/navigation';
+
+import React from 'react';
 import "./CourseCard.css";
-import { IoCaretForwardCircle } from "react-icons/io5";
 import { Image } from '@mantine/core';
+import Link from 'next/link';
 
 export type CourseCardInfo = {
     courseId?: number;
@@ -12,6 +11,7 @@ export type CourseCardInfo = {
     institute?: string;
     category?: string;
     className?: string;
+    id: number;
 };
 
 
@@ -34,15 +34,16 @@ export type CourseCardInfo = {
 
 
 export function CourseCard({
-    url = 'placeholder.png',
+    url = '/placeholder.png',
     name = 'Course Name',
     category,
     institute = 'Institute Name',
     className = '',
+    id,
 }: CourseCardInfo) {
     return (
         <div className={`course-card ${className}`}>
-            <img src={`/${url}`} alt="course" className="course-image" />
+            <img src={url} alt="course" className="course-image" />
             <div className="course-info">
                 <h3 className="course-name">{name}</h3>
                 {category && <p className="course-category">{category}</p>}
@@ -56,15 +57,18 @@ export function CourseCard({
 }
 
 export function CourseCardForProfile({
-    url = 'placeholder.png',
+    url = '/placeholder.png',
     name = 'Course Name',
     category,
     institute = 'Institute Name',
     className = '',
+    id,
 }: CourseCardInfo) {
+
         return (
             <div className={`course-card-for-profile ${className}`}>
-                <Image src={`/${url}`} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></Image>
+                <Link href={`/course/${id}`}>
+                <Image src={url} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></Image>
                 <div className="course-info-for-profile">
                     <h3 className="course-name">{name}</h3>
                     {category && <p className="course-category">{category}</p>}
@@ -73,6 +77,7 @@ export function CourseCardForProfile({
                         <span className="institute-name">{institute}</span>
                     </div>
                 </div>
+                </Link>
             </div>
         )
     }

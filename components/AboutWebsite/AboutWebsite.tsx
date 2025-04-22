@@ -1,8 +1,7 @@
 'use client'
 
 import classes from './AboutWebsite.module.css'
-import { GradientText } from "../GradientText/GradientText"
-import { Grid } from '@mantine/core'
+import { GradientText } from "../GradientText/MainPageText"
 import { getText } from './AboutWebsiteLanguage'
 
 export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
@@ -21,7 +20,12 @@ export function AboutWebSite(props: React.HTMLAttributes<HTMLDivElement>){
                         alignItems: 'center',
                     }}>
                         <span>{getText('welcome1')}</span>
-                        <div style={{ paddingLeft: '0.6vw' }}><GradientText>{getText('education')}</GradientText></div>
+                        <div style={{
+                            paddingLeft: '0.6vw',
+                            // lineHeight: '2.2',
+                        }}>
+                            <GradientText>{getText('education')}</GradientText>
+                        </div>
                         <span style={{ paddingLeft: '0.6vw' }}>{getText('welcome2')}</span>
                     </div>
 

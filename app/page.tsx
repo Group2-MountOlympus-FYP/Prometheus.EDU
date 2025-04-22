@@ -5,6 +5,7 @@ import { CourseCard } from '@/components/CourseCard/CourseCard';
 import { useEffect, useState } from 'react';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
+import { getText } from './language'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 import Link from 'next/link';
 import { getCourseByCategory } from '@/app/api/Course/router';
@@ -13,7 +14,7 @@ import { getCourseByCategory } from '@/app/api/Course/router';
 export default function HomePage() {
   const categories: string[] = ['All','Computer Science', 'Math', 'Sports', 'Life', 'Art', 'Language', 'Others'];
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
-  const [courses, setCourses] = useState<CourseCardInfo[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
 
   // 监听分类变化，获取课程数据
   useEffect(() => {
@@ -28,6 +29,7 @@ export default function HomePage() {
             const courses = await data.json();
             allCourses = [...allCourses, ...courses];
           }
+          //console.log(allCourses)
           setCourses(allCourses);
         } else {
           const data = await getCourseByCategory(selectedCategory);
@@ -50,7 +52,7 @@ export default function HomePage() {
 
         {/* 课程分类 */}
         <div className={classes.categoriesContainer}>
-          <span className={classes.categoriesTitle}> Categories </span>
+          <span className={classes.categoriesTitle}> {getText('categories')} </span>
           <div className={classes.categoriesList}>
             {categories.map((category, index) => (
               <button
@@ -68,12 +70,21 @@ export default function HomePage() {
         <div className={classes.courseList}>
           {courses.map((course, index) => (
             <Link
-              href={`/course/${course.courseId}`}
+              href={`/course/${course.id}`}
               key={index}
               style={{ textDecoration: 'none' }}
               className={classes.courseLink}
             >
-              <CourseCard {...course} />
+              <CourseCard
+                key={course.id}
+                courseId={course.id}
+                name={course.course_name}
+                institute={course.institution}
+                category={course.category}
+                className="courseCard"
+                url={course.images?.[0]?.url}
+                id={course.id}
+              />
             </Link>
           ))}
         </div>
