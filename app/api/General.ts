@@ -11,6 +11,12 @@ export async function GetCSRF(): Promise<string> {
 
 }
 
+export function redirectWindow(url: string){
+    if( typeof window !== "undefined" ){
+        window.location.href = url
+    }
+}
+
 //封装好的访问浏览器专用API方法
 export function setLocalStorage(key:any, value:any){
     if( typeof window !== "undefined" ){
