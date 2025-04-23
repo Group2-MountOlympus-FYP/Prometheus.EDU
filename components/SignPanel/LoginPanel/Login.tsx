@@ -2,7 +2,7 @@
 
 import { useState, useContext } from "react"
 import './Login.css'
-import {GetCSRF, getLocalStorage, reloadWindow, setLocalStorage, setUserInfo} from "@/app/api/General"
+import { GetCSRF, reloadWindow, setUserInfo } from "@/app/api/General"
 import { Login } from "@/app/api/Login/router"
 import { getText } from "./Language"
 import { Button, Grid, Input, Text } from "@mantine/core"
@@ -46,7 +46,7 @@ export function LoginPanel(){
             const res = await Login(username, password, csrf, isRemember)
             const data = await res.json()
             if(data.message){
-                setPasswordError(getText('password_error'))
+                setPasswordError(getText('password_error'));
                 return
             }
             
@@ -64,11 +64,12 @@ export function LoginPanel(){
                 birthDate: userData.birthdate,
                 gender: userData.gender,
                 avatar: userData.avatar,
-            })
+                userType: userData.status,
+            });
 
             notifications.show({
                 message: getText('login_success')
-            })
+            });
 
             //刷新页面
             setTimeout(() => {
