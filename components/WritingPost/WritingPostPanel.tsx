@@ -8,6 +8,11 @@ interface WritingPostPanelProps {
     opened: boolean;
     onClose: () => void;
     lecture_id: number;
+    onSubmit: (data: {
+        title: string;
+        content: string;
+        mentionList: any[];
+    }) => void;
 }
 
 export type RichTextEditorRef = {
@@ -15,8 +20,8 @@ export type RichTextEditorRef = {
     getMentionList: () => any[]
 }
 
-export function WritingPostPanel({ opened, onClose, lecture_id }: WritingPostPanelProps){
-    const richText = useRef<RichTextEditorRef>()
+export function WritingPostPanel({ opened, onClose, lecture_id, onSubmit }: WritingPostPanelProps){
+    const richText = useRef<RichTextEditorRef | null>(null);
     const [title, setTitle] = useState("")
     const [error, setError] = useState("")
 
@@ -32,19 +37,11 @@ export function WritingPostPanel({ opened, onClose, lecture_id }: WritingPostPan
             return
         }
 
-        const content = richText?.current?.getText()
-        const postTitle = title
-        const mentionList = richText?.current?.getMentionList()
+        const content = richText?.current?.getText() || "";
+        const mentionList = richText?.current?.getMentionList() || [];
 
+        onSubmit({ title, content, mentionList })
 
-        let tags:number[] = []
-        
-        const response = await publishPost(postTitle, content?content:'', tags, lecture_id, mentionList)
-        if(response.ok){
-            notifications.show({
-                message: 'Post release successful'
-            })
-        }
     }
 
     return (
@@ -58,7 +55,7 @@ export function WritingPostPanel({ opened, onClose, lecture_id }: WritingPostPan
     )
 }
 
-export function WritingAssignmentPanel({ opened, onClose, lecture_id }: WritingPostPanelProps){
+export function WritingAssignmentPanel({ opened, onClose, lecture_id, onSubmit }: WritingPostPanelProps){
     const richText = useRef<RichTextEditorRef>()
     const [title, setTitle] = useState("")
     const [error, setError] = useState("")
@@ -75,24 +72,11 @@ export function WritingAssignmentPanel({ opened, onClose, lecture_id }: WritingP
             return
         }
 
-        const content = richText?.current?.getText()
-        const postTitle = title
-        const mentionList = richText?.current?.getMentionList()
+        const content = richText.current?.getText() || ""
+        const mentionList = richText.current?.getMentionList() || []
 
+        onSubmit({ title, content, mentionList })
 
-        //console.log(richText?.current?.getText());
-        //console.log(`is AI included? ${containsAthenaMention(content)}`)
-
-
-        let tags:number[] = []
-        tags = [4]
-        
-        const response = await publishPost(postTitle, content?content:'', tags, lecture_id, mentionList)
-        if(response.ok){
-            notifications.show({
-                message: 'Assignment release successful'
-            })
-        }
     }
 
     return (

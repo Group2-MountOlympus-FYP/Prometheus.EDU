@@ -11,6 +11,7 @@ import VideoList from "@/app/course/[courseId]/component/course_video_list";
 import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
 import { getUserProfile } from "@/app/api/User/router";
+import { getText } from "./component/language";
 import { getUserInfo } from "@/app/api/General";
 
 interface CourseProps {
@@ -94,8 +95,8 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
           isEnrolled={isEnrolled}
           videos={(courseData.lectures || []).map((item: any) => ({
             id: item.id,
-            title: item.name || item.title || '无标题',
-            lastUpdated: item.created_at || '未知时间',
+            title: item.name || getText('no_title'),
+            lastUpdated: item.created_at || getText('no_time'),
           }))}
         />
       </Stack>

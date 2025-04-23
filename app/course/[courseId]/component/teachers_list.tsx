@@ -1,9 +1,11 @@
 "use client";
 import React from "react";
 import { Avatar, Text, Group, Stack, Title } from "@mantine/core";
+import { getText } from "./language";
 
 interface Lecturer {
   username: string;
+  avatar?: string;
 }
 
 interface LecturerListProps {
@@ -14,15 +16,21 @@ const LecturerList: React.FC<LecturerListProps> = ({ lecturers }) => {
   return (
     <>
       <Title order={3} mt="xl" mb="md">
-        Course Lecturers
+        {getText("course_lecturers") || "Course Lecturers"}
       </Title>
       <Group wrap="wrap" gap="xl">
-        {lecturers.map((lecturer, index) => (
-          <Stack align="center" key={index} gap={4}>
-            <Avatar radius="xl">{lecturer.username?.[0]?.toUpperCase() || "T"}</Avatar>
-            <Text>{lecturer.username}</Text>
-          </Stack>
-        ))}
+        {lecturers.map((lecturer, index) => {
+          const name = lecturer.username || getText("unknown_user");
+          const avatarSrc = lecturer.avatar || undefined;
+          return (
+            <Stack align="center" key={index} gap={4}>
+              <Avatar radius="xl" src={avatarSrc}>
+                {name[0]?.toUpperCase() || "?"}
+              </Avatar>
+              <Text>{name}</Text>
+            </Stack>
+          );
+        })}
       </Group>
     </>
   );
