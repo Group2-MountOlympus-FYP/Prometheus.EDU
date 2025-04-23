@@ -15,15 +15,20 @@ from .course_data_extractor import CourseDataExtractor
 
 
 def resolve_path(path: str) -> str:
+    """Resolve path to an absolute one"""
+    # return if it is just an absolute one
     if os.path.isabs(path):
         return path
-
-    # Obtain current working directory
-    cwd = os.path.dirname(__file__)
-    path = path.lstrip('/')
-    # Form the absolute path
-    abs_path = os.path.join(cwd, path)
-
+    
+    # obtain the absolute directory that this program is in
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    
+    # remove the beginning "/" or "\\"
+    if path.startswith('/') or path.startswith('\\'):
+        path = path[1:]
+    
+    abs_path = os.path.normpath(os.path.join(cwd, path))
+    
     return abs_path
 
 
@@ -359,6 +364,30 @@ class Athena:
             "query": query,
             "courses": courses
         }
+
+    def search_course_ids(self, query: str, k: int = 5) -> List[int]:
+        """
+        Search for courses based on a user query and only return the course IDs.
+
+        Args:
+            query: Search query string
+            k: Number of results to return (default: 5)
+
+        Returns:
+            Dictionary with course IDs and similarity scores
+        """
+        if not self.course_vector_store:
+            return {"error": "Course search is not available"}
+
+        results = self.course_vector_store.similarity_search_with_score(query, k=k)
+
+        course_ids = []
+
+        for doc, score in results:
+            if 'course_id' in doc.metadata:
+                course_ids.append(doc.metadata['course_id']),
+
+        return course_ids
 
 
 def create_athena_client():
