@@ -14,6 +14,7 @@ import Material from '@/app/video/[lecture_id]/components/material';
 import LecterList from '../../course/[courseId]/component/teachers_list'
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
 import { getCourseDetailsById } from '@/app/api/Course/router';
+import { publishPost } from "@/app/api/Posts/router"
 import { getText } from "./components/language";
 
 interface LectureProps {
@@ -37,6 +38,38 @@ export default function Lecture({ lectureId }: LectureProps) {
 
   const [videoList, setVideoList] = useState<VideoInfo[]>([]);
   const [lecturers, setLecturers] = useState<any[]>([]);
+
+  const handlePostSubmit = async ({
+                                    title,
+                                    content,
+                                    mentionList,
+                                  }: {
+    title: string;
+    content: string;
+    mentionList: any[];
+  }) => {
+    const containsAthenaMention = (htmlContent: string): boolean => {
+      const mentionRegex = /<span[^>]*data-type="mention"[^>]*data-id="-1"[^>]*>/g
+      return mentionRegex.test(htmlContent)
+    }
+
+    let tags: number[] = []
+    if (containsAthenaMention(content)) {
+      tags = [1]
+    }
+
+    try {
+      const response = await publishPost(title, content, tags, lectureId, mentionList)
+      if (response.ok) {
+        alert("Post success!")
+        close() // 关闭 modal
+      }
+    } catch (err) {
+      alert("Post failed.")
+      console.error(err)
+    }
+  }
+
 
   useEffect(() => {
     getLectureDetailsById(lectureId, 1, 10)
@@ -131,7 +164,13 @@ export default function Lecture({ lectureId }: LectureProps) {
 
         {activeTab === 'posts' && (
           <div className="post-panel">
-            <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId} />
+            <WritingPostPanel
+              opened={opened}
+              onClose={close}
+              lecture_id={lectureId}
+              onSubmit={handlePostSubmit}
+            />
+
             <Button
               onClick={open}
               id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
