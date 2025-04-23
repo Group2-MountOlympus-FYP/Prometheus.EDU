@@ -19,7 +19,6 @@ interface Course {
 
 interface EnrolledCourse {
   course: Course;
-  progress: number;
   enrollment_date: string;
 }
 
@@ -77,7 +76,6 @@ export default function MyCoursesPage() {
               <Text size="sm">{item.course.description}</Text>
               <Group>
                 <Badge color="teal">{item.course.level}</Badge>
-                <Badge color="blue">Progress: {item.progress}%</Badge>
               </Group>
               <Text size="xs" c="gray">Enrolled on: {new Date(item.enrollment_date).toLocaleDateString()}</Text>
             </Stack>

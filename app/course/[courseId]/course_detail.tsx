@@ -11,6 +11,7 @@ import VideoList from "@/app/course/[courseId]/component/course_video_list";
 import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
 import { getUserProfile } from "@/app/api/User/router";
+import { getText } from "./component/language";
 
 interface CourseProps {
   courseId: number;
@@ -19,7 +20,7 @@ interface CourseProps {
 const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [courseData, setCourseData] = useState<any>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [userStatus, setUserStatus] = useState<"STUDENT" | "TEACHER" | null>(null);
+  const [userStatus, setUserStatus] = useState<"NORMAL" | "TEACHER" | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -37,7 +38,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
         } else {
           setCourseData(course);
           setIsEnrolled(enrolled);
-          if (profile.status === "STUDENT" || profile.status === "TEACHER") {
+          if (profile.status === "NORMAL" || profile.status === "TEACHER") {
             setUserStatus(profile.status);
           } else {
             console.warn("⚠️ 未知用户身份:", profile.status);
@@ -93,8 +94,8 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
           isEnrolled={isEnrolled}
           videos={(courseData.lectures || []).map((item: any) => ({
             id: item.id,
-            title: item.name || item.title || '无标题',
-            lastUpdated: item.created_at || '未知时间',
+            title: item.name || getText('no_title'),
+            lastUpdated: item.created_at || getText('no_time'),
           }))}
         />
       </Stack>

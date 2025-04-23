@@ -20,7 +20,7 @@ import {useRouter} from "next/navigation";
 import {createCourse} from "@/app/api/Course/router";
 import {Dropzone, IMAGE_MIME_TYPE} from '@mantine/dropzone';
 import {IconUpload} from '@tabler/icons-react';
-import {getText} from "@/app/course/create/component/language";
+import {getText} from "@/app/MyCourses/create/component/language";
 
 const CourseCreate: React.FC = () => {
     const router = useRouter();

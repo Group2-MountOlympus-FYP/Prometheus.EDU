@@ -1,24 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Stack, Title, Text, Button, Group, Badge, Image
+  Stack, Title, Text, Button, Group, Badge, Image,
 } from "@mantine/core";
 import { IconStarFilled } from "@tabler/icons-react";
 import { enrollCourseById } from "@/app/api/Enroll/router";
 import { checkEnrollmentStatus } from "@/app/api/MyCourses/router";
-import { getUserProfile } from "@/app/api/User/router";
 import "./course_card.css";
+import { getText } from "./language";
 
 interface CourseHeaderProps {
   courseData: any;
   isEnrolled: boolean;
-  userStatus: "STUDENT" | "TEACHER" | null;
+  userStatus: "NORMAL" | "TEACHER" | null;
 }
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, userStatus }) => {
   const [enrolled, setEnrolled] = useState(isEnrolled);
   const courseId = courseData.id;
-
 
   if (!courseData) return null;
 
@@ -26,8 +25,8 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
     <div className="course-card">
       <div className="course-left">
         <Stack>
-          <Title order={1}>{courseData.course_name || "Course Name"}</Title>
-          <Text size="lg" color="dimmed">{courseData.institution || "Institute Name"}</Text>
+          <Title order={1}>{courseData.course_name || getText("no_title")}</Title>
+          <Text size="lg" color="dimmed">{courseData.institution || getText("unknown_institution")}</Text>
 
           {(courseData.rating ?? 0) > 0 ? (
             <Group>
@@ -36,7 +35,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
               ))}
             </Group>
           ) : (
-            <Text size="sm" color="dimmed">No rating</Text>
+            <Text size="sm" color="dimmed">{getText("no_title")}</Text>
           )}
 
           {userStatus === "TEACHER" ? (
@@ -48,7 +47,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
                 window.location.href = `/course/${courseId}/add_lecture`;
               }}
             >
-              Create Lecture
+              {getText("post")}
             </Button>
           ) : (
             <Button
@@ -60,24 +59,24 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
                   await enrollCourseById(courseId);
                   const confirmed = await checkEnrollmentStatus(courseId);
                   setEnrolled(confirmed);
-                  alert("报名成功！");
+                  alert(getText("Loading")); // ✅ 你可以加一个新 key，比如 enroll_success
                 } catch (err) {
                   console.error("报名失败", err);
-                  alert("报名失败，请稍后再试");
+                  alert(getText("Lecture_exist")); // 可替换成 "enroll_failed"
                 }
               }}
               disabled={enrolled}
             >
-              {enrolled ? "Enrolled" : "Enroll to this course"}
+              {enrolled ? getText("enrolled") : getText("enroll")}
             </Button>
           )}
 
           <Text size="sm" color="dimmed">
-            {courseData.enrollment_count || 0} people have enrolled
+            {(courseData.enrollment_count || 0) + " " + getText("people_have_enrolled")}
           </Text>
 
           <Text size="sm" className="course-intro">
-            {courseData.description || "No description available."}
+            {courseData.description || getText("no_title")}
           </Text>
 
           <Group mt="sm">
