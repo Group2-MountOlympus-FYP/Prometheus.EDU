@@ -29,6 +29,7 @@ const LectureCreatePage = () => {
     const [loading, setLoading] = useState(false);
     const [videoPreview, setVideoPreview] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
+    const [isTeacher, setIsTeacher] = useState<boolean | null>(null);
 
     // 用户登录检查
     useEffect(() => {
@@ -36,18 +37,32 @@ const LectureCreatePage = () => {
             .then(async (res) => {
                 if (res.status === 401) {
                     setIsLoggedIn(false);
+                    setIsTeacher(false);
                     return;
                 }
 
-                const data = await res.json();
-                if (data.id === -1) {
+                const sessionData = await res.json();
+                if (sessionData.id === -1) {
                     setIsLoggedIn(false);
+                    setIsTeacher(false);
                 } else {
                     setIsLoggedIn(true);
+                    try {
+                        const profileRes = await fetch("/backend/my_profile");
+                        const userData = await profileRes.json();
+                        if (userData.status === "TEACHER") {
+                            setIsTeacher(true);
+                        } else {
+                            setIsTeacher(false);
+                        }
+                    } catch {
+                        setIsTeacher(false);
+                    }
                 }
             })
             .catch(() => {
                 setIsLoggedIn(false);
+                setIsTeacher(false);
             });
     }, []);
 
@@ -105,8 +120,7 @@ const LectureCreatePage = () => {
             setLoading(false);
         }
     };
-
-    if (!isLoggedIn) {
+    if (!isLoggedIn || !isTeacher) {
         return (
             <Box
                 style={{
@@ -129,10 +143,10 @@ const LectureCreatePage = () => {
                         }}
                     >
                         <Title order={2} ta="center" mb="xl" size="2.0rem">
-                            {getText("notLoggedIn")}
+                            {getText(!isLoggedIn ? "notLoggedIn" : "notTeacher")}
                         </Title>
                         <Text size="lg" mb="lg" ta="center">
-                            {getText("pleaseLoginToCreateLecture")}
+                            {getText(!isLoggedIn ? "pleaseLoginToCreateLecture" : "onlyTeachersCanCreate")}
                         </Text>
 
                         <Button
@@ -148,6 +162,7 @@ const LectureCreatePage = () => {
             </Box>
         );
     }
+
 
     return (
         <Box
