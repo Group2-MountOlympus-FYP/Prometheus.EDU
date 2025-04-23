@@ -1,7 +1,7 @@
 from flask import jsonify, session, request
 from werkzeug.security import check_password_hash
 from enum import Enum, auto
-from .extensions import db ,shared_sequence
+from .extensions import db, shared_sequence
 from .Post import Post
 from datetime import datetime
 
@@ -10,7 +10,6 @@ import os
 from flask import url_for
 from .ActivityLog import ActivityLog
 from .Comment import Comment
-
 
 favorites = db.Table('favorites',
                      db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
@@ -25,7 +24,7 @@ followers = db.Table('followers',
                      )
 
 
-class UserStatus(str,Enum):
+class UserStatus(str, Enum):
     NORMAL = auto()
     VIP = auto()
     BANNED = auto()
@@ -34,14 +33,14 @@ class UserStatus(str,Enum):
 
 
 class User(db.Model):
-    id = db.Column(db.Integer,shared_sequence,primary_key=True)
+    id = db.Column(db.Integer, shared_sequence, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     birthdate = db.Column(db.Date, nullable=False)
     gender = db.Column(db.String(10), nullable=False)
     password_hash = db.Column(db.String(120), nullable=False)
     content = db.relationship('ReplyTarget', backref='author')
     avatar = db.Column(db.String(120), nullable=False,
-                       default='https://ik.imagekit.io/vhboyr/agent-halloween-japanese-man-ninja-svgrepo-com_w4qyshQea.svg')
+                       default='https://ik.imagekit.io/vhboyr/placeholder_zRDIDDLmH.png')
     favorited_posts = db.relationship('Post', secondary=favorites, lazy='dynamic',
                                       backref=db.backref('favorited_by', lazy='dynamic'))
     followed = db.relationship('User',
@@ -113,7 +112,6 @@ class User(db.Model):
         db.session.commit()
         return info
 
-
     def saveAvatar(self, file):
         self.avatar = fileUpload(file)
         db.session.commit()
@@ -170,6 +168,9 @@ class User(db.Model):
         self.liked_posts.remove(post)
         db.session.commit()
         return True
+
+    def get_my_comments(self):
+        return Comment.query.filter_by(author_id=self.id).all()
 
 
 def get_current_user():
