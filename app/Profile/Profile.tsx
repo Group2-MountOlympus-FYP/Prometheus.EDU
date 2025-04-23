@@ -14,6 +14,9 @@ interface ProfileProps{
     id?: number
 }
 
+const TEACHER = "TEACHER"
+const STUDENT = "STUDENT"
+
 export function Profile(props: ProfileProps) {
 
     const [avatar, setAvatar] = useState('')
@@ -23,6 +26,8 @@ export function Profile(props: ProfileProps) {
     const [tabsValue, setTabsValue] = useState<string | null>('1')
     const [courses, setCourses] = useState<any[]>([])
     const [posts, setPosts] = useState<any[]>([])
+    const [userType, setUserType] = useState<string>(STUDENT)
+
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [isProfileLoading, setIsProfileLoading] = useState<boolean>(true)
     useEffect(() => {
@@ -31,10 +36,13 @@ export function Profile(props: ProfileProps) {
         const fetchUserProfile = async () => {
             try{
                 const userData = await getUserProfile()
+                console.log(userData)
                 setAvatar(userData.avatar)
                 setBirthDate(userData.birthdate)
                 setUsername(userData.username)
                 setGender(userData.gender)
+                setUserType(userData.status)
+
                 setIsProfileLoading(false)
             }catch(error){
                 console.error(error)
@@ -50,6 +58,7 @@ export function Profile(props: ProfileProps) {
                 setBirthDate(userData.birthdate)
                 setUsername(userData.username)
                 setGender(userData.gender)
+                setUserType(userData.status)
 
                 setCourses(userData.enrollments)
                 setPosts(userData.posts)
@@ -125,6 +134,7 @@ export function Profile(props: ProfileProps) {
                     onTabsChange={onTabValueChange} 
                     isLoading={isProfileLoading}
                     isSelf={props.id ? false : true}
+                    userType={userType}
                     />
             </div>
         

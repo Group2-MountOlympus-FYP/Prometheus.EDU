@@ -23,6 +23,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     material: 'Material',
     assignment: 'Assignment',
     write_post: 'Open to write post',
+    write_assignment: 'Open to release assignment'
   },
   zh: {
 
@@ -39,6 +40,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     material: '课时材料',
     assignment: '作业',
     write_post: '发布帖子',
+    write_assignment: '发布作业'
   },
 }
 

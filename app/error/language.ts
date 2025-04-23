@@ -8,12 +8,12 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
         youAreNotLogin: 'You are not logged in',
         loginFirst: 'Please login first',
-        goToLogin: 'Go To Login',
+        goToLogin: 'Go To Main Page',
       },
     zh: {
         youAreNotLogin: '您尚未登录',
         loginFirst: '请先登录后再访问此页面。',
-        goToLogin: '去登录',
+        goToLogin: '去主页登录',
     },
 }
 
