@@ -52,6 +52,9 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         art: "Art",
         language: "Language",
         others: "Others",
+        notLoggedIn: 'You are not logged in',
+        pleaseLoginToCreateLecture: 'please login',
+        loginButton: 'jump to login page',
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -100,6 +103,9 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         art: "艺术",
         language: "语言",
         others: "其他",
+        notLoggedIn: '未登录',
+        pleaseLoginToCreateLecture: '请登录',
+        loginButton: '跳转到登录页面',
 
     },
 }
