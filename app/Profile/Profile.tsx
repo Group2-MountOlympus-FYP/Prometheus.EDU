@@ -136,14 +136,14 @@ export function Profile(props: ProfileProps) {
                             {
                                 courses.length !== 0 ?
                                 <MyCourse data={courses}></MyCourse> :
-                                <Text>{getText("noCourseYet")}</Text>
+                                <Text style={{textAlign:"center"}} size="xl">{getText("noCourseYet")}</Text>
                             }
                         </Tabs.Panel>
                         <Tabs.Panel value="2">
                             {
                                 posts.length !== 0 ? 
                                 <MyPosts posts={posts}></MyPosts> :
-                                <Text>{getText("noPostYet")}</Text>
+                                <Text style={{textAlign:"center"}} size="xl">{getText("noPostYet")}</Text>
                             }
                         </Tabs.Panel>
                     </Tabs>
