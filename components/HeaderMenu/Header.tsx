@@ -16,7 +16,9 @@ import { useRouter } from 'next/navigation'
 import { Logout } from "@/app/api/Login/router"
 import { useDisclosure } from "@mantine/hooks"
 import { GradientText } from "../GradientText/HeaderText"
+import { usePathname } from 'next/navigation'
 import { redirectWindow } from "@/app/api/General";
+
 
 type headerProps = {
     onLoginClick?: () => void
@@ -34,6 +36,9 @@ export default function Header() {
 
     const [avatar, setAvatar] = useState('')
     const [username, setUsername] = useState('')
+
+    // 监听路径变化
+    const pathname = usePathname();
 
 
     useEffect(() => {
@@ -65,6 +70,11 @@ export default function Header() {
         }
         fetchUserInfo()
     }, []);
+
+    // 页面地址变化时关闭消息弹窗
+    useEffect(() => {
+        msgClose();
+    }, [pathname]);
 
     // 弹出消息弹窗
     const [MsgPanelOpened, {open: msgOpen, close: msgClose}] = useDisclosure();
@@ -149,7 +159,7 @@ export default function Header() {
                         <Modal
                             opened={MsgPanelOpened}
                             onClose={msgClose}
-                            scrollAreaComponent={ScrollArea.Autosize}
+                            // scrollAreaComponent={ScrollArea.Autosize}
                             centered={false}
                             yOffset={"20vh"}
                             size={"lg"}

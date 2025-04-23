@@ -3,30 +3,38 @@
     height: 45vh;
     padding: 0.5vh 1vw 5vh 1vw;
 }
+.message-item {
+    position: relative; /* 使伪元素可以定位在右上角 */
+    padding: 12px 16px;
+    border-bottom: 1px solid lightgray;
+}
+.message-item:hover{
+    background-color: lightgray;
+    cursor: pointer;
+}
 /* 浅蓝色背景 + 未读圆点 */
 .message-item.unread {
-    background-color: #e6f4ff; /* 浅蓝色 */
-    padding-left: 16px;
+    /* background-color: #F1F2F9; */
+    padding-left: 0.8vw;
     position: relative;
 }
 
 /* 小圆点样式 */
 .message-item.unread::before {
     content: '';
-    width: 8px;
-    height: 8px;
-    background-color: #007aff; /* 蓝色小圆点 */
+    width: 0.5vw;
+    height: 0.5vw;
+    background-color: #E53935;
     border-radius: 50%;
     position: absolute;
-    left: 8px;
-    top: 50%;
-    transform: translateY(-50%);
-}
+    right: 8px;
+    top: 25%;
+  }
 
 /* 已读状态（无背景/无圆点） */
-.message-item.read {
+/* .message-item.read {
     background-color: transparent;
-}
+} */
 
 
 .message-content{
