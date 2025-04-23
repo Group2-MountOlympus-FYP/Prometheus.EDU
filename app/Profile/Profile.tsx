@@ -14,8 +14,6 @@ interface ProfileProps{
     id?: number
 }
 
-const TEACHER = "TEACHER"
-const STUDENT = "STUDENT"
 
 export function Profile(props: ProfileProps) {
 
@@ -26,7 +24,7 @@ export function Profile(props: ProfileProps) {
     const [tabsValue, setTabsValue] = useState<string | null>('1')
     const [courses, setCourses] = useState<any[]>([])
     const [posts, setPosts] = useState<any[]>([])
-    const [userType, setUserType] = useState<string>(STUDENT)
+    const [userType, setUserType] = useState<string>('')
 
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [isProfileLoading, setIsProfileLoading] = useState<boolean>(true)
@@ -90,7 +88,7 @@ export function Profile(props: ProfileProps) {
                     //console.log("Getting course...")
                     const response = await getMyCourses()
                     const data = await response.json()
-                    console.log(data)
+                    //console.log(data)
                     setCourses(data)
                 }catch(e){
                     console.log(e)
