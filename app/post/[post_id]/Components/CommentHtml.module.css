@@ -2,6 +2,22 @@
   padding: var(--mantine-spacing-lg) var(--mantine-spacing-xl);
 }
 
+.commentButton{
+  margin-left: auto;
+  background-color: white;
+  border: 0.1vw solid #3C4077;
+  color: #3C4077;
+  font-weight: bold;
+}
+.commentButton:hover{
+  background-color: #DEE0EF;
+  color: #3C4077;
+}
+.commentButton:active{
+  background-color: #777CB9;
+  color: white;
+}
+
 .body {
   padding-left: 54px;
   padding-top: var(--mantine-spacing-sm);

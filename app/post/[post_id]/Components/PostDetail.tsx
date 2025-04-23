@@ -38,7 +38,7 @@ export async function PostDetail(props: Props){
 
     return (
         <Container>
-            <Title ta="center" style={{color:'#777CB9', }}>{title}</Title>
+            <Title ta="left">{title}</Title>
 
             <CommentWriteButton post={post} />
         </Container>

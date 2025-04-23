@@ -31,7 +31,7 @@ export function Comment(props: Props) {
                         Created {createdAgo}
                     </Text>
                 </div>
-                <Button mt="md" onClick={toggle} style={{ marginLeft: "auto" }}>
+                <Button mt="md" onClick={toggle} className={classes.commentButton}>
                     Comment
                 </Button>
             </Group>
