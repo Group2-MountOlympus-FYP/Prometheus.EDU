@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Title, List, Anchor, Loader, Text } from '@mantine/core';
+import { Title, List, Anchor, Text } from '@mantine/core';
+import { getText } from './language'; // ✅ 引入多语言方法
 
 interface Resource {
   id: number;
@@ -22,12 +23,12 @@ const Material: React.FC<MaterialProps> = ({ lectureData }) => {
   const resources = lectureData.resources || [];
 
   if (!resources || resources.length === 0) {
-    return <Text>No materials available for this lecture.</Text>;
+    return <Text>{getText('No_materials')}</Text>;
   }
 
   return (
     <div>
-      <Title order={3} mb="md">Course Materials</Title>
+      <Title order={3} mb="md">{getText('Course_Materials')}</Title>
       <List spacing="sm" size="sm" center>
         {resources.map((resource) => {
           const matches = resource.url.match(/\(([^,]+),\"([^\"]+)\"\)/);
