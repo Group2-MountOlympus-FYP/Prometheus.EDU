@@ -1,21 +1,16 @@
 "use client";
-
 import React, { useEffect, useState } from "react";
 import {
-  Container,
-  Title,
-  Text,
-  Grid,
-  Divider,
-  Group,
-  Stack,
-  Skeleton,
+  Container, Title, Text, Grid, Divider, Group, Stack, Skeleton,
 } from "@mantine/core";
-import VideoList from "./component/course_video_list";
-import Teachers_list from "@/app/course/[courseId]/component/teachers_list";
+
 import CourseHeader from "@/app/course/[courseId]/component/course_card";
+import Teachers_list from "@/app/course/[courseId]/component/teachers_list";
+import VideoList from "@/app/course/[courseId]/component/course_video_list";
+
 import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
+import { getUserProfile } from "@/app/api/User/router";
 
 interface CourseProps {
   courseId: number;
@@ -23,32 +18,41 @@ interface CourseProps {
 
 const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [courseData, setCourseData] = useState<any>(null);
+  const [isEnrolled, setIsEnrolled] = useState(false);
+  const [userStatus, setUserStatus] = useState<"STUDENT" | "TEACHER" | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
-  const [isEnrolled, setIsEnrolled] = useState(false);
 
   useEffect(() => {
-    getCourseDetailsById(courseId)
-      .then((res) => {
-        if (!res || res.detail === "Course not found") {
+    async function fetchData() {
+      try {
+        const [course, enrolled, profile] = await Promise.all([
+          getCourseDetailsById(courseId),
+          checkEnrollmentStatus(courseId),
+          getUserProfile(),
+        ]);
+
+        if (!course || course.detail === "Course not found") {
           setError(true);
         } else {
-          setCourseData(res);
+          setCourseData(course);
+          setIsEnrolled(enrolled);
+          if (profile.status === "STUDENT" || profile.status === "TEACHER") {
+            setUserStatus(profile.status);
+          } else {
+            console.warn("⚠️ 未知用户身份:", profile.status);
+          }
         }
-      })
-      .catch((err) => {
-        console.error("获取课程失败：", err);
+      } catch (err) {
+        console.error("数据获取失败：", err);
         setError(true);
-      })
-      .finally(() => setLoading(false));
-  }, [courseId]);
+      } finally {
+        setLoading(false);
+      }
+    }
 
-  useEffect(() => {
-    checkEnrollmentStatus(courseId)
-      .then((status) => setIsEnrolled(status))
-      .catch(() => setIsEnrolled(false));
+    fetchData();
   }, [courseId]);
-
 
   if (loading) {
     return <div style={{ textAlign: "center", marginTop: "100px" }}>Loading...</div>;
@@ -68,20 +72,31 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
       {/* Header */}
       <Grid align="center" gutter="xl" className="course-header">
         <Grid.Col span={8}>
-          <CourseHeader courseId={courseId} />
+          <CourseHeader
+            courseData={courseData}
+            isEnrolled={isEnrolled}
+            userStatus={userStatus}
+          />
         </Grid.Col>
       </Grid>
 
-      {/* Lecturers */}
+      {/* Teachers */}
       <Group wrap="wrap">
-        <Teachers_list courseId={courseId} />
+        <Teachers_list lecturers={courseData.teachers || []} />
       </Group>
 
       <Divider my="xl" />
 
-      {/* Syllabus */}
+      {/* Videos */}
       <Stack>
-        <VideoList currentCourseId={courseId} isEnrolled={isEnrolled} />
+        <VideoList
+          isEnrolled={isEnrolled}
+          videos={(courseData.lectures || []).map((item: any) => ({
+            id: item.id,
+            title: item.name || item.title || '无标题',
+            lastUpdated: item.created_at || '未知时间',
+          }))}
+        />
       </Stack>
     </Container>
   );
