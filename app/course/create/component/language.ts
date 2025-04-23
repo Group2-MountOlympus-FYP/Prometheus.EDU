@@ -55,6 +55,9 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         notLoggedIn: 'You are not logged in',
         pleaseLoginToCreateLecture: 'please login',
         loginButton: 'jump to login page',
+        notTeacher: "You are not a teacher",
+        onlyTeachersCanCreate: "Only teachers can create courses.",
+
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -106,7 +109,8 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         notLoggedIn: '未登录',
         pleaseLoginToCreateLecture: '请登录',
         loginButton: '跳转到登录页面',
-
+        notTeacher: "您不是教师用户",
+        onlyTeachersCanCreate: "只有教师用户可以创建课程。",
     },
 }
 
