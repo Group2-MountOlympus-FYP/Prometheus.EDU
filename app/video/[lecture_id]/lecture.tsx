@@ -5,18 +5,25 @@ import { useDisclosure } from '@mantine/hooks';
 import { Grid, Skeleton, Container, Button, Tabs } from '@mantine/core';
 import { WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
 import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
-import { useSearchParams } from 'next/navigation';
+
 import './page.css';
 import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
+import { getCourseDetailsById } from '@/app/api/Course/router';
 import { getText } from "./components/language";
 
 interface LectureProps {
   lectureId: number;
 }
+interface VideoInfo {
+  id: number;
+  title: string;
+  video_time: string;
+}
+
 
 export default function Lecture({ lectureId }: LectureProps) {
   const videoRef = useRef<HTMLDivElement>(null);
@@ -27,17 +34,32 @@ export default function Lecture({ lectureId }: LectureProps) {
   const [error, setError] = useState(false);
   const [postsLoading, setPostsLoading] = useState(false);
 
+  const [videoList, setVideoList] = useState<VideoInfo[]>([]);
+
   useEffect(() => {
     getLectureDetailsById(lectureId, 1, 10)
-      .then((res) => {
-        if (!res || res.detail === 'Course not found') {
+      .then((lectureRes) => {
+        if (!lectureRes || lectureRes.detail === 'Course not found') {
           setError(true);
-        } else {
-          setLectureData(res);
+          return;
         }
+        setLectureData(lectureRes);
+
+        // 额外请求该课程的所有 lectures
+        getCourseDetailsById(lectureRes.course).then((courseData) => {
+          const rawVideos = courseData.lectures || courseData.videos || [];
+          const filtered = rawVideos.filter((item: any) => Number(item.id) !== lectureId);
+          const processedList: VideoInfo[] = filtered.map((item: any) => ({
+            id: item.id,
+            title: item.name || item.title || '无标题',
+            video_time: item.video_time || '未知时长',
+          }));
+          setVideoList(processedList);
+        });
       })
       .catch(() => setError(true));
   }, [lectureId]);
+
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -65,15 +87,16 @@ export default function Lecture({ lectureId }: LectureProps) {
 
   return (
     <Container className="video-container" size="fluid">
-      <VideoHeader lectureId={lectureId} />
+      <VideoHeader lectureData={lectureData} />
 
       <Grid className="video-grid" ref={videoRef}>
         <Grid.Col span={8}>
           <VideoPlayer videoUrl={lectureData.video_url} />
-          <VideoIntro lectureId={lectureId} />
+          <VideoIntro lectureData={lectureData} />
         </Grid.Col>
         <Grid.Col span={4}>
-          <VideoList currentCourseId={lectureData.course} currentLectureId={lectureId} />
+          <VideoList videoList={videoList} />
+
         </Grid.Col>
       </Grid>
 
@@ -96,7 +119,7 @@ export default function Lecture({ lectureId }: LectureProps) {
             <PostsWithPagination lecture_id={lectureId} />
           </Tabs.Panel>
           <Tabs.Panel value="Matrials">
-            <Material lectureId={lectureId} />
+            <Material lectureData={lectureData} />
           </Tabs.Panel>
           <Tabs.Panel value="Assignments">Assignments</Tabs.Panel>
         </Tabs>
