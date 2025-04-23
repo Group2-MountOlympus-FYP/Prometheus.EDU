@@ -11,6 +11,7 @@ from langchain.schema import Document
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 
 from .athena_prompts import AthenaPrompts
+from .course_data_extractor import CourseDataExtractor
 
 
 def resolve_path(path: str) -> str:
@@ -36,14 +37,14 @@ class AthenaConfig:
     temperature: float = 0.6
     chunk_size: int = 1000
     chunk_overlap: int = 100
-    vector_store_path: str = 'vector_store.faiss'
+    content_vector_store_path: str = 'vector_store_content.faiss'
+    course_vector_store_path: str = 'vector_store_courses.faiss'
     batch_size: int = 100
 
     resolve_directory: str = field(init=False, default="")
 
     def __post_init__(self):
         self.resolve_directory = resolve_path(self.directory)
-
 
 class DocumentLoader:
     """Handling documents loading"""
@@ -91,12 +92,12 @@ class DocumentLoader:
 
 
 class VectorStoreManager:
-    """Manages vector store creation and retrieval"""
+    """Manages multiple vector stores creation and retrieval"""
 
     def __init__(self, embeddings):
         self.embeddings = embeddings
 
-    def create_vector_store(self, documents: List[str], config: AthenaConfig) -> FAISS:
+    def create_vector_store(self, documents: List[Document], config: AthenaConfig, batch_size: int = None) -> FAISS:
         """Create a vector store from documents with batched processing"""
         text_splitter = CharacterTextSplitter(
             chunk_size=config.chunk_size, 
@@ -104,44 +105,56 @@ class VectorStoreManager:
         )
         vector_store = None
 
+        # Use config batch size if none specified
+        if batch_size is None:
+            batch_size = config.batch_size
+
         try:
-            for i in range(0, len(documents), config.batch_size):
-                batch = documents[i:i + config.batch_size]
-                split_docs = text_splitter.split_documents(
-                    [Document(page_content=doc) for doc in batch]
-                )
+            # Process documents in batches
+            for i in range(0, len(documents), batch_size):
+                batch = documents[i:i + batch_size]
+                # Handle different document types - string vs Document objects
+                split_docs = batch
+                if isinstance(documents[0], str):
+                    split_docs = text_splitter.split_documents(
+                        [Document(page_content=doc) for doc in batch]
+                    )
 
                 if vector_store is None:
                     vector_store = FAISS.from_documents(split_docs, self.embeddings)
                 else:
                     vector_store.add_documents(split_docs)
 
-                print(f'Processed batch {i//config.batch_size + 1}/{len(documents)//config.batch_size + 1}')
+                print(f'Processed batch {i//batch_size + 1}/{len(documents)//batch_size + 1}')
 
             return vector_store
         except Exception as e:
             raise ValueError(f"Vector store creation failed: {str(e)}")
 
-    def load_or_create_vector_store(self, documents: List[str], config: AthenaConfig) -> FAISS:
-        """Load existing vector store or create a new one"""
+    def load_or_create_vector_store(self, 
+                                    documents: List[Any], 
+                                    config: AthenaConfig, 
+                                    vector_store_path: str) -> FAISS:
+        """Load existing vector store or create a new one at the specified path"""
 
-        vector_store_path = config.vector_store_path
         if not os.path.isabs(vector_store_path):
             vector_store_path = os.path.join(os.path.dirname(__file__), vector_store_path)
 
-        if os.path.exists(config.vector_store_path):
+        if os.path.exists(vector_store_path):
             return FAISS.load_local(
-                config.vector_store_path,
+                vector_store_path,
                 embeddings=self.embeddings,
                 allow_dangerous_deserialization=True
             )
         else:
-            print("Vector store not found. Creating new vector store...")
+            print(f"Vector store not found at {vector_store_path}. Creating new vector store...")
             vector_store = self.create_vector_store(documents, config)
 
             if vector_store is not None:
-                vector_store.save_local(config.vector_store_path)
-                print(f"Vector store saved to {config.vector_store_path}")
+                # Ensure directory exists
+                os.makedirs(os.path.dirname(vector_store_path), exist_ok=True)
+                vector_store.save_local(vector_store_path)
+                print(f"Vector store saved to {vector_store_path}")
             else:
                 raise ValueError("Vector store creation returned None")
  
@@ -151,11 +164,14 @@ class VectorStoreManager:
 class ChainManager:
     """Manages the creation and access of LangChain chains"""
 
-    def __init__(self, llm, retriever):
+    def __init__(self, llm, retriever, is_recommend):
         self.llm = llm
         self.retriever = retriever
         self.chains = {}
-        self._initialize_chains()
+        if is_recommend is False:
+            self._initialize_chains()
+        else:
+            self._initialize_recommend_chains()
 
     def _initialize_chains(self):
         """Initialize all specialized chains"""
@@ -164,29 +180,32 @@ class ChainManager:
         self.chains["assignment_review"] = AthenaPrompts.create_assignment_review_chain(self.llm, self.retriever)
         self.chains["in_context_qa"] = AthenaPrompts.create_in_context_qa_chain(self.llm, self.retriever)
 
+    def _initialize_recommend_chains(self):
+        """You know... Just initialize the chains for recommendation"""
+        self.chains["recommend"] = AthenaPrompts.create_recommender_chain(self.llm, self.retriever)
+
     def get_chain(self, chain_type: str):
         """Get a specific chain by type"""
         if chain_type not in self.chains:
             raise ValueError(f"Unknown chain type: {chain_type}")
         return self.chains[chain_type]
 
-
 class Athena:
-    """Main Athena assistant class"""
+    """Main Athena assistant class with multiple specialized components"""
 
-    def __init__(self, config: Optional[AthenaConfig] = None, **kwargs):
+    def __init__(self, config: Optional[AthenaConfig] = None, db_uri: str = None, **kwargs):
         """Initialize Athena with configuration"""
         # Handle both direct kwargs and config object
         if config is None:
             config = AthenaConfig(**kwargs)
         self.config = config
+        self.db_uri = db_uri
 
         # Validate configuration
         self._validate_config()
 
         # Initialize components
         self._initialize_system()
-
 
     def _validate_config(self):
         """Validate the configuration"""
@@ -199,24 +218,40 @@ class Athena:
         if self.config.model != "gemini-2.0-flash":
             raise ValueError(f"Only gemini-2.0-flash model is currently supported")
 
-
     def _initialize_system(self):
-        """Initialize system components"""
-        # Load documents
-        self.documents = DocumentLoader.load_files(self.config.resolve_directory)
-
+        """Initialize system components and multiple vector stores"""
         # Initialize embeddings
         self.embeddings = GoogleGenerativeAIEmbeddings(
             model=self.config.embedding_model, 
             google_api_key=self.config.api_key
         )
 
-        # Initialize vector store
+        # Initialize vector store manager
         vector_store_manager = VectorStoreManager(self.embeddings)
-        self.vector_store = vector_store_manager.load_or_create_vector_store(
-            self.documents, 
-            self.config
+
+        # 1. Load educational content documents for AthenaTutor and AthenaReviewer
+        self.content_documents = DocumentLoader.load_files(self.config.resolve_directory)
+        self.content_vector_store = vector_store_manager.load_or_create_vector_store(
+            self.content_documents, 
+            self.config,
+            self.config.content_vector_store_path
         )
+        self.content_retriever = self.content_vector_store.as_retriever()
+
+        # 2. Load course data from database for AthenaRecommender
+        if self.db_uri:
+            course_extractor = CourseDataExtractor(self.db_uri)
+            self.course_documents = course_extractor.extract_course_documents()
+            self.course_vector_store = vector_store_manager.load_or_create_vector_store(
+                self.course_documents,
+                self.config,
+                self.config.course_vector_store_path
+            )
+            self.course_retriever = self.course_vector_store.as_retriever()
+        else:
+            print("Warning: Database URI not provided. AthenaRecommender will not be available.")
+            self.course_vector_store = None
+            self.course_retriever = None
 
         # Initialize LLM
         self.llm = ChatGoogleGenerativeAI(
@@ -225,17 +260,26 @@ class Athena:
             google_api_key=self.config.api_key
         )
 
-        # Initialize chain manager
-        self.retriever = self.vector_store.as_retriever()
-        self.chain_manager = ChainManager(self.llm, self.retriever)
+        # Initialize chain managers for different functionalities
+        self._initialize_chains()
+
+    def _initialize_chains(self):
+        """Initialize specialized chain managers for different functionalities"""
+        # Chain manager for content-based operations (tutor and reviewer)
+        self.content_chain_manager = ChainManager(llm=self.llm, retriever=self.content_retriever, is_recommend=True)
+
+        # Initialize recommender if course data is available
+        if self.course_retriever:
+            self.course_chain_manager = ChainManager(llm=self.llm, retriever=self.course_retriever, is_recommend=True)
+
 
     def generate(self, query: str) -> Dict[str, Any]:
-        """Generate a response using the general QA chain"""
-        return self.chain_manager.get_chain("qa").invoke(query)
+        """Generate a response using the general QA chain (AthenaTutor)"""
+        return self.content_chain_manager.get_chain("qa").invoke(query)
 
     def generate_report(self, query: str) -> Dict[str, Any]:
-        """Generate a report using the report chain"""
-        return self.chain_manager.get_chain("report").invoke(query)
+        """Generate a report using the report chain (AthenaTutor)"""
+        return self.content_chain_manager.get_chain("report").invoke(query)
 
     def generate_without_rag(self, query: str) -> str:
         """Generate a response without using RAG retrieval"""
@@ -243,29 +287,91 @@ class Athena:
         return self.llm.invoke(formatted_prompt)
 
     def retrieve_documents_only(self, query: str) -> List[Document]:
-        """Only retrieve documents without generating a response"""
-        return self.retriever.invoke(query)
+        """Only retrieve educational content documents without generating a response"""
+        return self.content_retriever.invoke(query)
 
     def review_assignment(self, task_requirements: str, submitted_content: str) -> Dict[str, Any]:
-        """Review an assignment using the assignment review chain"""
+        """Review an assignment using the assignment review chain (AthenaReviewer)"""
         combined_query = f"Assignment Requirements: {task_requirements}\n\nStudent Submission: {submitted_content}"
-        return self.chain_manager.get_chain("assignment_review").invoke(combined_query)
+        return self.content_chain_manager.get_chain("assignment_review").invoke(combined_query)
 
     def generate_in_context(self, query: str, context: str) -> Dict[str, Any]:
-        """Generate answer based on the post context and user query"""
+        """Generate answer based on the post context and user query (AthenaTutor)"""
         combined_query = f"User Question: {query}\n\nRelevant Context: {context}"
-        return self.chain_manager.get_chain("in_context_qa").invoke(combined_query)
+        return self.content_chain_manager.get_chain("in_context_qa").invoke(combined_query)
+
+    # New AthenaRecommender methods
+    def recommend_courses(self, user_info: str) -> Dict[str, Any]:
+        """
+        Recommend courses based on user profile information
+
+        Args:
+            user_info: String describing user's background, interests, and goals
+
+        Returns:
+            Dictionary with recommendation results including course IDs
+        """
+        if not self.course_retriever:
+            return {"error": "Course recommender is not available"}
+
+        formatted_query = f"User Profile for Course Recommendations: {user_info}"
+        return self.course_chain_manager.get_chain("recommend").invoke(formatted_query)
+
+    def search_courses(self, query: str, k: int = 5) -> Dict[str, Any]:
+        """
+        Search for courses based on a user query, returning only course IDs
+        directly from vector similarity search
+
+        Args:
+            query: Search query string
+            k: Number of results to return (default: 5)
+
+        Returns:
+            Dictionary with course IDs and similarity scores
+        """
+        if not self.course_vector_store:
+            return {"error": "Course search is not available"}
+
+        # Perform direct vector similarity search
+        results = self.course_vector_store.similarity_search_with_score(query, k=k)
+
+        # Extract course IDs and scores
+        courses = []
+        for doc, score in results:
+            # Only include results that have course_id in metadata
+            if 'course_id' in doc.metadata:
+                courses.append({
+                    "course_id": doc.metadata['course_id'],
+                    "course_name": doc.metadata.get('course_name', 'Unknown'),
+                    "similarity_score": float(score),  # Convert to float for JSON serialization
+                    "metadata": {
+                        k: v for k, v in doc.metadata.items() 
+                        if k not in ['course_id', 'course_name']
+                    }
+                })
+
+        return {
+            "query": query,
+            "courses": courses
+        }
 
 
-# Initialize with environment variable
 def create_athena_client():
     api_key = os.getenv('GOOGLE_API_KEY', '')
+    db_uri = os.getenv('SQLALCHEMY_DATABASE_URI', '')
+
+    if not api_key:
+        raise ValueError("API Key is required. Set the GOOGLE_API_KEY environment variable.")
+
+    if not db_uri:
+        print("Warning: DATABASE_URI environment variable not set. AthenaRecommender will be disabled.")
 
     try:
         athena_client = Athena(
             api_key=api_key,
             directory='study_materials',
-            model='gemini-2.0-flash'
+            model='gemini-2.0-flash',
+            db_uri=db_uri
         )
         return athena_client
     except Exception as e:
@@ -317,3 +423,4 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"An error occurred: {e}")
             print("\n" + "=" * 50 + "\n")
+
