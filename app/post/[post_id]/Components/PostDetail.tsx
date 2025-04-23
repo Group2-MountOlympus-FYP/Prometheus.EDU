@@ -38,7 +38,7 @@ export async function PostDetail(props: Props){
 
     return (
         <Container>
-            <Title ta="left">{title}</Title>
+            <Title ta="left" style={{ paddingBottom: "3vh" }}>{title}</Title>
 
             <CommentWriteButton post={post} />
         </Container>

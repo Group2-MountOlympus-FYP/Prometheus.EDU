@@ -5,7 +5,7 @@
 .commentButton{
   margin-left: auto;
   background-color: white;
-  border: 0.1vw solid #3C4077;
+  border: 0.1vw solid #DEE0EF;
   color: #3C4077;
   font-weight: bold;
 }
@@ -15,12 +15,14 @@
 }
 .commentButton:active{
   background-color: #777CB9;
+  border: 0.1vw solid #777CB9;
   color: white;
 }
 
 .body {
   padding-left: 54px;
   padding-top: var(--mantine-spacing-sm);
+  padding-bottom: 2vh;
   font-size: var(--mantine-font-size-sm);
 }
 
@@ -28,4 +30,20 @@
   & > p:last-child {
     margin-bottom: 0;
   }
+}
+
+.commentTitle{
+  display: flex;
+  align-items: center;
+}
+.commentTitle::after {
+  content: "";
+  flex-grow: 1;
+  height: 6px;
+  margin-top: 0.3vh;
+  margin-left: 8px;
+  background-image: radial-gradient(circle, #ABABAB 1.4px, transparent 1.4px);
+  background-repeat: repeat-x;
+  background-size: 10px 100%; /* 控制点的间距 */
+  display: block;
 }
