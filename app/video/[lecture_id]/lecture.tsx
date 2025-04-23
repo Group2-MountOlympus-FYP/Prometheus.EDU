@@ -11,6 +11,7 @@ import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
+import LecterList from '../../course/[courseId]/component/teachers_list'
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import { getText } from "./components/language";
@@ -35,6 +36,7 @@ export default function Lecture({ lectureId }: LectureProps) {
   const [postsLoading, setPostsLoading] = useState(false);
 
   const [videoList, setVideoList] = useState<VideoInfo[]>([]);
+  const [lecturers, setLecturers] = useState<any[]>([]);
 
   useEffect(() => {
     getLectureDetailsById(lectureId, 1, 10)
@@ -46,15 +48,17 @@ export default function Lecture({ lectureId }: LectureProps) {
         setLectureData(lectureRes);
 
         // 额外请求该课程的所有 lectures
-        getCourseDetailsById(lectureRes.course).then((courseData) => {
-          const rawVideos = courseData.lectures || courseData.videos || [];
+        getCourseDetailsById(lectureRes.course).then((courseRes) => {
+          const rawVideos = courseRes.lectures || courseRes.videos || [];
           const filtered = rawVideos.filter((item: any) => Number(item.id) !== lectureId);
           const processedList: VideoInfo[] = filtered.map((item: any) => ({
             id: item.id,
             title: item.name || item.title || '无标题',
             video_time: item.video_time || '未知时长',
           }));
+
           setVideoList(processedList);
+          setLecturers(courseRes.teachers || []); // 👈 设置老师列表
         });
       })
       .catch(() => setError(true));
@@ -96,6 +100,7 @@ export default function Lecture({ lectureId }: LectureProps) {
         </Grid.Col>
         <Grid.Col span={4}>
           <VideoList videoList={videoList} />
+          <LecterList lecturers={lecturers}/>
 
         </Grid.Col>
       </Grid>
