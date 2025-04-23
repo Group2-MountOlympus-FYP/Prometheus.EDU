@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Anchor, Avatar, Button, Card, Group, Text, Grid, Container, Tabs, Modal, FloatingIndicator, Skeleton } from "@mantine/core"
 import { UpdateUserInfoPanel } from "./UpdateUserInfo/UpdateUserInfo";
 import style from './UserProfile.module.css'
@@ -22,6 +22,15 @@ interface userDataProps{
 }
 
 export function UserProfile(props:userDataProps){
+
+    useEffect(() => {
+        if(props.userType === "TEACHER"){
+            setUserType("Teacher")
+        }else{
+            setUserType("Student")
+        }
+    })
+
     const [opened, {open, close}] = useDisclosure()
     const [isMouseOnAvatar, setIsMouseOnAvatar] = useState<boolean>(false)
     const [avatarChangeOpen, {open: openAvatarChange, close: closeAvatarChange}] = useDisclosure()
@@ -30,6 +39,7 @@ export function UserProfile(props:userDataProps){
 
     const [rootRef, setRootRef] = useState<HTMLDivElement | null>(null);
     const [controlsRefs, setControlsRefs] = useState<Record<string, HTMLButtonElement | null>>({});
+    const [userType, setUserType] = useState("")
     const setControlRef = (val: string) => (node: HTMLButtonElement) => {
         controlsRefs[val] = node;
         setControlsRefs(controlsRefs);
@@ -46,7 +56,7 @@ export function UserProfile(props:userDataProps){
                         <Text className={style.text}><strong>{getText('username')}: </strong>{props.username}</Text>
                         <Text className={style.text}><strong>{getText('gender')}: </strong>{props.gender}</Text>
                         <Text className={style.text}><strong>{getText('birthdate')}: </strong>{props.birthDate}</Text>
-                        <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>{props.userType}</span></Text>
+                        <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>{userType}</span></Text>
                     </div>
                     { props.isSelf?
                     <Group className={style.centered} style={{"marginBottom": '5.5vh'}}>
