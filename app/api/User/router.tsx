@@ -12,6 +12,7 @@ export interface userProfile{
     id: number,
     username: string,
     posts: any[],
+    status: string,
 }
 export async function getUserProfile(user_id?:number): Promise<userProfile> {
     let url = ''

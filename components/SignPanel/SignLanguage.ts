@@ -18,7 +18,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
       zh: {
         welcome: "欢迎来到",
         sitename: "Prometheus.EDU",
-        subittile: '一个线上教育综合平台',
+        subtitle: '一个线上教育综合平台',
         signup: '注册',
         signin: '登录',
         registerask: '没有账号？点击这里',

@@ -3,6 +3,7 @@ import { Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 import { CommentThread } from './CommentThread';
 import {Comment} from "@/app/post/[post_id]/Components/Comment";
+import {getText} from "@/components/CookieConsent/language";
 
 
 /**
@@ -40,7 +41,7 @@ export default function CommentWriteButton({ post }: { post: any }) {
     return (
         <Stack>
             <Comment author_id={post.author} created_at={post.created_at} content={post.content} id={post.id} key={0} onReplyAdded={handleCommentAdded}></Comment>
-            <Text fw={500}>Comments</Text>
+            <Text fw={500}>{getText("comment")}</Text>
 
             <CommentThread
                 comments={comments}
