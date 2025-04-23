@@ -1,56 +1,37 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Container, Grid, Stack, Title, Text, Button, Group, Badge, Image
+  Stack, Title, Text, Button, Group, Badge, Image
 } from "@mantine/core";
 import { IconStarFilled } from "@tabler/icons-react";
-import { getCourseDetailsById } from '@/app/api/Course/router';
+import { enrollCourseById } from "@/app/api/Enroll/router";
+import { checkEnrollmentStatus } from "@/app/api/MyCourses/router";
+import { getUserProfile } from "@/app/api/User/router";
 import "./course_card.css";
-import {enrollCourseById} from "@/app/api/Enroll/router";
-import {checkEnrollmentStatus} from "@/app/api/MyCourses/router";
-
-
 
 interface CourseHeaderProps {
-  courseId: number;
+  courseData: any;
+  isEnrolled: boolean;
+  userStatus: "STUDENT" | "TEACHER" | null;
 }
 
-const CourseHeader: React.FC<CourseHeaderProps> = ({ courseId }) => {
-  const [data, setData] = useState<any>(null);
-  const [isEnrolled, setIsEnrolled] = useState(false);
+const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, userStatus }) => {
+  const [enrolled, setEnrolled] = useState(isEnrolled);
+  const courseId = courseData.id;
 
 
-  useEffect(() => {
-    getCourseDetailsById(courseId)
-      .then((res) => {
-        setData(res);
-      })
-      .catch((err) => {
-        console.error("加载课程信息失败", err);
-      });
-
-    checkEnrollmentStatus(courseId)
-      .then((isEnrolled) => {
-        setIsEnrolled(isEnrolled);
-      })
-      .catch((err) => {
-        console.error("检查报名状态失败", err);
-      });
-  }, [courseId]);
-
-
-  if (!data) return null;
+  if (!courseData) return null;
 
   return (
     <div className="course-card">
       <div className="course-left">
         <Stack>
-          <Title order={1}>{data.course_name || "Course Name"}</Title>
-          <Text size="lg" color="dimmed">{data.institution || "Institute Name"}</Text>
+          <Title order={1}>{courseData.course_name || "Course Name"}</Title>
+          <Text size="lg" color="dimmed">{courseData.institution || "Institute Name"}</Text>
 
-          {(data.rating ?? 0) > 0 ? (
+          {(courseData.rating ?? 0) > 0 ? (
             <Group>
-              {Array.from({ length: Math.min(data.rating ?? 0, 5) }).map((_, i) => (
+              {Array.from({ length: Math.min(courseData.rating, 5) }).map((_, i) => (
                 <IconStarFilled key={i} size={20} color="#f1c40f" />
               ))}
             </Group>
@@ -58,51 +39,59 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseId }) => {
             <Text size="sm" color="dimmed">No rating</Text>
           )}
 
-
-          <Button
-            color={isEnrolled ? "gray" : "indigo"}
-            size="md"
-            className="enroll-button"
-            onClick={async () => {
-              try {
-                await enrollCourseById(courseId);
-                // ✅ 报名成功后重新验证是否报名（确保后端写入成功）
-                const confirmed = await checkEnrollmentStatus(courseId);
-                setIsEnrolled(confirmed);
-                alert("报名成功！");
-              } catch (err) {
-                console.error("报名失败", err);
-                alert("报名失败，请稍后再试");
-              }
-            }}
-            disabled={isEnrolled}
-          >
-            {isEnrolled ? "Enrolled" : "Enroll to this course"}
-          </Button>
-
-
+          {userStatus === "TEACHER" ? (
+            <Button
+              color="teal"
+              size="md"
+              className="create-lecture-button"
+              onClick={() => {
+                window.location.href = `/course/${courseId}/add_lecture`;
+              }}
+            >
+              Create Lecture
+            </Button>
+          ) : (
+            <Button
+              color={enrolled ? "gray" : "indigo"}
+              size="md"
+              className="enroll-button"
+              onClick={async () => {
+                try {
+                  await enrollCourseById(courseId);
+                  const confirmed = await checkEnrollmentStatus(courseId);
+                  setEnrolled(confirmed);
+                  alert("报名成功！");
+                } catch (err) {
+                  console.error("报名失败", err);
+                  alert("报名失败，请稍后再试");
+                }
+              }}
+              disabled={enrolled}
+            >
+              {enrolled ? "Enrolled" : "Enroll to this course"}
+            </Button>
+          )}
 
           <Text size="sm" color="dimmed">
-            {data.enrollment_count || 0} people have enrolled
+            {courseData.enrollment_count || 0} people have enrolled
           </Text>
 
           <Text size="sm" className="course-intro">
-            {data.description || "No description available."}
+            {courseData.description || "No description available."}
           </Text>
 
           <Group mt="sm">
-            {(data.tags || []).map((tag: string, i: number) => (
+            {(courseData.tags || []).map((tag: string, i: number) => (
               <Badge variant="outline" key={i}>{tag.toUpperCase()}</Badge>
             ))}
           </Group>
         </Stack>
       </div>
 
-
       <div className="course_right">
         <Image
           className="course_image"
-          src={data.images?.[0]?.url || "/course_pic.png"}
+          src={courseData.images?.[0]?.url || "/course_pic.png"}
           alt="Course Image"
           radius="md"
         />

@@ -1,33 +1,16 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Avatar, Text, Group, Stack, Title } from "@mantine/core";
-import { getCourseDetailsById } from '@/app/api/Course/router';
 
 interface Lecturer {
   username: string;
 }
 
 interface LecturerListProps {
-  courseId: number; // 可选参数
+  lecturers: Lecturer[];
 }
 
-const LecturerList: React.FC<LecturerListProps> = ({ courseId }) => {
-  const [lecturers, setLecturers] = useState<Lecturer[]>([]);
-
-  useEffect(() => {
-    getCourseDetailsById(courseId)
-      .then((data) => {
-        if (data.teachers && Array.isArray(data.teachers)) {
-          setLecturers(data.teachers);
-        } else {
-          console.warn("接口返回数据格式异常:", data);
-        }
-      })
-      .catch((err) => {
-        console.error("获取讲师信息失败：", err);
-      });
-  }, [courseId]);
-
+const LecturerList: React.FC<LecturerListProps> = ({ lecturers }) => {
   return (
     <>
       <Title order={3} mt="xl" mb="md">
@@ -36,7 +19,7 @@ const LecturerList: React.FC<LecturerListProps> = ({ courseId }) => {
       <Group wrap="wrap" gap="xl">
         {lecturers.map((lecturer, index) => (
           <Stack align="center" key={index} gap={4}>
-            <Avatar radius="xl">T</Avatar>
+            <Avatar radius="xl">{lecturer.username?.[0]?.toUpperCase() || "T"}</Avatar>
             <Text>{lecturer.username}</Text>
           </Stack>
         ))}
