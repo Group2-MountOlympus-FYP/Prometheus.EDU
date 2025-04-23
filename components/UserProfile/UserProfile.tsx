@@ -18,6 +18,7 @@ interface userDataProps{
     onTabsChange: (value: string | null) => void,
     isLoading: boolean,
     isSelf: boolean,
+    userType: string,
 }
 
 export function UserProfile(props:userDataProps){
@@ -45,7 +46,7 @@ export function UserProfile(props:userDataProps){
                         <Text className={style.text}><strong>{getText('username')}: </strong>{props.username}</Text>
                         <Text className={style.text}><strong>{getText('gender')}: </strong>{props.gender}</Text>
                         <Text className={style.text}><strong>{getText('birthdate')}: </strong>{props.birthDate}</Text>
-                        <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>Student</span></Text>
+                        <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>{props.userType}</span></Text>
                     </div>
                     { props.isSelf?
                     <Group className={style.centered} style={{"marginBottom": '5.5vh'}}>
