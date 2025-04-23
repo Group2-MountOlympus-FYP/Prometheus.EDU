@@ -18,7 +18,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         uploadFailed: "Upload failed",
         invalidVideoFile: "Please upload a valid video file.",
         dragOrClick: "Drag video here or click to upload",
-        videoHint: "Only MP4/WebM, max size 500MB.",
+        videoHint: "Only MP4/WebM, max size 300MB.",
         createLecture: "Create Lecture",
         error: "Error",
         pleaseUploadVideo: "Please upload a video for the lecture.",
@@ -52,8 +52,6 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         art: "Art",
         language: "Language",
         others: "Others",
-        created: 'Created',
-        comment:'Comment',
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -68,7 +66,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         uploadFailed: "上传失败",
         invalidVideoFile: "请上传有效的视频文件。",
         dragOrClick: "拖动视频到此或点击上传",
-        videoHint: "仅支持 MP4/WebM，最大 500MB。",
+        videoHint: "仅支持 MP4/WebM，最大 300MB。",
         createLecture: "创建课时",
         error: "错误",
         pleaseUploadVideo: "请上传课时视频。",
@@ -102,8 +100,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         art: "艺术",
         language: "语言",
         others: "其他",
-        created:'创建',
-        comment:'评论',
+
     },
 }
 
