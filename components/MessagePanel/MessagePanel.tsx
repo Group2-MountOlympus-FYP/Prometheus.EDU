@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import './MessagePanel.css';
 import { getNotifications, markNotificationAsRead } from '@/app/api/Notification/router';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+
 
 interface Notification {
   id: number;
@@ -57,6 +59,8 @@ export function MessagePanel() {
     }
   };
 
+  const router = useRouter();
+
   const content = messages.map((msg) => (
     <div
       key={msg.id}
@@ -65,6 +69,7 @@ export function MessagePanel() {
         if (!msg.read) {
           handleMarkAsRead(msg.id);
         }
+        router.push(`/post/${msg.post_id}`);
       }}
     >
       <div className="message-header">
@@ -72,12 +77,12 @@ export function MessagePanel() {
         <span className="message-type">
           {msg.type === 'replied' ? 'replied to you' : '@ you'}
         </span>
-        <span className="timestamp">at {new Date(msg.created_at).toLocaleString()}</span>
+        <span className="timestamp">at {new Date(msg.created_at).toLocaleString()} :</span>
       </div>
       <div className="message-content">
-        <Link href={`/post/${msg.post_id}`} className="post-title-link">
+        <span className="post-title-link">
           {msg.post_title || '[未命名帖子]'}
-        </Link>
+        </span>
       </div>
     </div>
   ));
@@ -85,7 +90,6 @@ export function MessagePanel() {
   return (
     <div>
       <div className="content-box">{content}</div>
-      <div className="placeholder"></div>
     </div>
   );
 }
