@@ -30,7 +30,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     Loading: '加载中...',
     Lecture_List: '课时列表',
     Lecture_time: '课时时间',
-    No_lecture: '该课程暂无课时',
+    No_lecture: '该课程暂无其它课时',
     Lecture_name: '课时名称',
     Lecture_date: '课时日期',
     Lecture_404: ' 404 ',
