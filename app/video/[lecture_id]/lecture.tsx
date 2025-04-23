@@ -13,6 +13,7 @@ import Material from '@/app/video/[lecture_id]/components/material';
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
 import { getText } from "./components/language";
 import { getUserInfo } from '@/app/api/General';
+import { Assignments } from '@/components/PostsOverview/Assignments';
 
 interface LectureProps {
   lectureId: number;
@@ -100,7 +101,9 @@ export default function Lecture({ lectureId }: LectureProps) {
           <Tabs.Panel value="Matrials">
             <Material lectureId={lectureId} />
           </Tabs.Panel>
-          <Tabs.Panel value="Assignments">Assignments</Tabs.Panel>
+          <Tabs.Panel value="Assignments">
+            <Assignments assignments={lectureData.posts}></Assignments>
+          </Tabs.Panel>
         </Tabs>
 
         {activeTab === 'posts' && (
