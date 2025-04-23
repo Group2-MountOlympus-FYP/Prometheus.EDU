@@ -57,6 +57,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         loginButton: 'jump to login page',
         notTeacher: "You are not a teacher",
         onlyTeachersCanCreate: "Only teachers can create courses.",
+        loading: 'loading',
 
     },
     zh: {
@@ -111,6 +112,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         loginButton: '跳转到登录页面',
         notTeacher: "您不是教师用户",
         onlyTeachersCanCreate: "只有教师用户可以创建课程。",
+        loading: '加载中...',
     },
 }
 

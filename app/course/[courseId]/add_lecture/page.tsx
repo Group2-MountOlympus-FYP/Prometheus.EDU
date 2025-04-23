@@ -30,6 +30,7 @@ const LectureCreatePage = () => {
     const [videoPreview, setVideoPreview] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
     const [isTeacher, setIsTeacher] = useState<boolean | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     // 用户登录检查
     useEffect(() => {
@@ -38,6 +39,7 @@ const LectureCreatePage = () => {
                 if (res.status === 401) {
                     setIsLoggedIn(false);
                     setIsTeacher(false);
+                    setIsLoading(false);
                     return;
                 }
 
@@ -45,24 +47,24 @@ const LectureCreatePage = () => {
                 if (sessionData.id === -1) {
                     setIsLoggedIn(false);
                     setIsTeacher(false);
+                    setIsLoading(false);
                 } else {
                     setIsLoggedIn(true);
                     try {
                         const profileRes = await fetch("/backend/my_profile");
                         const userData = await profileRes.json();
-                        if (userData.status === "TEACHER") {
-                            setIsTeacher(true);
-                        } else {
-                            setIsTeacher(false);
-                        }
+                        setIsTeacher(userData.status === "TEACHER");
                     } catch {
                         setIsTeacher(false);
+                    } finally {
+                        setIsLoading(false);
                     }
                 }
             })
             .catch(() => {
                 setIsLoggedIn(false);
                 setIsTeacher(false);
+                setIsLoading(false);
             });
     }, []);
 
@@ -120,6 +122,23 @@ const LectureCreatePage = () => {
             setLoading(false);
         }
     };
+
+    if (isLoading) {
+        return (
+            <Box
+                style={{
+                    background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+                    minHeight: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Text size="lg">{getText("loading") || "Loading..."}</Text>
+            </Box>
+        );
+    }
+
     if (!isLoggedIn || !isTeacher) {
         return (
             <Box

@@ -28,6 +28,7 @@ const CourseCreate: React.FC = () => {
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // 登录状态
     const [isTeacher, setIsTeacher] = useState<boolean | null>(null); // 是否为老师
+    const [isLoading, setIsLoading] = useState(true);
 
     const form = useForm({
         initialValues: {
@@ -47,6 +48,7 @@ const CourseCreate: React.FC = () => {
                 if (res.status === 401) {
                     setIsLoggedIn(false);
                     setIsTeacher(false);
+                    setIsLoading(false);
                     return;
                 }
 
@@ -54,24 +56,24 @@ const CourseCreate: React.FC = () => {
                 if (sessionData.id === -1) {
                     setIsLoggedIn(false);
                     setIsTeacher(false);
+                    setIsLoading(false);
                 } else {
                     setIsLoggedIn(true);
                     try {
                         const profileRes = await fetch("/backend/my_profile");
                         const userData = await profileRes.json();
-                        if (userData.status === "TEACHER") {
-                            setIsTeacher(true);
-                        } else {
-                            setIsTeacher(false);
-                        }
-                    } catch (error) {
+                        setIsTeacher(userData.status === "TEACHER");
+                    } catch {
                         setIsTeacher(false);
+                    } finally {
+                        setIsLoading(false);
                     }
                 }
             })
             .catch(() => {
                 setIsLoggedIn(false);
                 setIsTeacher(false);
+                setIsLoading(false);
             });
     }, []);
 
@@ -134,6 +136,22 @@ const CourseCreate: React.FC = () => {
             setLoading(false);
         }
     };
+    if (isLoading) {
+        return (
+            <Box
+                style={{
+                    background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+                    minHeight: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Text size="lg">{getText("loading") || "Loading..."}</Text>
+            </Box>
+        );
+    }
+
     if (!isLoggedIn || !isTeacher) {
         return (
             <Box
@@ -160,7 +178,7 @@ const CourseCreate: React.FC = () => {
                             {getText(!isLoggedIn ? "notLoggedIn" : "notTeacher")}
                         </Title>
                         <Text size="lg" mb="lg" ta="center">
-                            {getText(!isLoggedIn ? "pleaseLoginToCreateCourse" : "onlyTeachersCanCreate")}
+                            {getText(!isLoggedIn ? "pleaseLoginToCreateLecture" : "onlyTeachersCanCreate")}
                         </Text>
 
                         <Button
