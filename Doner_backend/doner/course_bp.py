@@ -396,7 +396,7 @@ def enroll(course_id):
 @login_required
 def enrolled_courses():
     user = get_current_user()
-    if user.type == UserStatus.TEACHER:
+    if user.status == UserStatus.TEACHER:
         # 获取所有由该教师发布的课程
         courses = Course.query.filter_by(author_id=user.id).all()
 
