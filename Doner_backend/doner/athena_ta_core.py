@@ -365,6 +365,30 @@ class Athena:
             "courses": courses
         }
 
+    def search_course_ids(self, query: str, k: int = 5) -> List[int]:
+        """
+        Search for courses based on a user query and only return the course IDs.
+
+        Args:
+            query: Search query string
+            k: Number of results to return (default: 5)
+
+        Returns:
+            Dictionary with course IDs and similarity scores
+        """
+        if not self.course_vector_store:
+            return {"error": "Course search is not available"}
+
+        search_results = self.search_courses(query, k=k)
+
+        if "courses" in search_results:
+            courses = search_results["courses"]
+            course_ids = [course["course_id"] for course in courses]
+            return course_ids
+
+        return []
+
+
 
 def create_athena_client():
     api_key = os.getenv('GOOGLE_API_KEY', '')
