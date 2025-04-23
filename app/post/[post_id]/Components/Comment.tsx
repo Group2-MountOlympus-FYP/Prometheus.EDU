@@ -4,6 +4,7 @@ import classes from './CommentHtml.module.css';
 import { formatDistanceToNow } from 'date-fns';
 import {CommentWrite} from "@/app/post/[post_id]/Components/CommentWrite";
 import {useDisclosure} from "@mantine/hooks";
+import { getText } from "@/components/CookieConsent/language";
 
 interface Props{
     author_id: any
@@ -28,11 +29,11 @@ export function Comment(props: Props) {
                 <div>
                     <Text fz="sm">{props.author_id.username}</Text>
                     <Text fz="xs" c="dimmed">
-                        Created {createdAgo}
+                        {getText("created")} {createdAgo}
                     </Text>
                 </div>
-                <Button mt="md" onClick={toggle} className={classes.commentButton}>
-                    Comment
+                <Button mt="md" onClick={toggle} className={classes.commentBody}>
+                    {getText("comment")}
                 </Button>
             </Group>
             <TypographyStylesProvider className={classes.body}>

@@ -61,8 +61,8 @@ export function CookieConsent(){
             </tr>
             </tbody>
         </table>
-        <Modal opened={opened} onClose={close} centered title={getText("consentTitle")}>
-          111
+        <Modal opened={opened} onClose={close} centered title={getText("privacy")}>
+          {getText("privacyContent")}
         </Modal>
     </div>
   );

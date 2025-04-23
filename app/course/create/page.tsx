@@ -1,5 +1,6 @@
 "use client";
-import React, {useState} from "react";
+
+import React, {useState, useEffect} from "react";
 import {
     Container,
     Title,
@@ -10,6 +11,8 @@ import {
     Select,
     Stack,
     Group,
+    Paper,
+    Box,
 } from "@mantine/core";
 import {useForm} from "@mantine/form";
 import {showNotification} from "@mantine/notifications";
@@ -17,10 +20,16 @@ import {useRouter} from "next/navigation";
 import {createCourse} from "@/app/api/Course/router";
 import {Dropzone, IMAGE_MIME_TYPE} from '@mantine/dropzone';
 import {IconUpload} from '@tabler/icons-react';
-import { getText } from "@/components/CookieConsent/language"; // ✅ 引入双语方法
+import {getText} from "@/app/course/create/component/language";
 
 const CourseCreate: React.FC = () => {
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null); // 登录状态
+    const [isTeacher, setIsTeacher] = useState<boolean | null>(null); // 是否为老师
+    const [isLoading, setIsLoading] = useState(true);
+
     const form = useForm({
         initialValues: {
             course_name: "",
@@ -33,8 +42,41 @@ const CourseCreate: React.FC = () => {
         },
     });
 
-    const [loading, setLoading] = useState(false);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
+    useEffect(() => {
+        fetch("/backend/login/get_session")
+            .then(async (res) => {
+                if (res.status === 401) {
+                    setIsLoggedIn(false);
+                    setIsTeacher(false);
+                    setIsLoading(false);
+                    return;
+                }
+
+                const sessionData = await res.json();
+                if (sessionData.id === -1) {
+                    setIsLoggedIn(false);
+                    setIsTeacher(false);
+                    setIsLoading(false);
+                } else {
+                    setIsLoggedIn(true);
+                    try {
+                        const profileRes = await fetch("/backend/my_profile");
+                        const userData = await profileRes.json();
+                        setIsTeacher(userData.status === "TEACHER");
+                    } catch {
+                        setIsTeacher(false);
+                    } finally {
+                        setIsLoading(false);
+                    }
+                }
+            })
+            .catch(() => {
+                setIsLoggedIn(false);
+                setIsTeacher(false);
+                setIsLoading(false);
+            });
+    }, []);
+
 
     const courseLevelOptions = [
         {value: "LEVEL_1", label: "LEVEL_1"},
@@ -94,121 +136,216 @@ const CourseCreate: React.FC = () => {
             setLoading(false);
         }
     };
+    if (isLoading) {
+        return (
+            <Box
+                style={{
+                    background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+                    minHeight: "100vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                }}
+            >
+                <Text size="lg">{getText("loading") || "Loading..."}</Text>
+            </Box>
+        );
+    }
 
-    return (
-        <Container size="sm" mt={200}>
-            <Title order={2} ta="center" mb="xl" size="2.5rem">
-                {getText("addNewCourse")}
-            </Title>
-
-            <Text size="xl" mt="md" mb="xl" ta="center">
-                {getText("fillCourseInfo")}
-            </Text>
-
-            <form onSubmit={handleSubmit}>
-                <Stack spacing={40}>
-                    <TextInput
-                        label={getText("courseName")}
-                        placeholder={getText("enterCourseName")}
-                        size="lg"
-                        {...form.getInputProps("course_name")}
-                        required
-                        mt="xl"
-                    />
-
-                    <div>
-                        <Text fw={500} mt={30} mb={20}>
-                            {getText("uploadCoursePicture")}
+    if (!isLoggedIn || !isTeacher) {
+        return (
+            <Box
+                style={{
+                    background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+                    minHeight: "100vh",
+                    paddingTop: "20px",
+                    textAlign: "center",
+                }}
+            >
+                <Container size="md" style={{marginTop: "100px"}}>
+                    <Paper
+                        shadow="xl"
+                        radius="lg"
+                        p="xl"
+                        withBorder
+                        style={{
+                            backgroundColor: "#f8f9fa",
+                            width: "100%",
+                            margin: "0 auto",
+                        }}
+                    >
+                        <Title order={2} ta="center" mb="xl" size="2.0rem">
+                            {getText(!isLoggedIn ? "notLoggedIn" : "notTeacher")}
+                        </Title>
+                        <Text size="lg" mb="lg" ta="center">
+                            {getText(!isLoggedIn ? "pleaseLoginToCreateLecture" : "onlyTeachersCanCreate")}
                         </Text>
 
-                        <Dropzone
-                            onDrop={(files) => {
-                                const file = files[0];
-                                form.setFieldValue("main_picture", file);
-                                setImagePreview(URL.createObjectURL(file));
-                            }}
-                            onReject={() =>
-                                showNotification({
-                                    title: getText("uploadFailed"),
-                                    message: getText("invalidImageFile"),
-                                    color: "red",
-                                })
-                            }
-                            maxSize={5 * 1024 ** 2}
-                            accept={IMAGE_MIME_TYPE}
-                            style={{backgroundColor: "#f1f3f5", borderRadius: 8}}
+                        <Button
+                            onClick={() => router.push("http://localhost:3000")}
+                            size="lg"
+                            variant="light"
+                            style={{width: "100%"}}
                         >
-                            <Group justify="center" style={{pointerEvents: "none"}}>
-                                <IconUpload size={80} stroke={1.5}/>
-                                <div>
-                                    <Text size="lg" inline>
-                                        {getText("dragOrClickToUpload")}
-                                    </Text>
-                                    <Text size="sm" c="dimmed" mt={7}>
-                                        {getText("imageFileNote")}
-                                    </Text>
-                                </div>
-                            </Group>
-                        </Dropzone>
-
-                        {imagePreview && (
-                            <img
-                                src={imagePreview}
-                                alt="Uploaded preview"
-                                style={{maxWidth: "100%", marginTop: 20, borderRadius: 16}}
-                            />
-                        )}
-                    </div>
-
-                    <Textarea
-                        label={getText("description")}
-                        placeholder={getText("enterCourseDescription")}
-                        autosize
-                        minRows={3}
-                        size="lg"
-                        {...form.getInputProps("description")}
-                        required
-                        mt="xl"
-                    />
-
-                    <Select
-                        label={getText("courseLevel")}
-                        placeholder={getText("selectCourseLevel")}
-                        data={courseLevelOptions}
-                        size="lg"
-                        {...form.getInputProps("level")}
-                        required
-                        mt="xl"
-                    />
-
-                    <Select
-                        label={getText("courseStatus")}
-                        placeholder={getText("selectCourseStatus")}
-                        data={courseStatusOptions}
-                        size="lg"
-                        {...form.getInputProps("status")}
-                        required
-                        mt="xl"
-                    />
-
-                    <Select
-                        label={getText("courseCategory")}
-                        placeholder={getText("selectCourseCategory")}
-                        data={categoryOptions}
-                        size="lg"
-                        {...form.getInputProps("category")}
-                        required
-                        mt="xl"
-                    />
-
-                    <Group justify="center" mt={80}>
-                        <Button type="submit" size="lg" loading={loading}>
-                            {getText("createCourse")}
+                            {getText("loginButton")}
                         </Button>
-                    </Group>
-                </Stack>
-            </form>
-        </Container>
+                    </Paper>
+                </Container>
+            </Box>
+        );
+    }
+
+
+    return (
+        <Box
+            style={{
+                background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+                minHeight: "100vh",
+                paddingTop: "20px",
+            }}
+        >
+            <Container size={false} style={{maxWidth: "1000px", margin: "0 auto"}}>
+                <Paper
+                    shadow="xl"
+                    radius="lg"
+                    p="xl"
+                    withBorder
+                    style={{
+                        backgroundColor: "#e7f5ff",
+                        width: "200%",
+                        maxWidth: "1000px",
+                        margin: "0 auto",
+                    }}
+                >
+                    <Title order={2} ta="center" mb="lg" style={{fontSize: "2.0rem"}}>
+                        {getText("addNewCourse")}
+                    </Title>
+
+                    <Text size="lg" mt="xs" mb="xl" ta="center" c="dimmed">
+                        {getText("fillCourseInfo")}
+                    </Text>
+
+                    <form onSubmit={handleSubmit}>
+                        <Stack spacing="xl">
+                            <TextInput
+                                label={getText("courseName")}
+                                placeholder={getText("enterCourseName")}
+                                size="md"
+                                radius="md"
+                                {...form.getInputProps("course_name")}
+                                required
+                            />
+
+                            <div>
+                                <Text fw={600} mb="sm">
+                                    {getText("uploadCoursePicture")}
+                                </Text>
+                                <Dropzone
+                                    onDrop={(files) => {
+                                        const file = files[0];
+                                        form.setFieldValue("main_picture", file);
+                                        setImagePreview(URL.createObjectURL(file));
+                                    }}
+                                    onReject={() =>
+                                        showNotification({
+                                            title: getText("uploadFailed"),
+                                            message: getText("invalidImageFile"),
+                                            color: "red",
+                                        })
+                                    }
+                                    maxSize={5 * 1024 ** 2}
+                                    accept={IMAGE_MIME_TYPE}
+                                    style={{
+                                        backgroundColor: "#f1f3f5",
+                                        borderRadius: "12px",
+                                        padding: "2rem",
+                                        border: "2px dashed #ced4da",
+                                    }}
+                                >
+                                    <Group justify="center" style={{pointerEvents: "none"}}>
+                                        <IconUpload size={60} stroke={1.5}/>
+                                        <div>
+                                            <Text size="md" ta="center">
+                                                {getText("dragOrClickToUpload")}
+                                            </Text>
+                                            <Text size="xs" c="dimmed" ta="center" mt={4}>
+                                                {getText("imageFileNote")}
+                                            </Text>
+                                        </div>
+                                    </Group>
+                                </Dropzone>
+                                {imagePreview && (
+                                    <img
+                                        src={imagePreview}
+                                        alt="Uploaded preview"
+                                        style={{
+                                            maxWidth: "100%",
+                                            marginTop: 16,
+                                            borderRadius: "12px",
+                                        }}
+                                    />
+                                )}
+                            </div>
+
+                            <Textarea
+                                label={getText("description")}
+                                placeholder={getText("enterCourseDescription")}
+                                autosize
+                                minRows={3}
+                                size="md"
+                                radius="md"
+                                {...form.getInputProps("description")}
+                                required
+                            />
+
+                            <Select
+                                label={getText("courseLevel")}
+                                placeholder={getText("selectCourseLevel")}
+                                data={courseLevelOptions}
+                                size="md"
+                                radius="md"
+                                {...form.getInputProps("level")}
+                                required
+                            />
+
+                            <Select
+                                label={getText("courseStatus")}
+                                placeholder={getText("selectCourseStatus")}
+                                data={courseStatusOptions}
+                                size="md"
+                                radius="md"
+                                {...form.getInputProps("status")}
+                                required
+                            />
+
+                            <Select
+                                label={getText("courseCategory")}
+                                placeholder={getText("selectCourseCategory")}
+                                data={categoryOptions}
+                                size="md"
+                                radius="md"
+                                {...form.getInputProps("category")}
+                                required
+                            />
+
+                            <Group justify="center" mt="xl">
+                                <Button
+                                    type="submit"
+                                    size="md"
+                                    radius="xl"
+                                    loading={loading}
+                                    style={{
+                                        background: "linear-gradient(90deg, #4dabf7, #228be6)",
+                                    }}
+                                >
+                                    {getText("createCourse")}
+                                </Button>
+                            </Group>
+                        </Stack>
+                    </form>
+                </Paper>
+            </Container>
+        </Box>
     );
 };
 
