@@ -15,15 +15,20 @@ from .course_data_extractor import CourseDataExtractor
 
 
 def resolve_path(path: str) -> str:
+    """Resolve path to an absolute one"""
+    # return if it is just an absolute one
     if os.path.isabs(path):
         return path
-
-    # Obtain current working directory
-    cwd = os.path.dirname(__file__)
-    path = path.lstrip('/')
-    # Form the absolute path
-    abs_path = os.path.join(cwd, path)
-
+    
+    # obtain the absolute directory that this program is in
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    
+    # remove the beginning "/" or "\\"
+    if path.startswith('/') or path.startswith('\\'):
+        path = path[1:]
+    
+    abs_path = os.path.normpath(os.path.join(cwd, path))
+    
     return abs_path
 
 
