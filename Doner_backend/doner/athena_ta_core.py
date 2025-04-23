@@ -379,15 +379,15 @@ class Athena:
         if not self.course_vector_store:
             return {"error": "Course search is not available"}
 
-        search_results = self.search_courses(query, k=k)
+        results = self.course_vector_store.similarity_search_with_score(query, k=k)
 
-        if "courses" in search_results:
-            courses = search_results["courses"]
-            course_ids = [course["course_id"] for course in courses]
-            return course_ids
+        course_ids = []
 
-        return []
+        for doc, score in results:
+            if 'course_id' in doc.metadata:
+                course_ids.append(doc.metadata['course_id']),
 
+        return course_ids
 
 
 def create_athena_client():
