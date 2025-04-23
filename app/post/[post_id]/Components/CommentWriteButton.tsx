@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { CommentThread } from './CommentThread';
 import {Comment} from "@/app/post/[post_id]/Components/Comment";
 import {getText} from "@/components/CookieConsent/language";
+import classes from './CommentHtml.module.css';
 
 
 /**
@@ -39,9 +40,19 @@ export default function CommentWriteButton({ post }: { post: any }) {
     };
 
     return (
-        <Stack>
-            <Comment author_id={post.author} created_at={post.created_at} content={post.content} id={post.id} key={0} onReplyAdded={handleCommentAdded}></Comment>
-            <Text fw={500}>{getText("comment")}</Text>
+        <Stack style={{ display: "flex", justifyContent: "center"}}>
+            <Comment 
+                author_id={post.author} 
+                created_at={post.created_at} 
+                content={post.content} 
+                id={post.id} 
+                key={0} 
+                onReplyAdded={handleCommentAdded}>
+            </Comment>
+
+            <div className={classes.commentTitle}>
+                <Text fw={500}>{getText("comment")}</Text>
+            </div>
 
             <CommentThread
                 comments={comments}
