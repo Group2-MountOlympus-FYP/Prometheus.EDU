@@ -4,9 +4,10 @@ from sqlalchemy.exc import IntegrityError
 
 from .Course import *
 from .Lecture import Lecture
-from .User import User
+from .User import get_current_user, UserStatus
 from .decorator import teacher_required, login_required
 from .schemas import CourseSchema, LectureSchema, EnrollmentSchema
+from .athena import athena_client
 
 course_bp = Blueprint('course', __name__)
 from .Image import Image
@@ -64,7 +65,7 @@ from .Image import Image
     }
 })
 def get_all_courses():
-    data=request.args
+    data = request.args
     teacher_id = data.get('teacher_id')
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
@@ -75,6 +76,17 @@ def get_all_courses():
     courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, category=category, page=page,
                                  per_page=per_page)
     return jsonify(CourseSchema(many=True).dump(courses))
+
+
+@course_bp.route('/search', methods=['GET'])
+def search():
+    data = request.args.get("query")
+    if not data:
+        return "query param error", 400
+
+    courses = Course.query.filter(Course.id.in_(athena_client.search_course_ids(data))).all()
+
+    return CourseSchema(many=True).dump(courses)
 
 
 # 获取课程详细信息接口
@@ -205,7 +217,7 @@ def create_course():
     institution = request.form.get('institution', "No institution")
     category = Category.__members__.get(data.get('category'), Category.Others)
 
-    course = Course.create_course(session['id'], course_name, description, institution, level, status,category)
+    course = Course.create_course(session['id'], course_name, description, institution, level, status, category)
     if file:
         Image.save_image(file, course)
 
@@ -325,6 +337,13 @@ def enroll(course_id):
 @course_bp.route('/my_course')
 @login_required
 def enrolled_courses():
-    user = User.query.get_or_404(session['id'])
-    enroll_dict = jsonify(EnrollmentSchema().dump(user.enrollments, many=True))
-    return enroll_dict
+    user = get_current_user()
+    if user.type == UserStatus.TEACHER:
+        # 获取所有由该教师发布的课程
+        courses = Course.query.filter_by(author_id=user.id).all()
+
+        # 使用 CourseSchema() 序列化每一个课程，并包装成 {"course": <course>}
+        result = [{"course": CourseSchema().dump(course)} for course in courses]
+        return jsonify(result)
+    else:
+        return jsonify(EnrollmentSchema().dump(user.enrollments, many=True))

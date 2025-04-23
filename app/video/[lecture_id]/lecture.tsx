@@ -2,10 +2,10 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Grid, Skeleton, Container, Button, Tabs } from '@mantine/core';
-import { WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
+import { Grid, Skeleton, Container, Button, Tabs, Modal } from '@mantine/core';
+import { WritingAssignmentPanel, WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
 import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
-
+import { useSearchParams } from 'next/navigation';
 import './page.css';
 import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
@@ -16,6 +16,9 @@ import { getLectureDetailsById } from '@/app/api/Lecture/router';
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import { publishPost } from "@/app/api/Posts/router"
 import { getText } from "./components/language";
+import { getUserInfo } from '@/app/api/General';
+import { Assignments } from '@/components/PostsOverview/Assignments';
+import { notifications } from "@mantine/notifications"
 
 interface LectureProps {
   lectureId: number;
@@ -35,6 +38,7 @@ export default function Lecture({ lectureId }: LectureProps) {
   const [lectureData, setLectureData] = useState<any>(null);
   const [error, setError] = useState(false);
   const [postsLoading, setPostsLoading] = useState(false);
+  const [assignmentWriteOpened, { open: openA, close: closeA }] = useDisclosure(false)
 
   const [videoList, setVideoList] = useState<VideoInfo[]>([]);
   const [lecturers, setLecturers] = useState<any[]>([]);
@@ -70,13 +74,43 @@ export default function Lecture({ lectureId }: LectureProps) {
     }
   }
 
+  const handleAssignmentSubmit = async ({
+                                          title,
+                                          content,
+                                          mentionList
+                                        }: {
+    title: string;
+    content: string;
+    mentionList: any[];
+  }) => {
+    const tags = [4]; // 代表“作业”的标签
+
+    try {
+      const response = await publishPost(title, content, tags, lectureId, mentionList);
+      if (response.ok) {
+        notifications.show({
+          message: "Assignment release successful",
+        });
+        closeA(); // 关闭弹窗
+      }
+    } catch (err) {
+      notifications.show({
+        message: "Assignment release failed",
+        color: "red",
+      });
+      console.error("作业发布失败:", err);
+    }
+  };
+
+
 
   useEffect(() => {
     getLectureDetailsById(lectureId, 1, 10)
       .then((lectureRes) => {
         if (!lectureRes || lectureRes.detail === 'Course not found') {
           setError(true);
-          return;
+        } else {
+          setLectureData(lectureRes);
         }
         setLectureData(lectureRes);
 
@@ -96,7 +130,6 @@ export default function Lecture({ lectureId }: LectureProps) {
       })
       .catch(() => setError(true));
   }, [lectureId]);
-
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -159,7 +192,9 @@ export default function Lecture({ lectureId }: LectureProps) {
           <Tabs.Panel value="Matrials">
             <Material lectureData={lectureData} />
           </Tabs.Panel>
-          <Tabs.Panel value="Assignments">Assignments</Tabs.Panel>
+          <Tabs.Panel value="Assignments">
+            <Assignments assignments={lectureData.posts}></Assignments>
+          </Tabs.Panel>
         </Tabs>
 
         {activeTab === 'posts' && (
@@ -179,6 +214,23 @@ export default function Lecture({ lectureId }: LectureProps) {
               {getText('write_post')}
             </Button>
           </div>
+        )}
+        {
+          activeTab === 'Assignments' && getUserInfo()?.userType === "TEACHER" && lectureData.teacher.username == getUserInfo()?.username && (
+            <div className="post-panel">
+              <Button
+                color={"#3C4077"}
+                onClick={openA}
+              >{getText("write_assignment")}</Button>
+
+              <WritingAssignmentPanel
+                opened={assignmentWriteOpened}
+                onClose={closeA}
+                lecture_id={lectureId}
+                onSubmit={handleAssignmentSubmit}
+              />
+
+            </div>
         )}
       </div>
 

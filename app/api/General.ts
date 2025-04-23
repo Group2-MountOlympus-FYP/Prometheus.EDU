@@ -74,6 +74,7 @@ export interface UserInfo{
     avatar: string,
     birthDate: string,
     gender: string,
+    userType: string,
 }
 export function setUserInfo(userInfo: UserInfo){
     if(getLocalStorage("cookieConsent") === "true"){
@@ -82,6 +83,7 @@ export function setUserInfo(userInfo: UserInfo){
         setCookie("avatar", userInfo.avatar)
         setCookie("birthDate", userInfo.birthDate)
         setCookie("gender", userInfo.gender)
+        setCookie("type", userInfo.userType)
     }else{
         //用户不同意使用cookie
         //使用localstorage
@@ -89,6 +91,7 @@ export function setUserInfo(userInfo: UserInfo){
         setLocalStorage("avatar", userInfo.avatar)
         setLocalStorage("birthDate", userInfo.birthDate)
         setLocalStorage("gender", userInfo.gender)
+        setLocalStorage("type", userInfo.userType)
     }
 }
 
@@ -99,14 +102,16 @@ export function getUserInfo(): UserInfo | null{
         const avatar = getCookie("avatar");
         const birthDate = getCookie("birthDate");
         const gender = getCookie("gender");
+        const type = getCookie("type")
 
         //验证数据是否存在
-        if(username !== null && birthDate !== null && gender !== null && avatar !== null){
+        if(username !== null && birthDate !== null && gender !== null && avatar !== null && type !== null){
             return {
                 username: username,
                 avatar: avatar,
                 birthDate: birthDate,
                 gender: gender,
+                userType: type,
             }
         }else{
             return null
@@ -118,14 +123,16 @@ export function getUserInfo(): UserInfo | null{
         const avatar = getLocalStorage("avatar");
         const birthDate = getLocalStorage("birthDate");
         const gender = getLocalStorage("gender");
+        const type = getCookie("type");
 
         //验证数据是否存在
-        if(username !== null && birthDate !== null && gender !== null && avatar !== null){
+        if(username !== null && birthDate !== null && gender !== null && avatar !== null && type !== null){
             return {
                 username: username,
                 avatar: avatar,
                 birthDate: birthDate,
                 gender: gender,
+                userType: type,
             }
         }else{
             return null
@@ -140,6 +147,7 @@ export function deleteUserInfo(){
         deleteCookie("avatar");
         deleteCookie("birthDate");
         deleteCookie("gender");
+        deleteCookie("tpye");
     }else{
         //用户不同意使用cookie
         //使用localstorage
@@ -147,6 +155,7 @@ export function deleteUserInfo(){
         removeLocalStorage("avatar");
         removeLocalStorage("birthDate");
         removeLocalStorage("gender");
+        removeLocalStorage("type");
     }
 }
 

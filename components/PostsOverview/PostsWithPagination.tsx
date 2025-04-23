@@ -25,6 +25,7 @@ interface Post{
     author: string;
     avatarPath: string;
     replyNum: number;
+    tags:any[];
 }
 
 export function PostsWithPagination(props:postsPaginationProps){
@@ -71,7 +72,8 @@ export function PostsWithPagination(props:postsPaginationProps){
                         authorId: post.author.id,
                         author: post.author.username,
                         avatarPath: post.author.avatar,
-                        replyNum: post.children.length
+                        replyNum: post.children.length,
+                        tags: post.tags,
                     }))
                     //
                     //console.log(extratedData)
@@ -90,15 +92,18 @@ export function PostsWithPagination(props:postsPaginationProps){
         <div style={{width:'63vw'}}>
             {
                 posts.map((post, key) => (
+                    post.tags.includes(4) ? 
+                    <span key={post.postId}></span>
+                    :
                     <PostsOverview 
-                    title={post.title} 
-                    publishDate={post.publishDate}
-                    replyNum={post.replyNum}
-                    postId={post.postId}
-                    author={post.author}
-                    authorId={post.authorId}
-                    avatarPath={post.avatarPath}
-                    key={post.postId}
+                        title={post.title} 
+                        publishDate={post.publishDate}
+                        replyNum={post.replyNum}
+                        postId={post.postId}
+                        author={post.author}
+                        authorId={post.authorId}
+                        avatarPath={post.avatarPath}
+                        key={post.postId}
                     ></PostsOverview>
                 ))
             }

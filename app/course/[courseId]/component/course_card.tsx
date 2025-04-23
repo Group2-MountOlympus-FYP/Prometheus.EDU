@@ -12,7 +12,7 @@ import { getText } from "./language";
 interface CourseHeaderProps {
   courseData: any;
   isEnrolled: boolean;
-  userStatus: "NORMAL" | "TEACHER" | null;
+  userStatus: "STUDENT" | "TEACHER" | null;
 }
 
 const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, userStatus }) => {

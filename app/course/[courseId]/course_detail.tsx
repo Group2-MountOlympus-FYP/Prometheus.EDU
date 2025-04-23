@@ -12,6 +12,7 @@ import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
 import { getUserProfile } from "@/app/api/User/router";
 import { getText } from "./component/language";
+import { getUserInfo } from "@/app/api/General";
 
 interface CourseProps {
   courseId: number;
@@ -20,7 +21,7 @@ interface CourseProps {
 const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [courseData, setCourseData] = useState<any>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
-  const [userStatus, setUserStatus] = useState<"NORMAL" | "TEACHER" | null>(null);
+  const [userStatus, setUserStatus] = useState<"STUDENT" | "TEACHER" | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
@@ -30,7 +31,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
         const [course, enrolled, profile] = await Promise.all([
           getCourseDetailsById(courseId),
           checkEnrollmentStatus(courseId),
-          getUserProfile(),
+          getUserInfo(),
         ]);
 
         if (!course || course.detail === "Course not found") {
@@ -38,10 +39,10 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
         } else {
           setCourseData(course);
           setIsEnrolled(enrolled);
-          if (profile.status === "NORMAL" || profile.status === "TEACHER") {
-            setUserStatus(profile.status);
+          if (profile?.userType === "STUDENT" || profile?.userType === "TEACHER") {
+            setUserStatus(profile.userType);
           } else {
-            console.warn("⚠️ 未知用户身份:", profile.status);
+            console.warn("⚠️ 未知用户身份:", profile?.userType);
           }
         }
       } catch (err) {

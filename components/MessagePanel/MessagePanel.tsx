@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react';
 import './MessagePanel.css';
 import { getNotifications, markNotificationAsRead } from '@/app/api/Notification/router';
 import Link from 'next/link';
-import { getText } from './language'; // ✅ 多语言支持
+import { useRouter } from 'next/navigation';
+import { getText } from './language';
 
 interface Notification {
   id: number;
@@ -58,6 +59,8 @@ export function MessagePanel() {
     }
   };
 
+  const router = useRouter();
+
   const content = messages.map((msg) => (
     <div
       key={msg.id}
@@ -66,6 +69,7 @@ export function MessagePanel() {
         if (!msg.read) {
           handleMarkAsRead(msg.id);
         }
+        router.push(`/post/${msg.post_id}`);
       }}
     >
       <div className="message-header">
@@ -76,9 +80,9 @@ export function MessagePanel() {
         <span className="timestamp">{getText('At')} {new Date(msg.created_at).toLocaleString()}</span>
       </div>
       <div className="message-content">
-        <Link href={`/post/${msg.post_id}`} className="post-title-link">
+        <span className="post-title-link">
           {msg.post_title || getText('Untitled_post')}
-        </Link>
+        </span>
       </div>
     </div>
   ));

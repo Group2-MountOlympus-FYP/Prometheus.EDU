@@ -21,7 +21,7 @@ export function Comment(props: Props) {
     const [opened, { toggle, close }] = useDisclosure(false);
     return (
             <>
-            <Group>
+            <Group style={{ display: "flex", alignItems: "center" }}>
                 <Avatar
                     src={props.author_id.avatar}
                     radius="xl"
@@ -32,7 +32,7 @@ export function Comment(props: Props) {
                         {getText("created")} {createdAgo}
                     </Text>
                 </div>
-                <Button mt="md" onClick={toggle} style={{ marginLeft: "auto" }}>
+                <Button onClick={toggle} className={classes.commentButton}>
                     {getText("comment")}
                 </Button>
             </Group>
