@@ -140,26 +140,31 @@ class VectorStoreManager:
         if not os.path.isabs(vector_store_path):
             vector_store_path = os.path.join(os.path.dirname(__file__), vector_store_path)
 
+        vector_store_dir = os.path.dirname(vector_store_path)
+
+        os.makedirs(vector_store_dir, exist_ok=True)
+
         if os.path.exists(vector_store_path):
-            return FAISS.load_local(
-                vector_store_path,
-                embeddings=self.embeddings,
-                allow_dangerous_deserialization=True
-            )
+            try:
+                return FAISS.load_local(
+                    vector_store_path,
+                    embeddings=self.embeddings,
+                    allow_dangerous_deserialization=True
+                )
+            except Exception as e:
+                print(f"Error loading vector store: {e}. Creating new vector store...")
         else:
             print(f"Vector store not found at {vector_store_path}. Creating new vector store...")
-            vector_store = self.create_vector_store(documents, config)
 
-            if vector_store is not None:
-                # Ensure directory exists
-                os.makedirs(os.path.dirname(vector_store_path), exist_ok=True)
-                vector_store.save_local(vector_store_path)
-                print(f"Vector store saved to {vector_store_path}")
-            else:
-                raise ValueError("Vector store creation returned None")
- 
-            return vector_store
+        vector_store = self.create_vector_store(documents, config)
 
+        if vector_store is not None:
+            vector_store.save_local(vector_store_path)
+            print(f"Vector store saved to {vector_store_path}")
+        else:
+            raise ValueError("Vector store creation returned None")
+
+        return vector_store
 
 class ChainManager:
     """Manages the creation and access of LangChain chains"""

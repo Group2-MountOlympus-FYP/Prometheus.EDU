@@ -20,7 +20,7 @@ Consequently, Agape needs a versatile yet user-friendly solution that not only o
 
 - **Structured Learning via NousTube**: Educational videos and lectures will be curated and hosted on the a module called *NousTube*, with features for taking notes and tracking course completion. The user-friendly interface ensures compatibility with mobile devices and low-bandwidth environments.
 - **Community Support through MetisHub**: *MetisHub* will serve as the primary forum for discussions, where learners can post questions, exchange ideas, and receive timely assistance. Additionally, they can reach out directly to partnering NGOs for help regarding study-related hurdles, such as financial constraints or access to learning materials.
-- **AI-Powered Assistance with Athena Intelligence**: Leveraging Retrieval-Augmented Generation (RAG) techniques, *Athena Intelligence* will reference approved course content to provide quick and accurate answers to learners’ questions. This minimizes the need for constant human intervention while maintaining consistent, fact-checked responses.
+- **AI-Powered Experience with Athena Intelligence**: Leveraging Retrieval-Augmented Generation (RAG) techniques, *Athena Intelligence* will reference approved course content to provide quick and accurate answers to learners’ questions via *AthenaTutor* service and review assignments submitted by learners via *AthenaReviewer*. This minimizes the need for constant human intervention while maintaining consistent, fact-checked responses. Besides, learners can get recommendations about the courses they may be interested in with *AthenaRecommender*.
 
 Through **Prometheus.EDU**, **MountOlympus** will deliver an end-to-end educational ecosystem that breaks barriers to access, fosters community collaboration, and leverages cutting-edge AI to support learners across the globe.
 
@@ -72,18 +72,25 @@ Our project aligns with several UN Sustainable Development Goals (SDGs), includi
    npm run dev
    ```
 
-3. Set up the backend environment using  
+3. Set up a virtual environment for the backend and set up `$FLASK_APP` and `$FLASK_ENV` to `run.py` and `development/production` respectively
 
-   ```shell
-   python Doner_backend/set_env.py
+4. Create a `.env` file under the directory `/Doner_backend` with the following environment variables:
+
+   ```text
+   GOOGLE_API_KEY=""
+   SQLALCHEMY_DATABASE_URI=""
+   AWS_ACCESS_KEY_ID=""
+   AWS_SECRET_ACCESS_KEY=""
+   AWS_DEFAULT_REGION=""
+   REDIS_URL=""
    ```
 
-4. Run the project
-   - on macOS:
+5. Run the project
+   - on macOS/Linux:
 
       ```shell
       cd Doner_backend
-      source donerenv/bin/activate
+      source donerenv/bin/activate # or other virtual environment of your choice
       flask run
       celery -A run.celery_app worker --loglevel=INFO
       ```
@@ -91,10 +98,9 @@ Our project aligns with several UN Sustainable Development Goals (SDGs), includi
 
       ```shell
       cd Doner_backend
-      donerenv\Scripts\activate
+      donerenv\Scripts\activate # or other virtual environment of your choice
       flask run
       celery -A run.celery_app worker --loglevel=INFO
-
       ```
 
 ### Login to the admin dashboard
@@ -124,13 +130,4 @@ Run the backend of this project and visit http://127.0.0.1:5000/admin
     flask db upgrade
     ```
 
-### For AthenaTutor Module
-
-在运行前，需要在 `Doner_backend/doner` 路径下创建 `.env`，并在其中添加 Google API Key
-
-`.env` 文件的格式应为
-
-```text
-GOOGLE_API_KEY="<your_api_key>"
-```
 
