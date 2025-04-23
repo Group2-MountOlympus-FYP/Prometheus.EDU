@@ -57,6 +57,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         loginButton: 'jump to login page',
         notTeacher: "You are not a teacher",
         onlyTeachersCanCreate: "Only teachers can add lecture.",
+        loading: 'loading',
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -110,6 +111,7 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         loginButton: '跳转到登录页面',
         notTeacher: "您不是教师用户",
         onlyTeachersCanCreate: "只有教师用户可以添加课时。",
+        loading: '加载中...',
 
     },
 }
