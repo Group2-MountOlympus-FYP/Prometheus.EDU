@@ -26,6 +26,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     Course_Materials: "Course Materials",
     No_materials: "No materials available for this lecture.",
     write_assignment: 'Open to release assignment',
+    post_success: 'Post Successful',
   },
   zh: {
 
@@ -45,6 +46,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     write_assignment: '发布作业',
     Course_Materials: "课程资料",
     No_materials: "该课程暂无资料",
+    post_success: '发布成功',
   },
 }
 

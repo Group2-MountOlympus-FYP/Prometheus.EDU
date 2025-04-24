@@ -9,6 +9,7 @@ import { getMyCourses } from "../api/MyCourses/router"
 import { getText } from "@/components/UserProfile/Language"
 import "./profile.css"
 import { MyPosts } from "./Components/myPosts"
+import { setUserInfo } from "../api/General"
 
 interface ProfileProps{
     id?: number
@@ -40,6 +41,14 @@ export function Profile(props: ProfileProps) {
                 setUsername(userData.username)
                 setGender(userData.gender)
                 setUserType(userData.status)
+
+                setUserInfo({
+                    username: userData.username,
+                    avatar: userData.avatar,
+                    birthDate: userData.birthdate,
+                    gender: userData.gender,
+                    userType: userData.status,
+                })
 
                 setIsProfileLoading(false)
             }catch(error){
