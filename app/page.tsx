@@ -14,16 +14,17 @@ import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
   const recommended = getText('recommended')
-  const categories: string[] = [
-    recommended,
-    getText('computerScience'),
-    getText('math'),
-    getText('sports'),
-    getText('life'),
-    getText('art'),
-    getText('language'),
-    getText('others')
+  const categories: { label: string, value: string }[] = [
+    { label: getText('recommended'), value: 'All' },
+    { label: getText('computerScience'), value: 'Computer Science' },
+    { label: getText('math'), value: 'Math' },
+    { label: getText('sports'), value: 'Sports' },
+    { label: getText('life'), value: 'Life' },
+    { label: getText('art'), value: 'Art' },
+    { label: getText('language'), value: 'Language' },
+    { label: getText('others'), value: 'Others' },
   ];
+  
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [courses, setCourses] = useState<any[]>([]);
   const router = useRouter();
@@ -38,10 +39,10 @@ export default function HomePage() {
       try {
         if (selectedCategory === 'All') {
           // 如果后端有专门的 "全部课程" 接口，可以用一个通用的 fetchAllCourses()
-          const allCategories = categories.filter(cat => cat !== 'All');
+          const allCategories = categories.filter(cat => cat.value !== 'All');
           let allCourses: CourseCardInfo[] = [];
           for (const category of allCategories) {
-            const data = await getCourseByCategory(category);
+            const data = await getCourseByCategory(category.value);
             const courses = await data.json();
             allCourses = [...allCourses, ...courses];
           }
@@ -76,10 +77,10 @@ export default function HomePage() {
             {categories.map((category, index) => (
               <button
                 key={index}
-                className={`${classes.categoriesButton} ${selectedCategory === category ? classes.selected : ''}`}
-                onClick={() => setSelectedCategory(category)}
+                className={`${classes.categoriesButton} ${selectedCategory === category.value ? classes.selected : ''}`}
+                onClick={() => setSelectedCategory(category.value)}
               >
-                {category}
+                {category.label}
               </button>
             ))}
           </div>
