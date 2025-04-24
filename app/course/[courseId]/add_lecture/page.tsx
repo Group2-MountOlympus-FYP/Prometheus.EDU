@@ -316,7 +316,6 @@ const LectureCreatePage = () => {
                                             color: "red",
                                         });
                                     }}
-                                    accept={[MIME_TYPES.pdf, ".md", ".html"]}
                                     style={{backgroundColor: "#f1f3f5", borderRadius: 8}}
                                 >
                                     <Group justify="center" mih={120} style={{pointerEvents: "none"}}>
