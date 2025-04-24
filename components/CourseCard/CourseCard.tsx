@@ -42,7 +42,7 @@ export function CourseCard({
     id,
 }: CourseCardInfo) {
     return (
-        <div className={`course-card ${className}`}>
+        <div className={`course-card-for-main ${className}`}>
             <img src={url} alt="course" className="course-image" />
             <div className="course-info">
                 <h3 className="course-name">{name}</h3>
@@ -67,7 +67,7 @@ export function CourseCardForProfile({
 
         return (
             <div className={`course-card-for-profile ${className}`}>
-                <Link href={`/course/${id}`}>
+                {/* <Link href={`/course/${id}`}> */}
                 <Image src={url} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></Image>
                 <div className="course-info-for-profile">
                     <h3 className="course-name">{name}</h3>
@@ -77,7 +77,7 @@ export function CourseCardForProfile({
                         <span className="institute-name">{institute}</span>
                     </div>
                 </div>
-                </Link>
+                {/* </Link> */}
             </div>
         )
     }
