@@ -2,6 +2,8 @@ import os
 import time
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
+import json, re
+
 
 from bs4 import BeautifulSoup
 from pypdf import PdfReader
@@ -310,22 +312,69 @@ class Athena:
         combined_query = f"User Question: {query}\n\nRelevant Context: {context}"
         return self.content_chain_manager.get_chain("in_context_qa").invoke(combined_query)
 
-    # New AthenaRecommender methods
-    def recommend_courses(self, user_info: str) -> Dict[str, Any]:
+
+    def recommend_courses(self, user_info: str, *, k_fallback: int = 5,
+                          max_attempts: int = 2) -> List[int]:
         """
-        Recommend courses based on user profile information
+        Return a robust list of recommended course_ids.
+
+        The LLM is asked for JSON, but it may still hallucinate or wrap it in
+        prose.  We therefore:
+        1.  Call the recommender chain.
+        2.  Try strict JSON parsing.
+        3.  Try to locate an embedded JSON object in the text.
+        4.  Grep for digit-like IDs (e.g. "course_id": 123).
+        5.  Fall back to vector similarity search (`search_course_ids`).
 
         Args:
-            user_info: String describing user's background, interests, and goals
+            user_info: Natural-language profile or query.
+            k_fallback: top-K to use for the similarity-search fallback.
+            max_attempts: how many times to re-query the chain before giving up.
 
         Returns:
-            Dictionary with recommendation results including course IDs
+            List[int]: Ordered list of course_ids (may be empty).
         """
         if not self.course_retriever:
-            return {"error": "Course recommender is not available"}
+            print("Course recommender not available; falling back to vector search only.")
+            return self.search_course_ids(user_info, k=k_fallback)
 
-        formatted_query = f"User Profile for Course Recommendations: {user_info}"
-        return self.course_chain_manager.get_chain("recommend").invoke(formatted_query)
+        prompt = f"User Profile for Course Recommendations: {user_info}"
+
+        for attempt in range(max_attempts):
+            raw = self.course_chain_manager.get_chain("recommend").invoke(prompt)
+            # RetrievalQA returns {"result": "..."}
+            text = raw.get("result", "") if isinstance(raw, dict) else str(raw)
+
+            try:
+                parsed = json.loads(text)
+                if isinstance(parsed, list):
+                    return [int(cid) for cid in parsed]
+                if isinstance(parsed, dict) and "course_ids" in parsed:
+                    return [int(cid) for cid in parsed["course_ids"]]
+            except json.JSONDecodeError:
+                pass  # fall through
+
+            try:
+                json_snippet = re.search(r"\{.*\}", text, re.S)
+                if json_snippet:
+                    parsed = json.loads(json_snippet.group())
+                    if isinstance(parsed, list):
+                        return [int(cid) for cid in parsed]
+                    if isinstance(parsed, dict) and "course_ids" in parsed:
+                        return [int(cid) for cid in parsed["course_ids"]]
+            except Exception:
+                pass  # keep going
+
+            ids = re.findall(r'"?course_id"?\s*[:=]\s*"?(\d+)"?', text)
+            if ids:
+                return [int(cid) for cid in ids]
+
+            # Optional: back-off strategy – tweak the prompt slightly and retry
+            prompt += "\n\n(Remember: reply ONLY with a JSON list of course_ids.)"
+
+        print("LLM failed to produce parseable output; using similarity-search fallback.")
+        return self.search_course_ids(user_info, k=k_fallback)
+
 
     def search_courses(self, query: str, k: int = 5) -> Dict[str, Any]:
         """
