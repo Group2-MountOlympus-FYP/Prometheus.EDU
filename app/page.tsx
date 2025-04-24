@@ -1,23 +1,39 @@
 'use client';
 
 import { AboutWebSite } from '@/components/AboutWebsite/AboutWebsite';
+import { Grid, Stack, Skeleton } from "@mantine/core"
 import { CourseCard } from '@/components/CourseCard/CourseCard';
 import { useEffect, useState } from 'react';
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
 import { getText } from './language'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
-import Link from 'next/link';
 import { getCourseByCategory } from '@/app/api/Course/router';
+import { useRouter } from 'next/navigation';
 
 
 export default function HomePage() {
-  const categories: string[] = ['All','Computer Science', 'Math', 'Sports', 'Life', 'Art', 'Language', 'Others'];
+  const recommended = getText('recommended')
+  const categories: string[] = [
+    recommended,
+    getText('computerScience'),
+    getText('math'),
+    getText('sports'),
+    getText('life'),
+    getText('art'),
+    getText('language'),
+    getText('others')
+  ];
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [courses, setCourses] = useState<any[]>([]);
+  const router = useRouter();
+  const [isCoursesLoading, setIsCoursesLoading] = useState<boolean>(true)
 
   // 监听分类变化，获取课程数据
   useEffect(() => {
+
+    setIsCoursesLoading(true)
+
     const fetchCourses = async () => {
       try {
         if (selectedCategory === 'All') {
@@ -36,6 +52,9 @@ export default function HomePage() {
           const courses = await data.json();
           setCourses(courses);
         }
+
+        setIsCoursesLoading(false)
+
       } catch (error) {
         console.error('failed:', error);
       }
@@ -44,7 +63,7 @@ export default function HomePage() {
     fetchCourses();
   }, [selectedCategory]);
 
-  return (
+  return (    
     <div style={{ maxWidth: '100vw' }}>
       <AboutWebSite style={{ maxWidth: '100vw' }} />
 
@@ -66,34 +85,46 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* 课程列表 */}
-        <div className={classes.courseList}>
-          {courses.map((course, index) => (
-            <Link
-              href={`/course/${course.id}`}
-              key={index}
-              style={{ textDecoration: 'none' }}
-              className={classes.courseLink}
-            >
-              <CourseCard
-                key={course.id}
-                courseId={course.id}
-                name={course.course_name}
-                institute={course.institution}
-                category={course.category}
-                className="courseCard"
-                url={course.images?.[0]?.url}
-                id={course.id}
-              />
-            </Link>
-          ))}
-        </div>
+        {
+          !isCoursesLoading ? (
+            // 课程列表
+            <div className={classes.courseList}>
+              {courses.map((course, index) => (
+                <div
+                  key={index}
+                  onClick={() => router.push(`/course/${course.id}`)}
+                  className={classes.courseCardBox}
+                  style={{ cursor: 'pointer' }}
+                >
+                  <CourseCard
+                    courseId={course.id}
+                    name={course.course_name}
+                    institute={course.institution}
+                    category={course.category}
+                    className="courseCardMain"
+                    url={course.images?.[0]?.url}
+                    id={course.id}
+                  />
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Stack gap="lg" style={{ margin:"auto", width: "70%" }}>
+              <Skeleton height={75} radius="xl" />
+              <Skeleton height={75} radius="xl" />
+              <Skeleton height={75} radius="xl" />
+              <Skeleton height={75} radius="xl" />
+              <Skeleton height={75} radius="xl" />
+            </Stack>
+          )
+        }
 
-      </div>
 
       <div className={classes.cookieConsent}>
         <CookieConsent />
       </div>
+      </div>
+
     </div>
   );
 }
