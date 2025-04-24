@@ -4,9 +4,13 @@ from sqlalchemy.exc import IntegrityError
 
 from .Course import *
 from .Lecture import Lecture
-from .User import User
+from .User import get_current_user, UserStatus
 from .decorator import teacher_required, login_required
 from .schemas import CourseSchema, LectureSchema, EnrollmentSchema
+from .athena import athena_client
+import re
+from bs4 import BeautifulSoup
+from collections import OrderedDict
 
 course_bp = Blueprint('course', __name__)
 from .Image import Image
@@ -64,7 +68,7 @@ from .Image import Image
     }
 })
 def get_all_courses():
-    data=request.args
+    data = request.args
     teacher_id = data.get('teacher_id')
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
@@ -75,6 +79,72 @@ def get_all_courses():
     courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, category=category, page=page,
                                  per_page=per_page)
     return jsonify(CourseSchema(many=True).dump(courses))
+
+
+@course_bp.route('/search', methods=['GET'])
+def search():
+    data = request.args.get("query")
+    if not data:
+        return "query param error", 400
+
+    courses = Course.query.filter(Course.id.in_(athena_client.search_course_ids(data))).all()
+
+    return CourseSchema(many=True).dump(courses)
+
+
+# 仅保留中文（CJK 统一表意文字区段）、英文大小写和空格
+NON_CN_EN_RE = re.compile(r'[^A-Za-z\u4E00-\u9FFF\s]+')
+
+
+def clean_text(text: str) -> str:
+    if not text:
+        return ""
+
+    # 1. 去除 HTML 标签
+    text = BeautifulSoup(text, "html.parser").get_text()
+
+    # 2. 去除所有非中英文字符（保留空格）
+    text = NON_CN_EN_RE.sub('', text)
+
+    # 3. 去除换行符并压缩多余空格
+    text = re.sub(r'[\r\n]+', ' ', text)
+    text = re.sub(r'\s+', ' ', text).strip()
+
+    # 4. 删除重复“片段”
+    #    这里把“片段”理解为以空格分隔的 token（英文单词或连续中文字符）
+    #    先按空格切分，再按出现顺序保留第一次出现的 token
+    tokens = text.split(' ')
+    unique_tokens = list(OrderedDict.fromkeys(tokens))  # Ordered 去重
+    text = ' '.join(unique_tokens)
+
+    return text
+
+
+def get_recommend(combined_text):
+    cleaned_text = clean_text(combined_text)
+    ids = athena_client.search_course_ids(cleaned_text)
+    courses = Course.query.filter(Course.id.in_(ids)).all()
+
+    return CourseSchema(many=True).dump(courses)
+
+
+@course_bp.route('/recommend', methods=['GET'])
+@login_required
+def recommend():
+    user = get_current_user()
+
+    # 收集 post 的 title 和 content
+    post_parts = [f"{post.title} {post.content}" for post in user.posts]
+
+    # 收集 comment 的 content
+    comment_parts = [comment.content for comment in user.get_my_comments()]
+
+    # 拼接所有文本内容（加上 birthdate 和 gender）
+    combined_text = " ".join(
+        filter(None, post_parts + comment_parts + [str(user.birthdate or ""), str(user.gender or "")])
+    )
+
+    return get_recommend(combined_text)
 
 
 # 获取课程详细信息接口
@@ -205,7 +275,7 @@ def create_course():
     institution = request.form.get('institution', "No institution")
     category = Category.__members__.get(data.get('category'), Category.Others)
 
-    course = Course.create_course(session['id'], course_name, description, institution, level, status,category)
+    course = Course.create_course(session['id'], course_name, description, institution, level, status, category)
     if file:
         Image.save_image(file, course)
 
@@ -325,6 +395,13 @@ def enroll(course_id):
 @course_bp.route('/my_course')
 @login_required
 def enrolled_courses():
-    user = User.query.get_or_404(session['id'])
-    enroll_dict = jsonify(EnrollmentSchema().dump(user.enrollments, many=True))
-    return enroll_dict
+    user = get_current_user()
+    if user.status == UserStatus.TEACHER:
+        # 获取所有由该教师发布的课程
+        courses = Course.query.filter_by(author_id=user.id).all()
+
+        # 使用 CourseSchema() 序列化每一个课程，并包装成 {"course": <course>}
+        result = [{"course": CourseSchema().dump(course)} for course in courses]
+        return jsonify(result)
+    else:
+        return jsonify(EnrollmentSchema().dump(user.enrollments, many=True))

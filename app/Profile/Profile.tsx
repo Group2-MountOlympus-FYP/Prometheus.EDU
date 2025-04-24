@@ -9,10 +9,12 @@ import { getMyCourses } from "../api/MyCourses/router"
 import { getText } from "@/components/UserProfile/Language"
 import "./profile.css"
 import { MyPosts } from "./Components/myPosts"
+import { setUserInfo } from "../api/General"
 
 interface ProfileProps{
     id?: number
 }
+
 
 export function Profile(props: ProfileProps) {
 
@@ -23,6 +25,8 @@ export function Profile(props: ProfileProps) {
     const [tabsValue, setTabsValue] = useState<string | null>('1')
     const [courses, setCourses] = useState<any[]>([])
     const [posts, setPosts] = useState<any[]>([])
+    const [userType, setUserType] = useState<string>('')
+
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [isProfileLoading, setIsProfileLoading] = useState<boolean>(true)
     useEffect(() => {
@@ -31,10 +35,21 @@ export function Profile(props: ProfileProps) {
         const fetchUserProfile = async () => {
             try{
                 const userData = await getUserProfile()
+                console.log(userData)
                 setAvatar(userData.avatar)
                 setBirthDate(userData.birthdate)
                 setUsername(userData.username)
                 setGender(userData.gender)
+                setUserType(userData.status)
+
+                setUserInfo({
+                    username: userData.username,
+                    avatar: userData.avatar,
+                    birthDate: userData.birthdate,
+                    gender: userData.gender,
+                    userType: userData.status,
+                })
+
                 setIsProfileLoading(false)
             }catch(error){
                 console.error(error)
@@ -50,6 +65,7 @@ export function Profile(props: ProfileProps) {
                 setBirthDate(userData.birthdate)
                 setUsername(userData.username)
                 setGender(userData.gender)
+                setUserType(userData.status)
 
                 setCourses(userData.enrollments)
                 setPosts(userData.posts)
@@ -81,7 +97,7 @@ export function Profile(props: ProfileProps) {
                     //console.log("Getting course...")
                     const response = await getMyCourses()
                     const data = await response.json()
-                    console.log(data)
+                    //console.log(data)
                     setCourses(data)
                 }catch(e){
                     console.log(e)
@@ -125,6 +141,7 @@ export function Profile(props: ProfileProps) {
                     onTabsChange={onTabValueChange} 
                     isLoading={isProfileLoading}
                     isSelf={props.id ? false : true}
+                    userType={userType}
                     />
             </div>
         

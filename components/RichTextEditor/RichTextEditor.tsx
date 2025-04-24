@@ -25,13 +25,11 @@ interface UserItem{
   label: string,
 }
 
-const users: UserItem[] = [
-  { id: '1', label: '张三' },
-  { id: '2', label: '李四' },
-  { id: '3', label: '王五' },
-]
+interface Props{
+  canMentionAthena?:false
+}
 
-export const RichTextEditor = forwardRef((props, ref) => {
+export const RichTextEditor = forwardRef<any, Props>((props, ref) => {
     const [mentionList, setMentionList] = useState<any[]>([])
     const editor = useEditor({
         extensions: [
@@ -191,7 +189,7 @@ export const RichTextEditor = forwardRef((props, ref) => {
           <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={editor?.isActive('bulletList') ? 'active' : ''}><TfiList></TfiList></button>
           <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={editor?.isActive('orderedList') ? 'is-active' : ''}><TfiListOl></TfiListOl></button>
           <button onClick={() => editor?.chain().focus().toggleCodeBlock().run()} className={editor?.isActive('codeBlock') ? 'is-active' : ''}>{"</>"}</button>
-          <button onClick={mentionAthena}>@Athena</button>
+          <button onClick={mentionAthena} hidden={!props.canMentionAthena}>@Athena</button>
         </div>
   
         {/* 编辑器主体 */}

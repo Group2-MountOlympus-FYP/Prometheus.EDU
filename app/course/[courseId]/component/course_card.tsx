@@ -1,13 +1,14 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
-  Stack, Title, Text, Button, Group, Badge, Image
+  Stack, Title, Text, Button, Group, Badge, Image,
 } from "@mantine/core";
 import { IconStarFilled } from "@tabler/icons-react";
 import { enrollCourseById } from "@/app/api/Enroll/router";
 import { checkEnrollmentStatus } from "@/app/api/MyCourses/router";
-import { getUserProfile } from "@/app/api/User/router";
 import "./course_card.css";
+import { getText } from "./language";
+import {notifications} from "@mantine/notifications";
 
 interface CourseHeaderProps {
   courseData: any;
@@ -18,6 +19,7 @@ interface CourseHeaderProps {
 const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, userStatus }) => {
   const [enrolled, setEnrolled] = useState(isEnrolled);
   const courseId = courseData.id;
+  const [isEnrollLoading, setIsEnrollLoading] = useState(true)
 
 
   if (!courseData) return null;
@@ -26,8 +28,8 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
     <div className="course-card">
       <div className="course-left">
         <Stack>
-          <Title order={1}>{courseData.course_name || "Course Name"}</Title>
-          <Text size="lg" color="dimmed">{courseData.institution || "Institute Name"}</Text>
+          <Title order={1}>{courseData.course_name || getText("no_title")}</Title>
+          <Text size="lg" color="dimmed">{courseData.institution || getText("unknown_institution")}</Text>
 
           {(courseData.rating ?? 0) > 0 ? (
             <Group>
@@ -36,7 +38,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
               ))}
             </Group>
           ) : (
-            <Text size="sm" color="dimmed">No rating</Text>
+            <Text size="sm" color="dimmed">{getText("no_title")}</Text>
           )}
 
           {userStatus === "TEACHER" ? (
@@ -48,7 +50,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
                 window.location.href = `/course/${courseId}/add_lecture`;
               }}
             >
-              Create Lecture
+              {getText("post")}
             </Button>
           ) : (
             <Button
@@ -57,27 +59,42 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
               className="enroll-button"
               onClick={async () => {
                 try {
+
+                  notifications.show({
+                    id: 'enrollNotification',
+                    message: getText("Loading"),
+                    loading: isEnrollLoading,
+                    autoClose: false,
+                  });
+
                   await enrollCourseById(courseId);
                   const confirmed = await checkEnrollmentStatus(courseId);
                   setEnrolled(confirmed);
-                  alert("报名成功！");
+                  setIsEnrollLoading(false)
+
+                  setTimeout(() => {
+                    notifications.hide('enrollNotification');
+                  }, 1500); //
                 } catch (err) {
                   console.error("报名失败", err);
-                  alert("报名失败，请稍后再试");
+                  notifications.show({
+                    message: getText("Lecture_exist"),
+                    color: 'red',
+                  });
                 }
               }}
               disabled={enrolled}
             >
-              {enrolled ? "Enrolled" : "Enroll to this course"}
+              {enrolled ? getText("enrolled") : getText("enroll")}
             </Button>
           )}
 
           <Text size="sm" color="dimmed">
-            {courseData.enrollment_count || 0} people have enrolled
+            {(courseData.enrollment_count || 0) + " " + getText("people_have_enrolled")}
           </Text>
 
           <Text size="sm" className="course-intro">
-            {courseData.description || "No description available."}
+            {courseData.description || getText("no_title")}
           </Text>
 
           <Group mt="sm">

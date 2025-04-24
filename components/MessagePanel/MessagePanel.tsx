@@ -5,7 +5,7 @@ import './MessagePanel.css';
 import { getNotifications, markNotificationAsRead } from '@/app/api/Notification/router';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-
+import { getText } from './language';
 
 interface Notification {
   id: number;
@@ -37,7 +37,7 @@ export function MessagePanel() {
           setMessages(filtered);
         }
       } catch (err) {
-        console.error('获取通知失败:', err);
+        console.error(getText('Fetch_error'), err);
       }
     }
 
@@ -55,7 +55,7 @@ export function MessagePanel() {
         prev.map((msg) => (msg.id === id ? { ...msg, read: true } : msg))
       );
     } catch (err) {
-      console.error(`标记通知 ${id} 为已读失败:`, err);
+      console.error(`${getText('Mark_read_error')} ${id}`, err);
     }
   };
 
@@ -75,13 +75,13 @@ export function MessagePanel() {
       <div className="message-header">
         <span className="sender-name">{msg.created_by.username}</span>
         <span className="message-type">
-          {msg.type === 'replied' ? 'replied to you' : '@ you'}
+          {msg.type === 'replied' ? getText('Replied_to_you') : getText('Mentioned_you')}
         </span>
-        <span className="timestamp">at {new Date(msg.created_at).toLocaleString()} :</span>
+        <span className="timestamp">{getText('At')} {new Date(msg.created_at).toLocaleString()}</span>
       </div>
       <div className="message-content">
         <span className="post-title-link">
-          {msg.post_title || '[未命名帖子]'}
+          {msg.post_title || getText('Untitled_post')}
         </span>
       </div>
     </div>
@@ -90,6 +90,7 @@ export function MessagePanel() {
   return (
     <div>
       <div className="content-box">{content}</div>
+      <div className="placeholder"></div>
     </div>
   );
 }

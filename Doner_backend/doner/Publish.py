@@ -483,7 +483,7 @@ def get_comment(id):
 @post_bp.route('/comment/all')
 def get_all_comments():
     user = get_current_user()
-    user_comments = Comment.query.filter(Comment.author_id == user.id).all()
+    user_comments = user.get_my_comments()
     return jsonify(CommentSchema(many=True).dump(user_comments))
 
 

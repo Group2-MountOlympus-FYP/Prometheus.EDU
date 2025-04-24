@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useEffect, useState } from "react";
-import { Title, List, Anchor, Loader, Text } from "@mantine/core";
-import {getLectureDetailsById} from "@/app/api/Lecture/router";
+import React from 'react';
+import { Title, List, Anchor, Text } from '@mantine/core';
+import { getText } from './language'; // ✅ 引入多语言方法
 
 interface Resource {
   id: number;
@@ -11,38 +11,26 @@ interface Resource {
   url: string;
 }
 
-interface MaterialProps {
-  lectureId: number;
+interface LectureDataWithResources {
+  resources: Resource[];
 }
 
-const Material: React.FC<MaterialProps> = ({ lectureId }) => {
-  const [resources, setResources] = useState<Resource[]>([]);
-  const [loading, setLoading] = useState(true);
+interface MaterialProps {
+  lectureData: LectureDataWithResources;
+}
 
-  useEffect(() => {
-    getLectureDetailsById(lectureId,1,10)
-      .then((data) => {
-        setResources(data.resources || []);
-        setLoading(false);
-      })
-      .catch((err) => {
-        console.error("加载资源失败", err);
-        setLoading(false);
-      });
-  }, [lectureId]);
+const Material: React.FC<MaterialProps> = ({ lectureData }) => {
+  const resources = lectureData.resources || [];
 
-  if (loading) return <Loader />;
-
-  if (resources.length === 0) {
-    return <Text>No materials available for this lecture.</Text>;
+  if (!resources || resources.length === 0) {
+    return <Text>{getText('No_materials')}</Text>;
   }
 
   return (
     <div>
-      <Title order={3} mb="md">Course Materials</Title>
+      <Title order={3} mb="md">{getText('Course_Materials')}</Title>
       <List spacing="sm" size="sm" center>
         {resources.map((resource) => {
-          // 解析 URL 中的实际文件地址和显示名
           const matches = resource.url.match(/\(([^,]+),\"([^\"]+)\"\)/);
           const fileUrl = matches?.[1] || "#";
           const fileName = matches?.[2] || resource.name;
