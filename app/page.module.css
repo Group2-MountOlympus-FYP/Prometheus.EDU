@@ -55,21 +55,18 @@
     gap: 15px;
 }
 
-.courseLink {
-    text-decoration: none;
-    color: inherit;
-    outline: none;
-    -webkit-tap-highlight-color: transparent; /* 移除移动端高亮 */
+/* .courseCardMain {
+    
 }
 
-.courseLink:focus,
-.courseLink:active,
-.courseLink:focus-visible {
+.courseCard:focus,
+.courseCard:active,
+.courseCard:focus-visible {
     outline: none;
     background: none;
     box-shadow: none;
     -webkit-box-shadow: none;
-}
+} */
 .cookieConsent{
     width: 100%;
     position: fixed;
