@@ -65,11 +65,16 @@ export default function Lecture({ lectureId }: LectureProps) {
     try {
       const response = await publishPost(title, content, tags, lectureId, mentionList)
       if (response.ok) {
-        alert("Post success!")
+        notifications.show({
+          message: getText("post_success")
+        })
         close() // 关闭 modal
       }
     } catch (err) {
-      alert("Post failed.")
+      notifications.show({
+        message: 'Post fail',
+        color: 'red'
+      })
       console.error(err)
     }
   }
