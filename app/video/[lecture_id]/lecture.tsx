@@ -5,19 +5,30 @@ import { useDisclosure } from '@mantine/hooks';
 import { Grid, Skeleton, Container, Button, Tabs, Modal } from '@mantine/core';
 import { WritingAssignmentPanel, WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
 import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
+import { useSearchParams } from 'next/navigation';
 import './page.css';
 import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
+import LecterList from '../../course/[courseId]/component/teachers_list'
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
+import { getCourseDetailsById } from '@/app/api/Course/router';
+import { publishPost } from "@/app/api/Posts/router"
 import { getText } from "./components/language";
 import { getUserInfo } from '@/app/api/General';
 import { Assignments } from '@/components/PostsOverview/Assignments';
+import { notifications } from "@mantine/notifications"
 
 interface LectureProps {
   lectureId: number;
 }
+interface VideoInfo {
+  id: number;
+  title: string;
+  video_time: string;
+}
+
 
 export default function Lecture({ lectureId }: LectureProps) {
   const videoRef = useRef<HTMLDivElement>(null);
@@ -29,15 +40,93 @@ export default function Lecture({ lectureId }: LectureProps) {
   const [postsLoading, setPostsLoading] = useState(false);
   const [assignmentWriteOpened, { open: openA, close: closeA }] = useDisclosure(false)
 
+  const [videoList, setVideoList] = useState<VideoInfo[]>([]);
+  const [lecturers, setLecturers] = useState<any[]>([]);
+
+  const handlePostSubmit = async ({
+                                    title,
+                                    content,
+                                    mentionList,
+                                  }: {
+    title: string;
+    content: string;
+    mentionList: any[];
+  }) => {
+    const containsAthenaMention = (htmlContent: string): boolean => {
+      const mentionRegex = /<span[^>]*data-type="mention"[^>]*data-id="-1"[^>]*>/g
+      return mentionRegex.test(htmlContent)
+    }
+
+    let tags: number[] = []
+    if (containsAthenaMention(content)) {
+      tags = [1]
+    }
+
+    try {
+      const response = await publishPost(title, content, tags, lectureId, mentionList)
+      if (response.ok) {
+        alert("Post success!")
+        close() // 关闭 modal
+      }
+    } catch (err) {
+      alert("Post failed.")
+      console.error(err)
+    }
+  }
+
+  const handleAssignmentSubmit = async ({
+                                          title,
+                                          content,
+                                          mentionList
+                                        }: {
+    title: string;
+    content: string;
+    mentionList: any[];
+  }) => {
+    const tags = [4]; // 代表“作业”的标签
+
+    try {
+      const response = await publishPost(title, content, tags, lectureId, mentionList);
+      if (response.ok) {
+        notifications.show({
+          message: "Assignment release successful",
+        });
+        closeA(); // 关闭弹窗
+      }
+    } catch (err) {
+      notifications.show({
+        message: "Assignment release failed",
+        color: "red",
+      });
+      console.error("作业发布失败:", err);
+    }
+  };
+
+
+
   useEffect(() => {
     getLectureDetailsById(lectureId, 1, 10)
-      .then((res) => {
-        if (!res || res.detail === 'Course not found') {
+      .then((lectureRes) => {
+        if (!lectureRes || lectureRes.detail === 'Course not found') {
           setError(true);
         } else {
-          //console.log(res)
-          setLectureData(res);
+          setLectureData(lectureRes);
         }
+        setLectureData(lectureRes);
+
+        // 额外请求该课程的所有 lectures
+        getCourseDetailsById(lectureRes.course).then((courseRes) => {
+          const rawVideos = courseRes.lectures || courseRes.videos || [];
+          const filtered = rawVideos.filter((item: any) => Number(item.id) !== lectureId);
+          const processedList: VideoInfo[] = filtered.map((item: any) => ({
+            id: item.id,
+            title: item.name || item.title || '无标题',
+            video_time: item.video_time || '未知时长',
+          }));
+
+          setVideoList(processedList);
+          setLecturers(courseRes.teachers || []); // 👈 设置老师列表
+        });
       })
       .catch(() => setError(true));
   }, [lectureId]);
@@ -68,15 +157,17 @@ export default function Lecture({ lectureId }: LectureProps) {
 
   return (
     <Container className="video-container" size="fluid">
-      <VideoHeader lectureId={lectureId} />
+      <VideoHeader lectureData={lectureData} />
 
       <Grid className="video-grid" ref={videoRef}>
         <Grid.Col span={8}>
           <VideoPlayer videoUrl={lectureData.video_url} />
-          <VideoIntro lectureId={lectureId} />
+          <VideoIntro lectureData={lectureData} />
         </Grid.Col>
         <Grid.Col span={4}>
-          <VideoList currentCourseId={lectureData.course} currentLectureId={lectureId} />
+          <VideoList videoList={videoList} />
+          <LecterList lecturers={lecturers}/>
+
         </Grid.Col>
       </Grid>
 
@@ -99,7 +190,7 @@ export default function Lecture({ lectureId }: LectureProps) {
             <PostsWithPagination lecture_id={lectureId} />
           </Tabs.Panel>
           <Tabs.Panel value="Matrials">
-            <Material lectureId={lectureId} />
+            <Material lectureData={lectureData} />
           </Tabs.Panel>
           <Tabs.Panel value="Assignments">
             <Assignments assignments={lectureData.posts}></Assignments>
@@ -108,7 +199,13 @@ export default function Lecture({ lectureId }: LectureProps) {
 
         {activeTab === 'posts' && (
           <div className="post-panel">
-            <WritingPostPanel opened={opened} onClose={close} lecture_id={lectureId} />
+            <WritingPostPanel
+              opened={opened}
+              onClose={close}
+              lecture_id={lectureId}
+              onSubmit={handlePostSubmit}
+            />
+
             <Button
               onClick={open}
               id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
@@ -126,7 +223,13 @@ export default function Lecture({ lectureId }: LectureProps) {
                 onClick={openA}
               >{getText("write_assignment")}</Button>
 
-              <WritingAssignmentPanel opened={assignmentWriteOpened} onClose={closeA} lecture_id={lectureId}></WritingAssignmentPanel>
+              <WritingAssignmentPanel
+                opened={assignmentWriteOpened}
+                onClose={closeA}
+                lecture_id={lectureId}
+                onSubmit={handleAssignmentSubmit}
+              />
+
             </div>
         )}
       </div>

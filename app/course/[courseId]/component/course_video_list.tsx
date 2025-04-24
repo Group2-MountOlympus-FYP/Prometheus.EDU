@@ -1,8 +1,9 @@
 'use client';
 
 import React from 'react';
-import { Container, Grid, Card, Text, Title, Skeleton } from '@mantine/core';
+import { Container, Grid, Card, Text, Title } from '@mantine/core';
 import { useRouter } from 'next/navigation';
+import { getText } from "./language";
 
 interface Lecture {
   id: number;
@@ -25,7 +26,7 @@ const VideoList: React.FC<VideoListProps> = ({ isEnrolled, videos }) => {
   return (
     <Container>
       <Title order={2} style={{ marginBottom: '20px' }}>
-        Lecture List
+        {getText("Lecture_List")}
       </Title>
 
       {videos && videos.length > 0 ? (
@@ -45,16 +46,16 @@ const VideoList: React.FC<VideoListProps> = ({ isEnrolled, videos }) => {
                   }
                 }}
               >
-                <Title order={4}>{video.title || '无标题'}</Title>
+                <Title order={4}>{video.title || getText("no_title")}</Title>
                 <Text size="sm" color="gray">
-                  更新时间: {video.lastUpdated || '未知时间'}
+                  {getText("Lecture_date")} {video.lastUpdated || getText("unknown_time")}
                 </Text>
               </Card>
             </Grid.Col>
           ))}
         </Grid>
       ) : (
-        <Text color="red">暂无其他视频</Text>
+        <Text color="red">{getText("no_videos")}</Text>
       )}
     </Container>
   );
