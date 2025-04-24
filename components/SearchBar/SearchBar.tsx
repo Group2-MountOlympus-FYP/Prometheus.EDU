@@ -1,21 +1,48 @@
 import { IconArrowRight, IconSearch } from "@tabler/icons-react";
-import { ActionIcon, TextInput, TextInputProps, useMantineTheme } from '@mantine/core';
+import { ActionIcon, TextInput, useMantineTheme } from '@mantine/core';
+import { useState } from "react";
 
-export function SearchBar(props: TextInputProps) {
+type SearchBarProps = {
+  onSearch?: (query: string) => void;
+};
+
+export function SearchBar({ onSearch }: SearchBarProps) {
+  const [query, setQuery] = useState('');
+
+  const handleSearch = () => {
+    if (onSearch && query.trim() !== '') {
+      onSearch(query.trim());
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleSearch();
+    }
+  };
 
   return (
     <TextInput
       radius="xl"
       size="md"
-      placeholder="Search"
+      value={query}
+      onChange={(event) => setQuery(event.currentTarget.value)}
+      onKeyDown={handleKeyPress}
+      placeholder="Search courses..."
       rightSectionWidth={42}
       leftSection={<IconSearch size={18} stroke={1.5} />}
       rightSection={
-        <ActionIcon size={32} radius="xl" color={'#434884'} variant="filled">
+        <ActionIcon
+          size={32}
+          radius="xl"
+          color={'#434884'}
+          variant="filled"
+          onClick={handleSearch}
+        >
           <IconArrowRight size={18} stroke={1.5} />
         </ActionIcon>
       }
-      {...props}
     />
   );
 }

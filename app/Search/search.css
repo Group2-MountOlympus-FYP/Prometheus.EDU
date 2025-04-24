@@ -1,0 +1,15 @@
+.course-list{
+    display: flex;
+    flex-direction: column;
+    margin-left: 2vw;
+    gap: 15px;
+}
+.course-link{
+    text-decoration: none;
+    color: inherit;
+    outline: none;
+    -webkit-tap-highlight-color: transparent; /* 移除移动端高亮 */
+    justify-content: center;
+    text-align: center;
+    display: flex;
+}

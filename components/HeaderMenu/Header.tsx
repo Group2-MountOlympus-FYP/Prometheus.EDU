@@ -21,8 +21,9 @@ import { redirectWindow } from "@/app/api/General";
 
 
 type headerProps = {
-    onLoginClick?: () => void
-}
+    onLoginClick?: () => void;
+    onSearch?: (query: string) => void;
+};
 
 const athenaLabel = getText('athena');
 const links = [
@@ -122,6 +123,10 @@ export default function Header() {
         )}
       </span>
     ));
+    const handleSearch = async (query: string) => {
+        router.push(`/Search?q=${encodeURIComponent(query)}`)
+
+    };
 
     return (
         <div>
@@ -137,7 +142,7 @@ export default function Header() {
                 </div>
 
                 <div style={{ flexGrow: 2, display: "flex", justifyContent: "center" }}>
-                    <SearchBar></SearchBar>
+                    <SearchBar onSearch={handleSearch} />
                 </div>
                 <div style={{ flexGrow: 1, display: "flex", justifyContent: "center" }}>
                     <LanguageSwitcher></LanguageSwitcher>
