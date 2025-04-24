@@ -25,7 +25,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     write_post: 'Open to write post',
     no_videos: "Course videos will be available soon, stay tuned",
     enrolled: "Enrolled",
-    enroll: "Enroll to this course",
+    enroll: "Enroll to this Course",
     people_have_enrolled: "people have enrolled",
     enroll_success: "Enrolled successfully!",
     enroll_failed: "Enrollment failed, please try again later.",

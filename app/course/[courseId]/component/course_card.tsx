@@ -86,12 +86,11 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
             ) : (
                 <Button
                     color={enrolled ? "gray" : "indigo"}
-                    size="md"
                     className="enroll-button"
                     onClick={handleEnroll}
                     disabled={enrolled}
                 >
-                  {enrolled ? getText("enrolled") : getText("enroll")}
+                    {enrolled ? getText("enrolled") : getText("enroll")}
                 </Button>
             )}
 

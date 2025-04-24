@@ -10,6 +10,16 @@ export async function getCourseByCategory(category: string) {
     return response;
 }
 
+export async function getCourseByRecommend() {
+  const url = `/backend/course/recommend`;
+
+  const response = await Fetch(url, {
+      method: 'GET',
+  });
+
+  return response;
+}
+
 export async function createCourse(data: FormData) {
   const url = '/backend/course/create'; // 你的后端创建课程的 API 地址
 

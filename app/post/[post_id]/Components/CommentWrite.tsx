@@ -2,9 +2,11 @@
 
 import {Button, Group, Dialog, Paper, Collapse} from "@mantine/core"
 import { useRef, useState } from "react"
+import classes from './CommentHtml.module.css';
 import { CommentEditor } from "./CommentEditor"
 import { RichTextEditorRef } from "@/components/WritingPost/WritingPostPanel"
 import { notifications } from "@mantine/notifications"
+import { getText } from "@/components/CookieConsent/language";
 
 interface Props{
     post_id: number,
@@ -95,11 +97,11 @@ export function CommentWrite(props: Props){
                     <CommentEditor ref={richText} />
 
                     <Group mt="md" justify="flex-end">
-                        <Button variant="outline" onClick={handleClose}>
-                            Cancel
+                        <Button variant="outline" onClick={handleClose} className={classes.commentEditCancel}>
+                            {getText("cancel")}
                         </Button>
-                        <Button onClick={handleCommentSubmit}>
-                            Submit Comment
+                        <Button onClick={handleCommentSubmit} className={classes.commentEditSubmit}>
+                            {getText("submitComment")}
                         </Button>
                     </Group>
                 </Paper>

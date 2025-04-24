@@ -1,8 +1,8 @@
 .course-card-header {
     width: 100%;
     background-color: #e6e8f5; /* 可选背景色 */
-    padding-top: 5vh;
-    padding-bottom: 5vh;
+    padding-top: 7vh;
+    padding-bottom: 7vh;
     position: relative;
 }
 
@@ -36,7 +36,8 @@
     border-radius: 8px;
     margin-top: 1rem;
     transition: background-color 0.2s ease;
-    width: 30%;
+    padding: 0 1vw;
+    width: 180px;
 }
 
 .enroll-button:hover {
