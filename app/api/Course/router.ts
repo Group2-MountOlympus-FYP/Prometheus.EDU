@@ -30,3 +30,18 @@ export async function getCourseDetailsById(id: number) {
 
   return await response.json();
 }
+
+export async function searchCourses(query: string) {
+  const url = `/backend/course/search?query=${encodeURIComponent(query)}`;
+
+  const response = await Fetch(url, {
+    method: 'GET',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Search failed: ${response.statusText}`);
+  }
+
+  return await response.json();
+}
+
