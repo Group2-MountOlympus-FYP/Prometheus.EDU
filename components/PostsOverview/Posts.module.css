@@ -53,4 +53,18 @@
 .title:hover{
     text-decoration: underline;
 }
+
+.assignmentImg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 55vh;
+    width: 100%;
+    z-index: 0;
+    pointer-events: none;
+    background-image: url(./../../public/assginment.png);
+    background-size: cover;
+    margin-top: 10vh;
+    margin-right: 10vw;
+  }
   

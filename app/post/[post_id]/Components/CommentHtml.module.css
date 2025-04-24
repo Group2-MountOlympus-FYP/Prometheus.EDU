@@ -47,3 +47,20 @@
   background-size: 10px 100%; /* 控制点的间距 */
   display: block;
 }
+
+.commentEditCancel{
+  border: 1.2px solid #3C4077;
+  color: #3C4077;
+}
+.commentEditCancel:hover{
+  background-color: #DEE0EF;
+  color: #3C4077;
+}
+.commentEditSubmit{
+  border: #3C4077;
+  background-color: #3C4077;
+}
+.commentEditSubmit:hover{
+  border: #3C4077;
+  background-color: #3C4077;
+}

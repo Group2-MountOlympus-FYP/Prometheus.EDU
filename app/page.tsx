@@ -3,22 +3,22 @@
 import { AboutWebSite } from '@/components/AboutWebsite/AboutWebsite';
 import { Grid, Stack, Skeleton } from "@mantine/core"
 import { CourseCard } from '@/components/CourseCard/CourseCard';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
+import { SessionContext } from "@/components/Contexts/SessionContext"
 import { CourseCardInfo } from '@/components/CourseCard/CourseCard';
 import classes from './page.module.css'
 import { getText } from './language'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
-import { getCourseByCategory } from '@/app/api/Course/router';
+import { getCourseByCategory, getCourseByRecommend } from '@/app/api/Course/router';
 import { useRouter } from 'next/navigation';
 
 
 export default function HomePage() {
-  const recommended = getText('recommended')
   const categories: { label: string, value: string }[] = [
     { label: getText('recommended'), value: 'All' },
     { label: getText('computerScience'), value: 'Computer Science' },
     { label: getText('math'), value: 'Math' },
-    { label: getText('sports'), value: 'Sports' },
+    { label: getText('sport'), value: 'Sport' },
     { label: getText('life'), value: 'Life' },
     { label: getText('art'), value: 'Art' },
     { label: getText('language'), value: 'Language' },
@@ -29,33 +29,39 @@ export default function HomePage() {
   const [courses, setCourses] = useState<any[]>([]);
   const router = useRouter();
   const [isCoursesLoading, setIsCoursesLoading] = useState<boolean>(true)
+  const { isLogin } = useContext(SessionContext)
 
   // 监听分类变化，获取课程数据
   useEffect(() => {
-
+    // 开始加载
     setIsCoursesLoading(true)
-
     const fetchCourses = async () => {
       try {
         if (selectedCategory === 'All') {
-          // 如果后端有专门的 "全部课程" 接口，可以用一个通用的 fetchAllCourses()
-          const allCategories = categories.filter(cat => cat.value !== 'All');
-          let allCourses: CourseCardInfo[] = [];
-          for (const category of allCategories) {
-            const data = await getCourseByCategory(category.value);
-            const courses = await data.json();
-            allCourses = [...allCourses, ...courses];
+          // 如果已登录，返回推荐课程
+          if (isLogin) {
+            const data = await getCourseByRecommend();
+            const recommendedCourses = await data.json();
+            console.log(recommendedCourses)
+            setCourses(recommendedCourses);
+          // 如果未登录，返回所有课程
+          } else {
+            const allCategories = categories.filter(cat => cat.value !== 'All');
+            let allCourses: CourseCardInfo[] = [];
+            for (const category of allCategories) {
+              const data = await getCourseByCategory(category.value);
+              const courses = await data.json();
+              allCourses = [...allCourses, ...courses];
+            }
+            setCourses(allCourses);
           }
-          //console.log(allCourses)
-          setCourses(allCourses);
         } else {
           const data = await getCourseByCategory(selectedCategory);
           const courses = await data.json();
           setCourses(courses);
         }
-
+        // 加载结束
         setIsCoursesLoading(false)
-
       } catch (error) {
         console.error('failed:', error);
       }

@@ -52,8 +52,11 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         art: "Art",
         language: "Language",
         others: "Others",
+        
         created: 'Created',
         comment:'Comment',
+        cancel: 'Cancel',
+        submitComment: 'Submit Comment',
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -102,8 +105,11 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         art: "艺术",
         language: "语言",
         others: "其他",
+
         created:'创建',
         comment:'评论',
+        cancel: '取消',
+        submitComment: '提交评论',
     },
 }
 

@@ -72,7 +72,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   return (
     <div className="course-container">
       {/* Header */}
-      <Stack align="stretch" style={{height:'50vh'}}>
+      <Stack align="stretch">
           <CourseHeader
               courseData={courseData}
               isEnrolled={isEnrolled}
