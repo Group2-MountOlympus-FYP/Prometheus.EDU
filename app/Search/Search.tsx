@@ -3,11 +3,11 @@
 import { useContext, useEffect, useState } from 'react';
 import { CourseCard } from '@/components/CourseCard/CourseCard';
 import classes from '@/app/page.module.css';
-import Link from 'next/link';
+import { getText } from './Language'
 import { searchCourses } from '@/app/api/Course/router';
 import { useSearchParams } from 'next/navigation';
 import { LoadingContext } from '@/components/Contexts/LoadingContext';
-import { Stack } from '@mantine/core';
+import {Container, Stack, Title} from '@mantine/core';
 
 export default function Search() {
   const { setIsLoading } = useContext(LoadingContext);
@@ -34,8 +34,10 @@ export default function Search() {
   }, [])
   if(searchData){
     return (
-      <div style={{width:'100%'}}>
-        <Stack gap={"sm"} justify={"center"} style={{margin:'auto', width:'100%'}}>
+      <Container style={{width:'100%'}}>
+        <Title style={{marginBottom:'5vh'}}>{getText("searchingResult")} "{queryParams}"</Title>
+        <Stack gap={"md"} style={{margin:'auto', width:'100%'}} align={"center"}>
+
           {searchData.map((course:any, index:any) => (
 
             <CourseCard
@@ -50,7 +52,7 @@ export default function Search() {
             />
           ))}
         </Stack>
-      </div>
+      </Container>
     )
   }else{
     return (
