@@ -74,7 +74,7 @@ def get_all_courses():
     per_page = int(request.args.get('per_page', 20))
     level = CourseLevel.__members__.get(data.get('level'), CourseLevel.LEVEL_1)
     status = CourseStatus.__members__.get(data.get('status'), CourseStatus.NORMAL)
-    category = Category.__members__.get(data.get('category'), Category.Others)
+    category = next((c for c in Category if c.value == data.get('category')), Category.Others)
 
     courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, category=category, page=page,
                                  per_page=per_page)
@@ -86,8 +86,9 @@ def search():
     data = request.args.get("query")
     if not data:
         return "query param error", 400
-
-    courses = Course.query.filter(Course.id.in_(athena_client.search_course_ids(data))).all()
+    ids=athena_client.search_course_ids(data)
+    print(ids)
+    courses = Course.query.filter(Course.id.in_(ids)).all()
 
     return CourseSchema(many=True).dump(courses)
 
