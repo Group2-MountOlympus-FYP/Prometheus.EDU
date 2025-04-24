@@ -15,9 +15,6 @@ interface LecturerListProps {
 const LecturerList: React.FC<LecturerListProps> = ({ lecturers }) => {
   return (
     <>
-      <Title order={3} mt="xl" mb="md">
-        {getText("course_lecturers") || "Course Lecturers"}
-      </Title>
       <Group wrap="wrap" gap="xl">
         {lecturers.map((lecturer, index) => {
           const name = lecturer.username || getText("unknown_user");
