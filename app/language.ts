@@ -31,7 +31,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
       recommended: "Recommended",
       computerScience: 'Computer Science',
       math: 'Math',
-      sports: 'Sports',
+      sports: 'Sport',
       life: 'Life',
       art: 'Art',
       language: 'Language',

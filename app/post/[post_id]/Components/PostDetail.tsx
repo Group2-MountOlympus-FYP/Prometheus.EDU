@@ -29,6 +29,7 @@ export async function PostDetail(props: Props){
 
         title = jsonData.title;
         post = jsonData;
+        console.log("jsonData",jsonData);
         console.log(post);
     } catch (err) {
         console.error('获取文章失败:', err);

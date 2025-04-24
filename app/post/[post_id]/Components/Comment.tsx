@@ -32,9 +32,6 @@ export function Comment(props: Props) {
                         {getText("created")} {createdAgo}
                     </Text>
                 </div>
-                <Button onClick={toggle} className={classes.commentButton}>
-                    {getText("comment")}
-                </Button>
             </Group>
             <TypographyStylesProvider className={classes.body}>
                 <div
@@ -46,6 +43,9 @@ export function Comment(props: Props) {
                 />
             </TypographyStylesProvider>
 
+            <Button onClick={toggle} className={classes.commentButton}>
+                {getText("comment")}
+            </Button>
 
             <CommentWrite opened={opened} onClose={close} post_id={props.id} onSuccess={props.onReplyAdded} />
             </>
