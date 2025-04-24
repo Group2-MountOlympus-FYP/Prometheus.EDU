@@ -293,6 +293,58 @@ const LectureCreatePage = () => {
                                 )}
                             </div>
 
+                            <div>
+                                <Text fw={500} mt={30} mb={20}>
+                                    {getText("uploadResources")}
+                                </Text>
+                                <Dropzone
+                                    multiple
+                                    onDrop={(files) => {
+                                        const currentFiles = form.values.resources;
+                                        const newFiles = [...currentFiles, ...files];
+
+                                        // 去重（根据文件名）
+                                        const uniqueFiles = Array.from(new Map(newFiles.map(f => [f.name, f])).values());
+
+                                        form.setFieldValue("resources", uniqueFiles);
+                                    }}
+
+                                    onReject={() => {
+                                        showNotification({
+                                            title: getText("uploadFailed"),
+                                            message: getText("invalidFile"),
+                                            color: "red",
+                                        });
+                                    }}
+                                    accept={[MIME_TYPES.pdf, ".md", ".html"]}
+                                    style={{backgroundColor: "#f1f3f5", borderRadius: 8}}
+                                >
+                                    <Group justify="center" mih={120} style={{pointerEvents: "none"}}>
+                                        <IconUpload size={40} stroke={1.5}/>
+                                        <div>
+                                            <Text size="lg" inline>
+                                                {getText("dragOrClickResources")}
+                                            </Text>
+                                            <Text size="sm" c="dimmed" mt={7}>
+                                                {getText("resourceHint")}
+                                            </Text>
+                                        </div>
+                                    </Group>
+                                </Dropzone>
+
+                                {form.values.resources.length > 0 && (
+                                    <Box mt="md">
+                                        <Text fw={500}>{getText("uploadedResources")}:</Text>
+                                        <ul>
+                                            {form.values.resources.map((file, index) => (
+                                                <li key={index}>{file.name}</li>
+                                            ))}
+                                        </ul>
+                                    </Box>
+                                )}
+                            </div>
+
+
                             <Group justify="center" mt={80} style={{width: "100%"}}>
                                 <Button type="submit" loading={loading} size="lg">
                                     {getText("createLecture")}
