@@ -30,6 +30,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     enroll_success: "Enrolled successfully!",
     enroll_failed: "Enrollment failed, please try again later.",
     unknown_institution: "No institution available",
+    no_rating: 'No rating',
+    no_intro: 'No introduction',
   },
   zh: {
     no_title: '暂无标题',
@@ -52,6 +54,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     enroll_success: "报名成功！",
     enroll_failed: "报名失败，请稍后再试",
     unknown_institution: "暂无机构",
+    no_rating: '没有评分',
+    no_intro: '没有介绍',
   },
 }
 

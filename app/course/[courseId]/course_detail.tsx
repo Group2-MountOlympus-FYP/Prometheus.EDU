@@ -10,7 +10,6 @@ import VideoList from "@/app/course/[courseId]/component/course_video_list";
 
 import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
-import { getUserProfile } from "@/app/api/User/router";
 import { getText } from "./component/language";
 import { getUserInfo } from "@/app/api/General";
 
@@ -37,6 +36,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
         if (!course || course.detail === "Course not found") {
           setError(true);
         } else {
+          //console.log(course)
           setCourseData(course);
           setIsEnrolled(enrolled);
           if (profile?.userType === "STUDENT" || profile?.userType === "TEACHER") {
@@ -70,37 +70,40 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   }
 
   return (
-    <Container size="lg" className="course-container">
+    <div className="course-container">
       {/* Header */}
-      <Grid align="center" gutter="xl" className="course-header">
-        <Grid.Col span={8}>
+      <Stack align="stretch" style={{height:'50vh'}}>
           <CourseHeader
-            courseData={courseData}
-            isEnrolled={isEnrolled}
-            userStatus={userStatus}
+              courseData={courseData}
+              isEnrolled={isEnrolled}
+              userStatus={userStatus}
           />
-        </Grid.Col>
-      </Grid>
-
-      {/* Teachers */}
-      <Group wrap="wrap">
-        <Teachers_list lecturers={courseData.teachers || []} />
-      </Group>
-
-      <Divider my="xl" />
-
-      {/* Videos */}
-      <Stack>
-        <VideoList
-          isEnrolled={isEnrolled}
-          videos={(courseData.lectures || []).map((item: any) => ({
-            id: item.id,
-            title: item.name || getText('no_title'),
-            lastUpdated: item.created_at || getText('no_time'),
-          }))}
-        />
       </Stack>
-    </Container>
+
+      <Container size={"90vw"}>
+          <Title order={3} mt="xl" mb="md">
+              {getText("course_lecturers") || "Course Lecturers"}
+          </Title>
+          {/* Teachers */}
+          <Group wrap="wrap" style={{marginTop:'40px'}}>
+              <Teachers_list lecturers={courseData.teachers || []} />
+          </Group>
+
+          <Divider my="xl" />
+
+          {/* Videos */}
+          <Stack>
+              <VideoList
+                  isEnrolled={isEnrolled}
+                  videos={(courseData.lectures || []).map((item: any) => ({
+                      id: item.id,
+                      title: item.name || getText('no_title'),
+                      lastUpdated: item.created_at || getText('no_time'),
+                  }))}
+              />
+          </Stack>
+      </Container>
+    </div>
   );
 };
 

@@ -1,22 +1,23 @@
-.course-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    width: 1000px;
-    padding: 2rem 12rem;
-    box-sizing: border-box;
+.course-card-header {
+    width: 100%;
     background-color: #e6e8f5; /* 可选背景色 */
-    border-radius: 16px;
-    gap: 3rem; /* 左右区域间距 */
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    position: relative;
 }
 
+.course-container{
+    margin-top: -3vh;
+}
 
 .course-header {
     width: 100%;
     background-color: #e6e8f4;
-    border-radius: 16px;
-    padding: 2rem;
     align-items: center;
+}
+
+.course-card-header-left{
+    padding-left: 10vw;
 }
 
 /* Title 样式优化 */
@@ -35,6 +36,7 @@
     border-radius: 8px;
     margin-top: 1rem;
     transition: background-color 0.2s ease;
+    width: 30%;
 }
 
 .enroll-button:hover {
@@ -61,10 +63,12 @@
 }
 
 
-.course-image-col {
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+.course_image {
+    max-width: 90%;
+    max-height: 35vh;
+}
+.course_right{
+    width: 100%;
 }
 
 
@@ -92,4 +96,24 @@
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     object-fit: cover;
+}
+
+.circle{
+    width: 100px;
+    height: 100px;
+    background-color: white;
+    border-radius: 50%;
+    z-index: 0;
+}
+
+#circle-left{
+    position: absolute;
+    left: -50px;
+    bottom: -50px;
+}
+
+#circle-right{
+    position: absolute;
+    right: -50px;
+    bottom: -50px;
 }
