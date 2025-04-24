@@ -58,6 +58,11 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         notTeacher: "You are not a teacher",
         onlyTeachersCanCreate: "Only teachers can add lecture.",
         loading: 'loading',
+        uploadResources: "Upload Resources",
+        dragOrClickResources: "Drag & drop or click to upload files (.pdf, .md, .html)",
+        resourceHint: "Supports multiple files like PDF, Markdown, and HTML",
+        uploadedResources: "Uploaded Resource Files",
+        invalidFile: "Invalid resource file format.",
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -112,6 +117,11 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         notTeacher: "您不是教师用户",
         onlyTeachersCanCreate: "只有教师用户可以添加课时。",
         loading: '加载中...',
+        uploadResources: "上传资源文件",
+        dragOrClickResources: "拖放或点击上传资源（.pdf、.md、.html）",
+        resourceHint: "支持多文件上传，格式包括 PDF、Markdown 和 HTML",
+        uploadedResources: "已上传资源文件",
+        invalidFile: "无效的资源文件格式。",
 
     },
 }
