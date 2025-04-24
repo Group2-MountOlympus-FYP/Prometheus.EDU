@@ -1,13 +1,11 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Grid, Skeleton, Container, Button, Tabs, Modal } from '@mantine/core';
+import {Grid, Container, Button, Tabs, Text, Title, Stack} from '@mantine/core';
 import { WritingAssignmentPanel, WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
 import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
-import { useSearchParams } from 'next/navigation';
 import './page.css';
-import VideoHeader from './components/video_page_header';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
@@ -19,6 +17,8 @@ import { getText } from "./components/language";
 import { getUserInfo } from '@/app/api/General';
 import { Assignments } from '@/components/PostsOverview/Assignments';
 import { notifications } from "@mantine/notifications"
+import { format } from "date-fns";
+import { LoadingContext } from "@/components/Contexts/LoadingContext";
 
 interface LectureProps {
   lectureId: number;
@@ -31,13 +31,14 @@ interface VideoInfo {
 
 
 export default function Lecture({ lectureId }: LectureProps) {
+  const { isLoading, setIsLoading } = useContext(LoadingContext);
+
   const videoRef = useRef<HTMLDivElement>(null);
   const [isVideoLeaveWindow, setIsVideoLeaveWindow] = useState(false);
   const [opened, { open, close }] = useDisclosure(false);
   const [activeTab, setActiveTab] = useState('posts');
   const [lectureData, setLectureData] = useState<any>(null);
   const [error, setError] = useState(false);
-  const [postsLoading, setPostsLoading] = useState(false);
   const [assignmentWriteOpened, { open: openA, close: closeA }] = useDisclosure(false)
 
   const [videoList, setVideoList] = useState<VideoInfo[]>([]);
@@ -110,6 +111,7 @@ export default function Lecture({ lectureId }: LectureProps) {
 
 
   useEffect(() => {
+    setIsLoading(true)
     getLectureDetailsById(lectureId, 1, 10)
       .then((lectureRes) => {
         if (!lectureRes || lectureRes.detail === 'Course not found') {
@@ -131,9 +133,11 @@ export default function Lecture({ lectureId }: LectureProps) {
 
           setVideoList(processedList);
           setLecturers(courseRes.teachers || []); // 👈 设置老师列表
+
+          setIsLoading(false)
         });
       })
-      .catch(() => setError(true));
+      .catch(() => {setError(true);setIsLoading(false);});
   }, [lectureId]);
 
   useEffect(() => {
@@ -162,21 +166,31 @@ export default function Lecture({ lectureId }: LectureProps) {
 
   return (
     <Container className="video-container" size="fluid">
-      <VideoHeader lectureData={lectureData} />
 
-      <Grid className="video-grid" ref={videoRef}>
-        <Grid.Col span={8}>
-          <VideoPlayer videoUrl={lectureData.video_url} />
-          <VideoIntro lectureData={lectureData} />
-        </Grid.Col>
-        <Grid.Col span={4}>
-          <VideoList videoList={videoList} />
-          <LecterList lecturers={lecturers}/>
+      <Container size={"xl"}>
+        <Stack gap={"sm"}>
+          <Title>{getText('Lecture_name')}: {lectureData.name}</Title>
+          <Text id={"video-release-date"}>
+            {getText('Lecture_date')}: {format(new Date(lectureData.created_at), 'yyyy-MM-dd')}
+          </Text>
+        </Stack>
 
-        </Grid.Col>
-      </Grid>
+        <Grid className="video-grid" ref={videoRef}>
+          <Grid.Col span={8}>
+            <VideoPlayer videoUrl={lectureData.video_url} />
+            <VideoIntro lectureData={lectureData} />
+          </Grid.Col>
+          <Grid.Col span={4}>
+            <VideoList videoList={videoList} />
+            <div className={"lecture_list_div"}>
+              <LecterList lecturers={lecturers}/>
+            </div>
 
-      <div hidden={postsLoading}>
+          </Grid.Col>
+        </Grid>
+      </Container>
+
+      <div>
         <Tabs
           color="#3C4077"
           variant="pills"
@@ -192,7 +206,7 @@ export default function Lecture({ lectureId }: LectureProps) {
           </Tabs.List>
 
           <Tabs.Panel value="posts">
-            <PostsWithPagination lecture_id={lectureId} />
+            <PostsWithPagination lecture_id={lectureId} lecture_data={lectureData} />
           </Tabs.Panel>
           <Tabs.Panel value="Matrials">
             <Material lectureData={lectureData} />
@@ -239,7 +253,6 @@ export default function Lecture({ lectureId }: LectureProps) {
         )}
       </div>
 
-      <Skeleton height={'500px'} animate={true} hidden={!postsLoading} />
     </Container>
   );
 }
@@ -269,7 +282,7 @@ function VideoPlayer({ videoUrl }: VideoPlayerProps) {
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center' }}>
+    <div style={{ display: 'flex', justifyContent: 'center'}}>
       <video
         ref={videoRef}
         controls
@@ -280,6 +293,7 @@ function VideoPlayer({ videoUrl }: VideoPlayerProps) {
           textAlign: 'center',
           backgroundColor: 'black',
           minHeight: '240px',
+          maxHeight: '70vh',
         }}
       >
         <source src={videoUrl} type={videoType} />

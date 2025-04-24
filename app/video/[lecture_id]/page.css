@@ -45,3 +45,12 @@
     display: block;
     justify-self: center;
 }
+.lecture_list_div{
+    padding-top: 2rem;
+    padding-left: 1rem;
+}
+
+#video-release-date{
+    text-align: left;
+    color: grey
+}

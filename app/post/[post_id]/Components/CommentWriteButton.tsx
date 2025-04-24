@@ -41,7 +41,7 @@ export default function CommentWriteButton({ post }: { post: any }) {
 
     return (
         <Stack style={{ display: "flex", justifyContent: "center"}}>
-            <Comment 
+            <Comment
                 author_id={post.author} 
                 created_at={post.created_at} 
                 content={post.content} 
