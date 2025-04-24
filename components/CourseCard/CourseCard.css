@@ -1,13 +1,18 @@
-.course-card {
+.course-card-for-main {
     display: flex;
     align-items: center;
     width: 52.5vw;
+    max-width: 52.5vw;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
     background: #fff;
     padding: 10px;
 }
+.course-card-for-main:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
 
 .course-card-for-profile{
     display: block;
