@@ -6,16 +6,8 @@ import { getLectureDetailsById } from "@/app/api/Lecture/router"
 import style from './Posts.module.css'
 
 interface postsPaginationProps{
-    lecture_id?:number
-}
-interface PostInResponse{
-    id: number;
-    created_at: string;
-    title: string;
-    author_id: number;
-    author_name: string;
-    author_avatar_path: string;
-    children: object[];
+    lecture_id?:number,
+    lecture_data: any
 }
 interface Post{
     postId: number;
@@ -29,63 +21,22 @@ interface Post{
 }
 
 export function PostsWithPagination(props:postsPaginationProps){
-    const [activePage, setActivePage] = useState(1)
-    const [totalPages, setTotalPages] = useState(1)
     const [posts, setPosts] = useState<Post[]>([])
-    const postsData = [
-        {
-            title: 'This is first post of this website',
-            publishDate: '2025-3-26 11:04',
-            replyNum: 27,
-            postId: 1,
-            author: 'Bollix',
-            authorId: 1,
-            avatarPath: ''
-        },
-        {
-            title: 'This is second post of this website',
-            publishDate: '2025-3-26 11:06',
-            replyNum: 0,
-            postId: 2,
-            author: 'Merlla',
-            authorId: 2,
-            avatarPath: ''
-        }
-    ]
 
     useEffect(() => {
         //访问接口
-        const fetchPosts = async () => {
-            try{
-                if(props.lecture_id){
-                    const response = await getLectureDetailsById(props.lecture_id,activePage,15)
-                    //console.log('返回数据成功')
-                    const data = response
-                    setTotalPages(data.total_page)
-                    //console.log(data)
-                    //将接收到的数据映射到数组中
-                    //只保留需要的数据，剩下的数据全部丢弃
-                    const extratedData = data.posts.map((post: any) => ({
-                        postId: post.id,
-                        publishDate: post.created_at,
-                        title: post.title,
-                        authorId: post.author.id,
-                        author: post.author.username,
-                        avatarPath: post.author.avatar,
-                        replyNum: post.children.length,
-                        tags: post.tags,
-                    }))
-                    //
-                    //console.log(extratedData)
-                    //
-                    setPosts(extratedData)
-                }
-            }catch(error){
-                console.error(`fetch posts error! ${error}`)
-            }
-        }
-        
-        fetchPosts()
+        const extratedData = props.lecture_data.posts.map((post: any) => ({
+            postId: post.id,
+            publishDate: post.created_at,
+            title: post.title,
+            authorId: post.author.id,
+            author: post.author.username,
+            avatarPath: post.author.avatar,
+            replyNum: post.children.length,
+            tags: post.tags,
+        }))
+
+        setPosts(extratedData)
     }, [])
 
     return (
