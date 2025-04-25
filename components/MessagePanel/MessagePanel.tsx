@@ -42,7 +42,6 @@ export function MessagePanel() {
     }
 
     fetchMessages();
-
     return () => {
       isMounted = false;
     };

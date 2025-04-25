@@ -50,7 +50,7 @@ export function WritingPostPanel({ opened, onClose, lecture_id, onSubmit }: Writ
             <Input.Wrapper error={error} style={{marginBottom:'1rem'}}>
                 <Input radius={"xl"} placeholder="Title" value={title} onChange={handleTitleChange} maxLength={50}></Input>
             </Input.Wrapper>
-            <RichTextEditor ref={richText}></RichTextEditor>
+            <RichTextEditor ref={richText} canMentionAthena={true}></RichTextEditor>
             <Button fullWidth radius={"xl"} onClick={handlePostSubmit} style={{ backgroundColor: "#3C4077" }}>Post</Button>
         </Modal>
     )
@@ -86,7 +86,7 @@ export function WritingAssignmentPanel({ opened, onClose, lecture_id, onSubmit }
                 <Input radius={"xl"} placeholder="Title" value={title} onChange={handleTitleChange}></Input>
             </Input.Wrapper>
             <RichTextEditor ref={richText} canMentionAthena={false}></RichTextEditor>
-            <Button fullWidth radius={"xl"} onClick={handlePostSubmit}>Post</Button>
+            <Button fullWidth radius={"xl"} onClick={handlePostSubmit} color={"#777CB9"}>Post</Button>
         </Modal>
     )
 }
