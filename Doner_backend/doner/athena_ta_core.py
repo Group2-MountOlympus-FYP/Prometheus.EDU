@@ -21,16 +21,16 @@ def resolve_path(path: str) -> str:
     # return if it is just an absolute one
     if os.path.isabs(path):
         return path
-    
+
     # obtain the absolute directory that this program is in
     cwd = os.path.dirname(os.path.abspath(__file__))
-    
+
     # remove the beginning "/" or "\\"
     if path.startswith('/') or path.startswith('\\'):
         path = path[1:]
-    
+
     abs_path = os.path.normpath(os.path.join(cwd, path))
-    
+
     return abs_path
 
 
@@ -107,7 +107,7 @@ class VectorStoreManager:
     def create_vector_store(self, documents: List[Document], config: AthenaConfig, batch_size: int = None) -> FAISS:
         """Create a vector store from documents with batched processing"""
         text_splitter = CharacterTextSplitter(
-            chunk_size=config.chunk_size, 
+            chunk_size=config.chunk_size,
             chunk_overlap=config.chunk_overlap
         )
         vector_store = None
@@ -138,9 +138,9 @@ class VectorStoreManager:
         except Exception as e:
             raise ValueError(f"Vector store creation failed: {str(e)}")
 
-    def load_or_create_vector_store(self, 
-                                    documents: List[Any], 
-                                    config: AthenaConfig, 
+    def load_or_create_vector_store(self,
+                                    documents: List[Any],
+                                    config: AthenaConfig,
                                     vector_store_path: str) -> FAISS:
         """Load existing vector store or create a new one at the specified path"""
 
@@ -234,7 +234,7 @@ class Athena:
         """Initialize system components and multiple vector stores"""
         # Initialize embeddings
         self.embeddings = GoogleGenerativeAIEmbeddings(
-            model=self.config.embedding_model, 
+            model=self.config.embedding_model,
             google_api_key=self.config.api_key
         )
 
@@ -244,7 +244,7 @@ class Athena:
         # 1. Load educational content documents for AthenaTutor and AthenaReviewer
         self.content_documents = DocumentLoader.load_files(self.config.resolve_directory)
         self.content_vector_store = vector_store_manager.load_or_create_vector_store(
-            self.content_documents, 
+            self.content_documents,
             self.config,
             self.config.content_vector_store_path
         )
@@ -267,8 +267,8 @@ class Athena:
 
         # Initialize LLM
         self.llm = ChatGoogleGenerativeAI(
-            model=self.config.model, 
-            temperature=self.config.temperature, 
+            model=self.config.model,
+            temperature=self.config.temperature,
             google_api_key=self.config.api_key
         )
 
@@ -278,7 +278,7 @@ class Athena:
     def _initialize_chains(self):
         """Initialize specialized chain managers for different functionalities"""
         # Chain manager for content-based operations (tutor and reviewer)
-        self.content_chain_manager = ChainManager(llm=self.llm, retriever=self.content_retriever, is_recommend=True)
+        self.content_chain_manager = ChainManager(llm=self.llm, retriever=self.content_retriever, is_recommend=False)
 
         # Initialize recommender if course data is available
         if self.course_retriever:
