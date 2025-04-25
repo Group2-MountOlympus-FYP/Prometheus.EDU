@@ -1,11 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import {useContext, useEffect, useState} from 'react';
 import { getMyCourses } from '@/app/api/MyCourses/router';
 import { getUserProfile } from '@/app/api/User/router';
 import { Card, Image, Text, Badge, Group, Stack, Loader, Button } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { getText } from './language';
+import {LoadingContext} from "@/components/Contexts/LoadingContext";
 
 interface Course {
   id: number;
@@ -26,10 +27,11 @@ interface EnrolledCourse {
 export default function MyCoursesPage() {
   const [courses, setCourses] = useState<EnrolledCourse[]>([]);
   const [userStatus, setUserStatus] = useState<"TEACHER" | "NORMAL" | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { isLoading, setIsLoading } = useContext(LoadingContext)
   const router = useRouter();
 
   useEffect(() => {
+    setIsLoading(true)
     async function fetchData() {
       try {
         const [coursesRes, profile] = await Promise.all([
@@ -51,19 +53,21 @@ export default function MyCoursesPage() {
         console.error(getText('load_failed'), err);
         setCourses([]);
       } finally {
-        setLoading(false);
+        setIsLoading(false)
       }
     }
 
     fetchData();
   }, []);
 
-  if (loading) {
-    return <Loader color="indigo" size="lg" />;
+  if(isLoading){
+    return (
+        <div></div>
+    )
   }
 
   return (
-    <Stack p="lg">
+    <Stack p="lg" style={{marginLeft:'5vw', marginTop:'-2vh'}}>
       <Group justify="space-between" align="center">
         <Text size="xl" fw={700}>{getText("my_courses")}</Text>
         {userStatus === 'TEACHER' && (

@@ -24,6 +24,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -77,6 +78,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
               courseData={courseData}
               isEnrolled={isEnrolled}
               userStatus={userStatus}
+              onEnrolled={() => setIsEnrolled(true)}
           />
       </Stack>
 
