@@ -41,8 +41,9 @@ export default function HomePage() {
           // 如果已登录，返回推荐课程
           if (isLogin) {
             const data = await getCourseByRecommend();
+            //console.log("get Recommend")
             const recommendedCourses = await data.json();
-            console.log(recommendedCourses)
+            //console.log(recommendedCourses)
             setCourses(recommendedCourses);
           // 如果未登录，返回所有课程
           } else {
@@ -50,6 +51,7 @@ export default function HomePage() {
             let allCourses: CourseCardInfo[] = [];
             for (const category of allCategories) {
               const data = await getCourseByCategory(category.value);
+              //console.log("get All")
               const courses = await data.json();
               allCourses = [...allCourses, ...courses];
             }
