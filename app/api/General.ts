@@ -123,7 +123,7 @@ export function getUserInfo(): UserInfo | null{
         const avatar = getLocalStorage("avatar");
         const birthDate = getLocalStorage("birthDate");
         const gender = getLocalStorage("gender");
-        const type = getCookie("type");
+        const type = getLocalStorage("type");
 
         //验证数据是否存在
         if(username !== null && birthDate !== null && gender !== null && avatar !== null && type !== null){
@@ -135,6 +135,7 @@ export function getUserInfo(): UserInfo | null{
                 userType: type,
             }
         }else{
+            //console.log("return null!")
             return null
         }
     }
@@ -147,7 +148,7 @@ export function deleteUserInfo(){
         deleteCookie("avatar");
         deleteCookie("birthDate");
         deleteCookie("gender");
-        deleteCookie("tpye");
+        deleteCookie("type");
     }else{
         //用户不同意使用cookie
         //使用localstorage

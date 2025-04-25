@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Container, Title, Text, Grid, Divider, Group, Stack, Skeleton, Image
+    Container, Title, Text, Grid, Divider, Group, Stack, Skeleton, Image, Avatar
 } from "@mantine/core";
 
 import CourseHeader from "@/app/course/[courseId]/component/course_card";
-import Teachers_list from "@/app/course/[courseId]/component/teachers_list";
 import VideoList from "@/app/course/[courseId]/component/course_video_list";
+import { LectureListForCourseDetail } from "@/app/course/[courseId]/component/teachers_list";
 
 import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
@@ -23,6 +23,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [userStatus, setUserStatus] = useState<"STUDENT" | "TEACHER" | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
 
   useEffect(() => {
     async function fetchData() {
@@ -77,6 +78,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
               courseData={courseData}
               isEnrolled={isEnrolled}
               userStatus={userStatus}
+              onEnrolled={() => setIsEnrolled(true)}
           />
       </Stack>
 
@@ -85,9 +87,9 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
               {getText("course_lecturers") || "Course Lecturers"}
           </Title>
           {/* Teachers */}
-          <Group wrap="wrap" style={{marginTop:'40px'}}>
-              <Teachers_list lecturers={courseData.teachers || []} />
-          </Group>
+          <div style={{marginTop:'40px'}}>
+              <LectureListForCourseDetail lecturers={courseData.teachers || []} />
+          </div>
 
           <Divider my="xl" />
 
@@ -121,3 +123,5 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
 };
 
 export default CourseDetail;
+
+

@@ -15,12 +15,14 @@ interface CourseHeaderProps {
   courseData: any;
   isEnrolled: boolean;
   userStatus: "STUDENT" | "TEACHER" | null;
+  onEnrolled: () => void
 }
 
-const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, userStatus }) => {
+const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, userStatus, onEnrolled }) => {
   const [enrolled, setEnrolled] = useState(isEnrolled);
   const courseId = courseData.id;
   const [isEnrollLoading, setIsEnrollLoading] = useState(true)
+  const [enrolledNumber, setEnrolledNumber] = useState(courseData.enrollment_count)
 
 
   if (!courseData) return null;
@@ -39,6 +41,8 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
       const confirmed = await checkEnrollmentStatus(courseId);
       setEnrolled(confirmed);
       setIsEnrollLoading(false)
+      onEnrolled()
+      setEnrolledNumber(enrolledNumber + 1)
 
       setTimeout(() => {
         notifications.hide('enrollNotification');
@@ -95,7 +99,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
             )}
 
             <Text size="sm" color="dimmed">
-              {(courseData.enrollment_count || 0) + " " + getText("people_have_enrolled")}
+              {enrolledNumber + " " + getText("people_have_enrolled")}
             </Text>
 
             <Text size="sm" className="course-intro">

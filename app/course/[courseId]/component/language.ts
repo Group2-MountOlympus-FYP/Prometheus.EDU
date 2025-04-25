@@ -19,7 +19,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     Lecture_date: 'Update Time',
     Lecture_404: ' 404 Not Found',
     Lecture_exist: 'The lecture does not exist or has been deleted',
-    post: 'Post',
+    post: 'Add Lecture',
     material: 'Material',
     assignment: 'Assignment',
     write_post: 'Open to write post',
@@ -58,6 +58,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     no_rating: '没有评分',
     no_intro: '没有介绍',
     Instructor_List: '教师列表',
+    post: '增加课程',
   },
 }
 
