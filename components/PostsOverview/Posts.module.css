@@ -8,8 +8,8 @@
     text-decoration: underline;
 }
 .paper{
-    border: '1px solid';
-    border-color: #777cb9
+    border: 1px solid  #777cb9;
+    max-width: 100%;
 }
 .badge {
     display: inline-flex;

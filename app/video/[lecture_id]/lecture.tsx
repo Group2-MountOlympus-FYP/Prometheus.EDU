@@ -177,81 +177,84 @@ export default function Lecture({ lectureId }: LectureProps) {
 
         <Grid className="video-grid" ref={videoRef}>
           <Grid.Col span={8}>
-            <VideoPlayer videoUrl={lectureData.video_url} />
-            <VideoIntro lectureData={lectureData} />
+            <VideoPlayer videoUrl={lectureData.video_url}/>
+            <VideoIntro lectureData={lectureData}/>
+
+            <div>
+              <Tabs
+                  color="#3C4077"
+                  variant="pills"
+                  defaultValue="posts"
+                  className="tabs"
+                  value={activeTab}
+                  onChange={(val) => val && setActiveTab(val)}
+              >
+                <Tabs.List className="tabs-list">
+                  <Tabs.Tab value="posts">{getText('post')}</Tabs.Tab>
+                  <Tabs.Tab value="Matrials">{getText('material')}</Tabs.Tab>
+                  <Tabs.Tab value="Assignments">{getText('assignment')}</Tabs.Tab>
+                </Tabs.List>
+
+                <Tabs.Panel value="posts">
+                  <PostsWithPagination lecture_id={lectureId} lecture_data={lectureData}/>
+                </Tabs.Panel>
+                <Tabs.Panel value="Matrials">
+                  <Material lectureData={lectureData}/>
+                </Tabs.Panel>
+                <Tabs.Panel value="Assignments">
+                  <Assignments assignments={lectureData.posts}></Assignments>
+                </Tabs.Panel>
+              </Tabs>
+
+              {activeTab === 'posts' && (
+                  <div className="post-panel">
+                    <WritingPostPanel
+                        opened={opened}
+                        onClose={close}
+                        lecture_id={lectureId}
+                        onSubmit={handlePostSubmit}
+                    />
+
+                    <Button
+                        onClick={open}
+                        id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
+                        className="post-button"
+                    >
+                      {getText('write_post')}
+                    </Button>
+                  </div>
+              )}
+              {
+                  activeTab === 'Assignments' && getUserInfo()?.userType === "TEACHER" && lectureData.teacher.username == getUserInfo()?.username && (
+                      <div className="post-panel">
+                        <Button
+                            color={"#3C4077"}
+                            onClick={openA}
+                        >{getText("write_assignment")}</Button>
+
+                        <WritingAssignmentPanel
+                            opened={assignmentWriteOpened}
+                            onClose={closeA}
+                            lecture_id={lectureId}
+                            onSubmit={handleAssignmentSubmit}
+                        />
+
+                      </div>
+                  )}
+            </div>
+
           </Grid.Col>
           <Grid.Col span={4}>
-            <VideoList videoList={videoList} />
+            <VideoList videoList={videoList}/>
             <div className={"lecture_list_div"}>
               <LecterList lecturers={lecturers}/>
             </div>
+
 
           </Grid.Col>
         </Grid>
       </Container>
 
-      <div>
-        <Tabs
-          color="#3C4077"
-          variant="pills"
-          defaultValue="posts"
-          className="tabs"
-          value={activeTab}
-          onChange={(val) => val && setActiveTab(val)}
-        >
-          <Tabs.List className="tabs-list">
-            <Tabs.Tab value="posts">{getText('post')}</Tabs.Tab>
-            <Tabs.Tab value="Matrials">{getText('material')}</Tabs.Tab>
-            <Tabs.Tab value="Assignments">{getText('assignment')}</Tabs.Tab>
-          </Tabs.List>
-
-          <Tabs.Panel value="posts">
-            <PostsWithPagination lecture_id={lectureId} lecture_data={lectureData} />
-          </Tabs.Panel>
-          <Tabs.Panel value="Matrials">
-            <Material lectureData={lectureData} />
-          </Tabs.Panel>
-          <Tabs.Panel value="Assignments">
-            <Assignments assignments={lectureData.posts}></Assignments>
-          </Tabs.Panel>
-        </Tabs>
-
-        {activeTab === 'posts' && (
-          <div className="post-panel">
-            <WritingPostPanel
-              opened={opened}
-              onClose={close}
-              lecture_id={lectureId}
-              onSubmit={handlePostSubmit}
-            />
-
-            <Button
-              onClick={open}
-              id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
-              className="post-button"
-            >
-              {getText('write_post')}
-            </Button>
-          </div>
-        )}
-        {
-          activeTab === 'Assignments' && getUserInfo()?.userType === "TEACHER" && lectureData.teacher.username == getUserInfo()?.username && (
-            <div className="post-panel">
-              <Button
-                color={"#3C4077"}
-                onClick={openA}
-              >{getText("write_assignment")}</Button>
-
-              <WritingAssignmentPanel
-                opened={assignmentWriteOpened}
-                onClose={closeA}
-                lecture_id={lectureId}
-                onSubmit={handleAssignmentSubmit}
-              />
-
-            </div>
-        )}
-      </div>
 
     </Container>
   );
@@ -263,7 +266,7 @@ interface VideoPlayerProps {
   videoUrl: string;
 }
 
-function VideoPlayer({ videoUrl }: VideoPlayerProps) {
+function VideoPlayer({videoUrl}: VideoPlayerProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [videoType, setVideoType] = useState<VideoTypes>('video/mp4'); // 默认 mp4 更稳
 
@@ -271,34 +274,34 @@ function VideoPlayer({ videoUrl }: VideoPlayerProps) {
     const error = videoRef.current?.error;
     if (error) {
       const message =
-        {
-          1: '视频加载被用户中止',
-          2: '网络错误',
-          3: '解码失败（格式可能不支持）',
-          4: '视频格式不支持或服务器响应错误',
-        }[error.code] || '未知错误';
+          {
+            1: '视频加载被用户中止',
+            2: '网络错误',
+            3: '解码失败（格式可能不支持）',
+            4: '视频格式不支持或服务器响应错误',
+          }[error.code] || '未知错误';
       console.error('[VIDEO ERROR]', message);
     }
   };
 
   return (
-    <div style={{ display: 'flex', justifyContent: 'center'}}>
-      <video
-        ref={videoRef}
-        controls
-        width="100%"
-        onError={handleError}
-        style={{
-          margin: 'auto',
-          textAlign: 'center',
-          backgroundColor: 'black',
-          minHeight: '240px',
-          maxHeight: '70vh',
-        }}
-      >
-        <source src={videoUrl} type={videoType} />
-        Your browser does not support the video tag.
-      </video>
-    </div>
+      <div style={{display: 'flex', justifyContent: 'center'}}>
+        <video
+            ref={videoRef}
+            controls
+            width="100%"
+            onError={handleError}
+            style={{
+              margin: 'auto',
+              textAlign: 'center',
+              backgroundColor: 'black',
+              minHeight: '240px',
+              maxHeight: '70vh',
+            }}
+        >
+          <source src={videoUrl} type={videoType}/>
+          Your browser does not support the video tag.
+        </video>
+      </div>
   );
 }
