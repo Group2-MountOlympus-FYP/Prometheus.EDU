@@ -58,9 +58,11 @@ export function Comment(props: Props) {
                 />
             </TypographyStylesProvider>
 
+            <div className={classes.commentWrapper}>
             <Button onClick={toggle} className={classes.commentButton}>
                 {getText("comment")}
             </Button>
+            </div>
 
             <CommentWrite opened={opened} onClose={close} post_id={props.id} onSuccess={props.onReplyAdded} />
             </>

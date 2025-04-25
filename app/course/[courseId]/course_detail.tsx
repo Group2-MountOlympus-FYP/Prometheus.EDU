@@ -1,12 +1,12 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Container, Title, Text, Grid, Divider, Group, Stack, Skeleton,
+    Container, Title, Text, Grid, Divider, Group, Stack, Skeleton, Image, Avatar
 } from "@mantine/core";
 
 import CourseHeader from "@/app/course/[courseId]/component/course_card";
-import Teachers_list from "@/app/course/[courseId]/component/teachers_list";
 import VideoList from "@/app/course/[courseId]/component/course_video_list";
+import { LectureListForCourseDetail } from "@/app/course/[courseId]/component/teachers_list";
 
 import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
@@ -85,9 +85,9 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
               {getText("course_lecturers") || "Course Lecturers"}
           </Title>
           {/* Teachers */}
-          <Group wrap="wrap" style={{marginTop:'40px'}}>
-              <Teachers_list lecturers={courseData.teachers || []} />
-          </Group>
+          <div style={{marginTop:'40px'}}>
+              <LectureListForCourseDetail lecturers={courseData.teachers || []} />
+          </div>
 
           <Divider my="xl" />
 
@@ -103,8 +103,23 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
               />
           </Stack>
       </Container>
+
+      <Image src={'/categories.png'}
+        style={{
+          position: "fixed",
+          bottom: "3%",
+          right: "5%",
+          height: "35vh",
+          width: "35vh",
+          zIndex: -9999,
+          pointerEvents: "none",
+          objectFit: "cover",
+          opacity: 0.2,
+        }}/>
     </div>
   );
 };
 
 export default CourseDetail;
+
+

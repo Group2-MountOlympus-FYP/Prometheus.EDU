@@ -4,6 +4,7 @@ import { RichTextEditor } from "../RichTextEditor/RichTextEditor"
 import { useRef, useState } from "react"
 import { publishPost } from "@/app/api/Posts/router"
 import { notifications } from "@mantine/notifications"
+import classes from "./WritingPostPanel.module.css"
 interface WritingPostPanelProps {
     opened: boolean;
     onClose: () => void;
@@ -47,10 +48,10 @@ export function WritingPostPanel({ opened, onClose, lecture_id, onSubmit }: Writ
     return (
         <Modal opened={opened} onClose={onClose} title={"Create a Post"} size={'70%'} centered>
             <Input.Wrapper error={error} style={{marginBottom:'1rem'}}>
-                <Input radius={"xl"} placeholder="Title" value={title} onChange={handleTitleChange}></Input>
+                <Input radius={"xl"} placeholder="Title" value={title} onChange={handleTitleChange} maxLength={50}></Input>
             </Input.Wrapper>
             <RichTextEditor ref={richText}></RichTextEditor>
-            <Button fullWidth radius={"xl"} onClick={handlePostSubmit}>Post</Button>
+            <Button fullWidth radius={"xl"} onClick={handlePostSubmit} style={{ backgroundColor: "#3C4077" }}>Post</Button>
         </Modal>
     )
 }
