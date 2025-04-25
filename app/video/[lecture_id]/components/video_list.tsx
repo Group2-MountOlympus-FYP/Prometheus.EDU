@@ -1,7 +1,9 @@
 import React from 'react';
 import {Container, Grid, Card, Text, Title, Stack} from '@mantine/core';
+import { FaPlay } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { getText } from "./language";
+import classes from './lecture.module.css';
 
 interface VideoInfo {
   id: number;
@@ -21,8 +23,8 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
   };
 
   return (
-    <Container style={{ minHeight: "70vh", maxHeight: "70vh" }}>
-      <Title order={2} style={{ marginBottom: '20px' }}>
+    <Container style={{ minHeight: "56vh", maxHeight: "56vh" }}>
+      <Title order={2} style={{ marginBottom: '15px' }}>
         {getText('Lecture_List')}
       </Title>
 
@@ -32,15 +34,19 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
             {videoList.map((video) => (
               <Card
                 key={video.id}
-                shadow="sm"
                 padding="lg"
-                style={{ cursor: 'pointer', width:'100%' }}
+                className={classes.videoItem}
                 onClick={() => handleCardClick(video.id)}
               >
-                <Title order={4}>{video.title}</Title>
-                <Text size="sm" color="gray">
-                  {getText('Lecture_time')}: {video.video_time}
-                </Text>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <Title order={4} fw={500}>{video.title}</Title>
+                  <Text size="sm" color="gray">
+                    {getText('Lecture_time')}: {video.video_time}
+                  </Text>
+                </div>
+                <FaPlay style={{ fontSize: '20px', color: '#777CB9' }} /> {/* 播放图标 */}
+              </div>
               </Card>
             ))}
           </Stack>

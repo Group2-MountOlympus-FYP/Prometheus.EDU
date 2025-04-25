@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import {
-  Container, Title, Text, Grid, Divider, Group, Stack, Skeleton,
+  Container, Title, Text, Grid, Divider, Group, Stack, Skeleton, Image
 } from "@mantine/core";
 
 import CourseHeader from "@/app/course/[courseId]/component/course_card";
@@ -103,6 +103,19 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
               />
           </Stack>
       </Container>
+
+      <Image src={'/categories.png'}
+        style={{
+          position: "fixed",
+          bottom: "3%",
+          right: "5%",
+          height: "35vh",
+          width: "35vh",
+          zIndex: -9999,
+          pointerEvents: "none",
+          objectFit: "cover",
+          opacity: 0.2,
+        }}/>
     </div>
   );
 };

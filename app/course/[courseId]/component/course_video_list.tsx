@@ -37,6 +37,7 @@ const VideoList: React.FC<VideoListProps> = ({ isEnrolled, videos }) => {
               shadow="sm"
               padding="lg"
               style={{
+                backgroundColor: 'rgba(255, 255, 255, 0.5)', 
                 cursor: isEnrolled ? 'pointer' : 'not-allowed',
                 pointerEvents: isEnrolled ? 'auto' : 'none',
               }}

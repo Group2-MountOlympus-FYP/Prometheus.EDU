@@ -1,5 +1,4 @@
 'use client'
-import classes from './Posts.module.css';
 import { PostsOverview } from "./PostsOverview"
 
 interface Props{
@@ -9,7 +8,6 @@ interface Props{
 export function Assignments(props:Props){
     return (
         <div style={{width:'63vw'}}>
-            {/* <div className={classes.assignmentImg}></div> */}
             {
                 props.assignments.map((post: any, key: any) => (
                     post.tags.includes(4) ? 

@@ -29,10 +29,10 @@ export function PostsOverview(props: PostOverviewProps){
 
     return (
         <Grid>
-            <Grid.Col span={0.5}>
+            <Grid.Col span={0.75}>
                 <Avatar src={props.avatarPath} className={style.avatar} onClick={toAtuhorProfile}></Avatar>
             </Grid.Col>
-            <Grid.Col span={11.5}>
+            <Grid.Col span={11.25}>
                 <table>
                     <tbody>
                         <tr style={{height: "3vh"}}>
@@ -42,10 +42,16 @@ export function PostsOverview(props: PostOverviewProps){
                         </tr>
                         <tr>
                             <td>
-                            <Paper shadow="xs" withBorder p={10} className={style.paper}>
+                            <Paper
+                                shadow="xs"
+                                withBorder
+                                p={10}
+                                className={`${style.paper} ${style.clickablePaper}`}
+                                onClick={toPostDetail}
+                            >
                                 <Grid>
                                     <Grid.Col span={11}>
-                                        <Text size="xl" className={style.title} onClick={toPostDetail}>{props.title}</Text>
+                                        <Text size="xl" className={style.title}>{props.title}</Text>
                                     </Grid.Col>
                                     <Grid.Col span={1} className={style.replyBadgeGrid}>
                                         <div hidden={!props.replyNum}>

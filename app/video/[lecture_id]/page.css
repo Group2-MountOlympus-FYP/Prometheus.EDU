@@ -24,11 +24,14 @@
 }
 #normal{
     position: relative;
+    margin-top: 3vh;
+    margin-left: 1.5vw;
 }
 
 .tabs{
     margin-left: 1rem;
     margin-top: 2rem;
+    font-size: large;
 }
 .tabs-list{
     margin-bottom: 4vh;
@@ -38,16 +41,19 @@
     margin-top: 2rem;
 }
 .post-button{
-
     margin-top: 3rem;
+    background-color: #3C4077;
+}
+.post-button:hover{
+    background-color: #3C4077;
 }
 .post-panel{
     display: block;
     justify-self: center;
 }
 .lecture_list_div{
-    padding-top: 2rem;
-    padding-left: 1rem;
+    padding-top: 2vh;
+    padding-left: 0.5vw;
 }
 
 #video-release-date{
