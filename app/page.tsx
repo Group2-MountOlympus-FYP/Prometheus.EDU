@@ -60,6 +60,7 @@ export default function HomePage() {
         } else {
           const data = await getCourseByCategory(selectedCategory);
           const courses = await data.json();
+          console.log("get data", courses)
           setCourses(courses);
         }
         // 加载结束
