@@ -1,3 +1,12 @@
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .bgImg{
     background-image: url(./../../public/background.png);
     background-size: cover;
@@ -10,7 +19,7 @@
     margin-top: -10vh;
 }
 .bgLight{
-    background-image: url(./../../public/light.png);
+    background-image: url(./../../public/holy3.png);
     background-size: cover;
     height: 75vh;
     width: 75vh;
@@ -18,6 +27,9 @@
     position: absolute;
     top: -35%;
     right: 2.5%;
+    opacity: 0.75;
+
+    animation: spin 20s linear infinite;
 }
 .iconImg{
     background-image: url(./../../public/main-logo.png);

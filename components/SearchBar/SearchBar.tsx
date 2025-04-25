@@ -36,13 +36,21 @@ export function SearchBar({ onSearch }: SearchBarProps) {
         <ActionIcon
           size={32}
           radius="xl"
-          color={'#434884'}
+          color={'#3C4077'}
           variant="filled"
           onClick={handleSearch}
         >
           <IconArrowRight size={18} stroke={1.5} />
         </ActionIcon>
       }
+      styles={{
+        input: {
+          borderColor: '#777CB9',
+          '&:focus': {
+            border: 'ipx solid #777CB9',
+          },
+        },
+      }}
     />
   );
 }

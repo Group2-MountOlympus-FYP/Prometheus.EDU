@@ -47,6 +47,11 @@ export function UserProfile(props:userDataProps){
     
     
     return (
+        <div className={style.profileWrapper}>
+
+        <div className={style.profileImg1}></div>
+        <div className={style.profileImg2}></div>
+
         <Card withBorder radius={"md"} padding={"lg"} className={style.card}>
             {
                 !props.isLoading ? 
@@ -132,5 +137,6 @@ export function UserProfile(props:userDataProps){
                 <ChangePasswordPanel></ChangePasswordPanel>
             </Modal>
         </Card>
+        </div>
     )
 }
