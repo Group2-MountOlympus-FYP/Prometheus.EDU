@@ -43,14 +43,30 @@
     padding-top: 0.55vh;
     object-fit: cover;
 }
-.webName{
+
+.webName {
+    margin: auto;
+} 
+.defaultStyle {
     font-family: "Fredoka", "Comic Sans", cursive;
     color: #0D283C;
-    font-size: 2.8vh;
     font-weight: 800;
+    font-size: 32px;
     padding: 0 1.5vh;
-    margin: -1vh -0.2vw;
 }
+.videoStyle {
+    font-family: "Teko", "Roboto", sans-serif;
+    color: #333;
+    font-size: 40px;
+    padding: 0.8vh 1.5vh 0 1.5vh;
+}
+.postStyle {
+    font-family: "Righteous", "Roboto", sans-serif;
+    color: #333;
+    font-size: 32px;
+    padding: 0.5vh 1.5vh 0 1.5vh;
+}
+  
 .links{
     display: block;
     line-height: 1;

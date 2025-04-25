@@ -2,7 +2,6 @@
 
 import { SearchBar } from "../SearchBar/SearchBar"
 import { Group, Avatar, Modal, Menu, ScrollArea } from "@mantine/core"
-import '@fontsource/fredoka';
 import classes from './Header.module.css'
 import { LanguageSwitcher } from "../LanguageSwitcher/LanguageSwitcher"
 import { getText } from './HeaderLanguage'
@@ -18,6 +17,9 @@ import { useDisclosure } from "@mantine/hooks"
 import { GradientText } from "../GradientText/HeaderText"
 import { usePathname } from 'next/navigation'
 import { redirectWindow } from "@/app/api/General";
+import '@fontsource/fredoka';
+import '@fontsource/righteous';
+import '@fontsource/teko';
 
 
 type headerProps = {
@@ -40,7 +42,7 @@ export default function Header() {
 
     // 监听路径变化
     const pathname = usePathname();
-
+    // console.log(pathname);
 
     useEffect(() => {
         //加载
@@ -137,7 +139,31 @@ export default function Header() {
                         <img src="/website-logo.png" className={classes.logo}/>
                     </div>
                     <div className={classes.nameBox}>
-                        <p className={classes.webName}> Prometheus.EDU</p>
+                        <p className={`${classes.webName} ${
+                        pathname.startsWith('/video')
+                            ? classes.videoStyle
+                            : pathname.startsWith('/post')
+                            ? classes.postStyle
+                            : classes.defaultStyle
+                        }`}>
+                        {pathname.startsWith('/video')
+                            ? 'NousTube'
+                            : pathname.startsWith('/post')
+                            ? 'MetisHub'
+                            : 'Prometheus.EDU'}
+                        </p>
+                    <p
+                        className={classes.webName}
+                        style={{
+                            fontFamily:
+                            pathname.startsWith('/video')
+                                ? '"Teko", "Roboto", sans-serif'
+                                : pathname.startsWith('/post')
+                                ? '"Righteous", "Roboto", sans-serif'
+                                : '"Fredoka", "Comic Sans", cursive',
+                        }}
+                    >
+                    </p>
                     </div>
                 </div>
 

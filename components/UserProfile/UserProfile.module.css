@@ -1,3 +1,33 @@
+.profileWrapper {
+    display: flex;
+    position: relative; /* 用于定位子元素 */
+    justify-content: center;
+    width: 100%;
+  }
+.profileImg1{
+    background-image: url(./../../public/profile.png);
+    background-size: cover;
+    position: absolute;
+    top: 15%;
+    right: 7%;
+    height: 25vh;
+    width: 25vh;
+    z-index: -9999;
+    pointer-events: none;
+    opacity: 0.2;
+}
+.profileImg2{
+    background-image: url(./../../public/profile.png);
+    background-size: cover;
+    position: absolute;
+    top: 15%;
+    left: 6.9%;
+    height: 25vh;
+    width: 25vh;
+    z-index: -9999;
+    pointer-events: none;
+    opacity: 0.2;
+}
 .card{
     border: 3px solid #dee0ef;
     width: 70vw;
