@@ -26,7 +26,7 @@ interface UserItem{
 }
 
 interface Props{
-  canMentionAthena?:false
+  canMentionAthena?:boolean
 }
 
 export const RichTextEditor = forwardRef<any, Props>((props, ref) => {
@@ -189,11 +189,16 @@ export const RichTextEditor = forwardRef<any, Props>((props, ref) => {
           <button onClick={() => editor?.chain().focus().toggleBulletList().run()} className={editor?.isActive('bulletList') ? 'active' : ''}><TfiList></TfiList></button>
           <button onClick={() => editor?.chain().focus().toggleOrderedList().run()} className={editor?.isActive('orderedList') ? 'is-active' : ''}><TfiListOl></TfiListOl></button>
           <button onClick={() => editor?.chain().focus().toggleCodeBlock().run()} className={editor?.isActive('codeBlock') ? 'is-active' : ''}>{"</>"}</button>
-          <button onClick={mentionAthena} hidden={!props.canMentionAthena}>@Athena</button>
+            {
+                props.canMentionAthena?
+                <button onClick={mentionAthena} hidden={!props.canMentionAthena}>@Athena</button>
+                    :
+                    ""
+            }
         </div>
-  
-        {/* 编辑器主体 */}
-        <EditorContent editor={editor} className="editor-content" />
+
+          {/* 编辑器主体 */}
+          <EditorContent editor={editor} className="editor-content" />
   
       </div>
     )

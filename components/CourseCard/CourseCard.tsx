@@ -2,7 +2,7 @@
 import React from 'react';
 import "./CourseCard.css";
 import { Image } from '@mantine/core';
-import Link from 'next/link';
+import { useRouter } from "next/navigation";
 
 export type CourseCardInfo = {
     courseId?: number;
@@ -65,8 +65,13 @@ export function CourseCardForProfile({
     id,
 }: CourseCardInfo) {
 
+    const router = useRouter()
+
+    const toCourseDetail = () => {
+        router.push(`/course/${id}`)
+    }
         return (
-            <div className={`course-card-for-profile ${className}`}>
+            <div className={`course-card-for-profile ${className}`} onClick={toCourseDetail} style={{cursor:'pointer'}}>
                 {/* <Link href={`/course/${id}`}> */}
                 <Image src={url} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></Image>
                 <div className="course-info-for-profile">

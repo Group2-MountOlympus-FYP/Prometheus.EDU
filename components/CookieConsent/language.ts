@@ -57,6 +57,11 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         comment:'Comment',
         cancel: 'Cancel',
         submitComment: 'Submit Comment',
+        privacyContent: 'Before using our services or clicking the "Enroll" button, please read and agree to the following User Agreement.\n' +
+            'We collect and use the necessary information you provide (including but not limited to your name, email address, and course progress) to deliver our services.\n' +
+            'We are committed to not disclosing your personal information to any unauthorized third party.\n' +
+            'If you have any questions during your use of the platform, feel free to contact our support team or review the full User Agreement and Privacy Policy.\n' +
+            'By continuing to use the platform, you are deemed to have read and agreed to the above terms.'
     },
     zh: {
         cookieDesc: '我们使用 Cookie 来提升用户体验，继续浏览表示您同意我们的',
@@ -110,6 +115,13 @@ const translations: { [key in 'en' | 'zh']: Translations } = {
         comment:'评论',
         cancel: '取消',
         submitComment: '提交评论',
+        privacyContent: '在您使用本平台服务或点击“报名”按钮之前，' +
+            '请您仔细阅读并同意以下用户协议。' +
+            '本平台将收集与使用您提供的必要信息' +
+            '（包括但不限于姓名、邮箱、课程进度等）' +
+            '以提供相关服务。我们承诺不会将您的个人信息泄露给未经授权的第三方。' +
+            '使用过程中如您有任何疑问，可随时联系我们的客服或查看完整的《用户协议》和《隐私政策》。' +
+            '继续使用即视为您已阅读并同意上述条款。'
     },
 }
 
