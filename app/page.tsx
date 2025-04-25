@@ -73,7 +73,7 @@ export default function HomePage() {
   }, [selectedCategory]);
 
   return (    
-    <div style={{ maxWidth: '100vw' }}>
+    <div style={{ maxWidth: '100vw',}}>
       <AboutWebSite style={{ maxWidth: '100vw' }} />
 
       <div className={classes.courseContainer}>
