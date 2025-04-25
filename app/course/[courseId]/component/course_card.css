@@ -40,6 +40,15 @@
     transition: background-color 0.2s ease;
 }
 
+.create-lecture-button{
+    display: inline-block;
+    width: 30%;
+}
+
+.create-lecture-button:hover{
+    background-color: #009c9c
+}
+
 .enroll-button:hover {
     background-color: #2e3161;
 }
