@@ -1,6 +1,6 @@
 'use client'
 
-import { Paper, Text, Grid, Avatar } from "@mantine/core"
+import {Paper, Text, Grid, Avatar, Title} from "@mantine/core"
 import { useRouter } from "next/navigation"
 import style from './Posts.module.css'
 
@@ -51,7 +51,7 @@ export function PostsOverview(props: PostOverviewProps){
                             >
                                 <Grid>
                                     <Grid.Col span={11}>
-                                        <Text size="xl" className={style.title}>{props.title}</Text>
+                                        <Title size="lg" fw={400} className={style.title} onClick={toPostDetail} lineClamp={1}>{props.title}</Title>
                                     </Grid.Col>
                                     <Grid.Col span={1} className={style.replyBadgeGrid}>
                                         <div hidden={!props.replyNum}>
