@@ -1,13 +1,14 @@
 .course-card-header {
     width: 100%;
     background-color: #e6e8f5; /* 可选背景色 */
-    padding-top: 7vh;
-    padding-bottom: 7vh;
+    padding-top: 15vh;
+    padding-bottom: 7.5vh;
     position: relative;
+    /* align-items: center; */
 }
 
 .course-container{
-    margin-top: -3vh;
+    margin-top: -10vh;
 }
 
 .course-header {
@@ -66,7 +67,7 @@
 
 .course_image {
     max-width: 90%;
-    max-height: 35vh;
+    max-height: 30vh;
 }
 .course_right{
     width: 100%;

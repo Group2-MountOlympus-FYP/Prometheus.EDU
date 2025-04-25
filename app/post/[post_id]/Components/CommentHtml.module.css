@@ -3,7 +3,8 @@
 }
 
 .commentButton{
-  margin-left: auto;
+  margin-left: 87%;
+  margin-bottom: 1vh;
   background-color: white;
   border: 0.1vw solid #DEE0EF;
   color: #3C4077;
@@ -22,7 +23,7 @@
 .body {
   padding-left: 54px;
   padding-top: var(--mantine-spacing-sm);
-  padding-bottom: 2vh;
+  padding-bottom: 0.5vh;
   font-size: var(--mantine-font-size-sm);
 }
 
@@ -63,4 +64,17 @@
 .commentEditSubmit:hover{
   border: #3C4077;
   background-color: #3C4077;
+}
+
+.assignmentImg {
+  position: absolute;
+  top: 2vh;
+  right: 2vw;
+  height: 18vh;
+  width: 18vh;
+  z-index: -9999;
+  pointer-events: none;
+  background-image: url(./../../../../public/assginment.png);
+  background-size: cover;
+  opacity: 0.25;
 }

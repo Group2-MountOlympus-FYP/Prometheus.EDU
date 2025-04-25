@@ -9,18 +9,26 @@
 }
 .paper{
     border: 1px solid  #777cb9;
-    max-width: 100%;
+    cursor: pointer;
+}
+.paper:hover{
+    transform: translateY(-2px);
+}
+.paper:active{
+    transform: translateY(0);
+    background-color: #DEE0EF;
 }
 .badge {
     display: inline-flex;
     align-items: center;
     background-color: #777cb9; /* 紫色背景 */
     color: white;
-    padding: 5px 12px;
+    padding: 3px 12px;
     border-radius: 4px;
-    font-size: 14px;
-    font-weight: bold;
+    font-size: 12px;
+    font-weight: 600;
     position: relative;
+    margin-right: 0.3vw;
 }
 
 .badge::before {
@@ -47,24 +55,11 @@
     justify-content: center;
 }
 .title{
-    cursor: pointer;
-    color: #00053b;
+    /* cursor: pointer;
+    color: #00053b; */
+    padding: 0.2vh 0.6vw;
 }
-.title:hover{
+/* .title:hover{
     text-decoration: underline;
-}
-
-.assignmentImg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    height: 55vh;
-    width: 100%;
-    z-index: 0;
-    pointer-events: none;
-    background-image: url(./../../public/assginment.png);
-    background-size: cover;
-    margin-top: 10vh;
-    margin-right: 10vw;
-  }
+} */
   

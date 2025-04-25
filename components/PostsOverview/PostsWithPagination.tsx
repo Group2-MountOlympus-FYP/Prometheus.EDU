@@ -40,7 +40,7 @@ export function PostsWithPagination(props:postsPaginationProps){
     }, [])
 
     return (
-        <div style={{width:'90%'}}>
+        <div style={{width:'97%'}}>
             {
                 posts.map((post, key) => (
                     post.tags.includes(4) ? 
