@@ -8,7 +8,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
   en: {
     no_title: 'No Title',
     no_time: 'Unknown Time',
-    course_lecturers: 'Course Lecturers',
+    course_lecturers: 'Course Instructors',
     unknown_user: 'No lecturers for this course',
     Lecture_Overview: 'Lecture Overview',
     Loading: 'Loading...',
