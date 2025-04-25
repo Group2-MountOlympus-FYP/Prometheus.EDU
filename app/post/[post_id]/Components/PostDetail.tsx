@@ -1,6 +1,7 @@
 
 
 import {Button, Container, Group, Modal, Stack, Text, Textarea, TextInput, Title} from "@mantine/core"
+import classes from './CommentHtml.module.css';
 import { cookies } from 'next/headers';
 import CommentWriteButton from "@/app/post/[post_id]/Components/CommentWriteButton";
 
@@ -38,9 +39,14 @@ export async function PostDetail(props: Props){
 
 
     return (
-        <Container>
+        <Container style={{ position: "relative" }}>
             <Title ta="left" style={{ paddingBottom: "3vh" }}>{title}</Title>
-
+            {
+                post.tags.includes(4) ?
+                <div className={classes.assignmentImg}></div>
+                :
+                <></>
+            }
             <CommentWriteButton post={post} />
         </Container>
     )

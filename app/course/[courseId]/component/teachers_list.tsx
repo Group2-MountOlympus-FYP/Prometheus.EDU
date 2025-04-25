@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { Avatar, Text, Group, Stack, Title } from "@mantine/core";
+import { Avatar, Text, Group, Stack, Title, Container } from "@mantine/core";
 import { getText } from "./language";
 
 interface Lecturer {
@@ -15,6 +15,10 @@ interface LecturerListProps {
 const LecturerList: React.FC<LecturerListProps> = ({ lecturers }) => {
   return (
     <>
+    <Container style={{ minWidth: "25vw", maxWidth: "25vw" }}>
+      <Title order={3} fw={500} style={{ marginBottom: '25px' }}>
+                {getText('Instructor_List')}
+      </Title>
       <Group wrap="wrap" gap="xl">
         {lecturers.map((lecturer, index) => {
           const name = lecturer.username || getText("unknown_user");
@@ -29,6 +33,7 @@ const LecturerList: React.FC<LecturerListProps> = ({ lecturers }) => {
           );
         })}
       </Group>
+      </Container>
     </>
   );
 };

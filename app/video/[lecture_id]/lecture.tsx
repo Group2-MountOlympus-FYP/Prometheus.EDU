@@ -19,6 +19,7 @@ import { Assignments } from '@/components/PostsOverview/Assignments';
 import { notifications } from "@mantine/notifications"
 import { format } from "date-fns";
 import { LoadingContext } from "@/components/Contexts/LoadingContext";
+import { IconMessageCircle, IconPaperclip, IconBrandAsana } from '@tabler/icons-react';
 
 interface LectureProps {
   lectureId: number;
@@ -169,7 +170,8 @@ export default function Lecture({ lectureId }: LectureProps) {
 
       <Container size={"xl"}>
         <Stack gap={"sm"}>
-          <Title>{getText('Lecture_name')}: {lectureData.name}</Title>
+          <Title>{lectureData.name}</Title>
+          {/* {getText('Lecture_name')}: */}
           <Text id={"video-release-date"}>
             {getText('Lecture_date')}: {format(new Date(lectureData.created_at), 'yyyy-MM-dd')}
           </Text>
@@ -181,28 +183,31 @@ export default function Lecture({ lectureId }: LectureProps) {
             <VideoIntro lectureData={lectureData} />
           </Grid.Col>
           <Grid.Col span={4}>
+          <Container style={{ minHeight: "70vh" }}>
             <VideoList videoList={videoList} />
-            <div className={"lecture_list_div"}>
-              <LecterList lecturers={lecturers}/>
+            <div className="lecture_list_div">
+              <LecterList lecturers={lecturers} />
             </div>
+          </Container>
 
           </Grid.Col>
         </Grid>
       </Container>
 
-      <div>
+      <Container size={"xl"} style={{ paddingLeft: "0" }}>
+      <Stack gap="md">
         <Tabs
           color="#3C4077"
           variant="pills"
           defaultValue="posts"
-          className="tabs"
+          classNames={{ tab: 'tabs' }}
           value={activeTab}
           onChange={(val) => val && setActiveTab(val)}
         >
           <Tabs.List className="tabs-list">
-            <Tabs.Tab value="posts">{getText('post')}</Tabs.Tab>
-            <Tabs.Tab value="Matrials">{getText('material')}</Tabs.Tab>
-            <Tabs.Tab value="Assignments">{getText('assignment')}</Tabs.Tab>
+            <Tabs.Tab value="posts" leftSection={<IconMessageCircle size={18}/>}>{getText('posts')}</Tabs.Tab>
+            <Tabs.Tab value="Matrials" leftSection={<IconPaperclip size={18}/>}>{getText('materials')}</Tabs.Tab>
+            <Tabs.Tab value="Assignments" leftSection={<IconBrandAsana size={18}/>}>{getText('assignments')}</Tabs.Tab>
           </Tabs.List>
 
           <Tabs.Panel value="posts">
@@ -225,7 +230,7 @@ export default function Lecture({ lectureId }: LectureProps) {
               onSubmit={handlePostSubmit}
             />
 
-            <Button
+            <Button size="lg"
               onClick={open}
               id={isVideoLeaveWindow ? 'normal' : 'right-corner'}
               className="post-button"
@@ -251,7 +256,8 @@ export default function Lecture({ lectureId }: LectureProps) {
 
             </div>
         )}
-      </div>
+      </Stack>
+      </Container>
 
     </Container>
   );
@@ -293,7 +299,7 @@ function VideoPlayer({ videoUrl }: VideoPlayerProps) {
           textAlign: 'center',
           backgroundColor: 'black',
           minHeight: '240px',
-          maxHeight: '70vh',
+          maxHeight: '56vh',
         }}
       >
         <source src={videoUrl} type={videoType} />

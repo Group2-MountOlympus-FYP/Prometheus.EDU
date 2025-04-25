@@ -1,0 +1,15 @@
+.videoItem:first-child {
+    margin-top: 5px;
+}
+.videoItem{
+    width: 100%;
+    cursor: pointer;
+    border: 1px solid lightgray;
+}
+.videoItem:hover {
+    transform: translateY(-3px);
+}
+.videoItem:active {
+    transform: translateY(0);
+    background-color: lightgray;
+}
