@@ -60,6 +60,7 @@ export default function HomePage() {
         } else {
           const data = await getCourseByCategory(selectedCategory);
           const courses = await data.json();
+          console.log("get data", courses)
           setCourses(courses);
         }
         // 加载结束
@@ -73,7 +74,7 @@ export default function HomePage() {
   }, [selectedCategory]);
 
   return (    
-    <div style={{ maxWidth: '100vw' }}>
+    <div style={{ maxWidth: '100vw',}}>
       <AboutWebSite style={{ maxWidth: '100vw' }} />
 
       <div className={classes.courseContainer}>
