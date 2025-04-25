@@ -38,4 +38,26 @@ const LecturerList: React.FC<LecturerListProps> = ({ lecturers }) => {
   );
 };
 
+export function LectureListForCourseDetail(props: LecturerListProps){
+  return (
+      <div>
+        <Group gap="xl" justify={"space-between"}>
+          {props.lecturers.map((lecturer, index) => {
+            const name = lecturer.username || getText("unknown_user");
+            const avatarSrc = lecturer.avatar || undefined;
+            return (
+                <Stack align="center" key={index} gap={4}>
+                  <Avatar radius="xl" src={avatarSrc}>
+                    {name[0]?.toUpperCase() || "?"}
+                  </Avatar>
+                  <Text>{name}</Text>
+                </Stack>
+            );
+          })}
+        </Group>
+      </div>
+  )
+}
+
 export default LecturerList;
+
