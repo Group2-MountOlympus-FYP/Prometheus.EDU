@@ -5,8 +5,6 @@ from wtforms.validators import InputRequired
 
 from .athena_ta_core import athena_client
 
-import os
-
 from io import BytesIO
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer 
 from reportlab.lib.pagesizes import LETTER
