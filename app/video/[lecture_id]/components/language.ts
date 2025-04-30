@@ -22,11 +22,11 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     posts: 'Posts',
     materials: 'Materials',
     assignments: 'Assignments',
-    write_post: 'Open to Write post',
+    write_post: 'Open to Write Post',
     Course_Materials: "Course Materials",
     No_materials: "No materials available for this lecture.",
-    write_assignment: 'Open to release assignment',
-    post_success: 'Post Successful',
+    write_assignment: 'Open to Release Assignment',
+    post_success: 'Post Sent Successfully',
   },
   zh: {
 
