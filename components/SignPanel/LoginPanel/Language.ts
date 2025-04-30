@@ -27,7 +27,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         remember: '记住我',
         login: '登录',
         password_error: '密码错误',
-        login_success: '登陆成功',
+        login_success: '登录成功',
       },
 }
 
