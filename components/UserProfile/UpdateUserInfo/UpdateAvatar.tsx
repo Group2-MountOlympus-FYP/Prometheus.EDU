@@ -106,7 +106,10 @@ export function UpdateAvatar(){
                     <Dropzone.Idle>
                         <IconPhoto size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
                     </Dropzone.Idle> :
-                    <Image src={url}></Image>
+                    <img src={url}
+                         alt="Image"
+                         width={320}
+                         height={250}></img>
                 }
             </Group>
         </Dropzone>

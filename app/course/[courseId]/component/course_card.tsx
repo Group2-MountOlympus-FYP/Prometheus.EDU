@@ -110,11 +110,10 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
         </Grid.Col>
         <Grid.Col span={4}>
           <Stack gap={"sm"}>
-            <Image
+            <img
                 className="course_image"
                 src={courseData.images?.[0]?.url || "/course_pic.png"}
                 alt="Course Image"
-                radius="md"
             />
             <Group mt="sm">
               {(courseData.tags || []).map((tag: string, i: number) => (
