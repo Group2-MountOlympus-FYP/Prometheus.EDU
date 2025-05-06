@@ -43,7 +43,7 @@ export default function HomePage() {
             const data = await getCourseByRecommend();
             //console.log("get Recommend")
             const recommendedCourses = await data.json();
-            console.log(recommendedCourses)
+            //console.log(recommendedCourses)
             setCourses(recommendedCourses);
           // 如果未登录，返回所有课程
           } else {
