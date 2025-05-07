@@ -33,7 +33,7 @@ export function LanguageSwitcher() {
 
   const items = data.map((item) => (
     <Menu.Item
-      leftSection={<Image src={item.image} width={18} height={18} />}
+      leftSection={<img src={item.image} width={18} height={18} />}
       onClick={() => handleLanguageChange(item)}
       key={item.label}
     >
@@ -54,7 +54,7 @@ export function LanguageSwitcher() {
       <Menu.Target>
         <UnstyledButton className={classes.control} data-expanded={opened || undefined}>
           <Group gap="xs">
-            <Image className={classes.circle} src={selected.image} alt={`${selected.label} Flag`} width={22} height={22} />
+            <img className={classes.circle} src={selected.image} alt={`${selected.label} Flag`} width={22} height={22} />
             <span className={classes.label}>{selected.label}</span>
           </Group>
           <IconChevronDown size={16} className={classes.icon} stroke={1.5} />
