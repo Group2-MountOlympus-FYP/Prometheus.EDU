@@ -139,9 +139,8 @@ class Course(ReplyTarget):
         db.session.commit()
         return course
 
-    def update_course(self, course_name=None, description=None, institution=None, rating=None, level=None,
-                      status=None, teacher_id=None, lower_level_course_id=None,
-                      higher_level_course_id=None):
+    def update_course(self, course_name=None, description=None, institution=None, level=None,
+                      status=None):
         """
         更新课程信息
         :param institution:
@@ -159,20 +158,13 @@ class Course(ReplyTarget):
             self.course_name = course_name
         if description:
             self.description = description
-        if rating is not None:
-            self.rating = rating
         if institution:
             self.institution = institution
         if level:
             self.level = level
         if status:
             self.status = status
-        if teacher_id:
-            self.author_id = teacher_id
-        if lower_level_course_id:
-            self.lower_level_course_id = lower_level_course_id
-        if higher_level_course_id:
-            self.higher_level_course_id = higher_level_course_id
+
 
         db.session.commit()
         return self
