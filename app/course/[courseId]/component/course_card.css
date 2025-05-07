@@ -76,6 +76,7 @@
 .course_image {
     max-width: 90%;
     max-height: 30vh;
+    border-radius: 8px;
 }
 .course_right{
     width: 100%;

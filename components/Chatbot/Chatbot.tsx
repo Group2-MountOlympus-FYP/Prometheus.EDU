@@ -18,22 +18,23 @@ import {
   ActionIcon,
   List,
 } from '@mantine/core';
-import { 
-  IconSend, 
-  IconRobot, 
-  IconUser, 
-  IconInfoCircle, 
-  IconDownload, 
-  IconDotsVertical, 
+import { notifications } from '@mantine/notifications';
+import {
+  IconSend,
+  IconRobot,
+  IconUser,
+  IconInfoCircle,
+  IconDotsVertical,
   IconSearch,
-  IconBrain
+  IconBrain,
+  IconCopy
 } from '@tabler/icons-react';
-import { 
-  generateAnswer, 
-  generateWithoutRAG, 
-  retrieveDocumentsOnly, 
-  generateReport 
+import {
+  generateAnswer,
+  generateWithoutRAG,
+  retrieveDocumentsOnly,
 } from '@/app/api/Athena/router';
+import DOMPurify from 'dompurify';
 import './Chatbot.css';
 
 // 定义消息类型
@@ -46,94 +47,75 @@ interface Message {
   documents?: string[];
 }
 
+// 定义API响应类型
+interface ApiResponse {
+  result: string | { result: string } | any;
+  documents?: string[];
+}
+
 const Chatbot: React.FC = () => {
   // 状态管理：消息、输入框、加载状态和错误信息
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // 查询模式: 'rag' (默认), 'norag', 'docs'
   const [queryMode, setQueryMode] = useState<'rag' | 'norag' | 'docs'>('rag');
-  
-  // 用于滚动到聊天底部的引用
-  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // 当消息更新时滚动到底部
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const isFirstRender = useRef(true);
+
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
-      return; // 初次加载不滚动
+      return;
     }
-    scrollToBottom(); // 后续有新消息再滚动
+    // scrollToBottom();
   }, [messages]);
-  
-  // useEffect(() => {
-  //   scrollToBottom();
-  // }, [messages]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  // 生成唯一ID
   const generateId = () => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
 
-  // 处理生成PDF报告
-  const handleGenerateReport = async (query: string) => {
-    try {
-      setIsLoading(true);
-      const response = await generateReport(query);
-      
-      if (!response.ok) {
-        throw new Error(`生成报告失败: ${response.status} ${response.statusText}`);
-      }
-      
-      // 获取 blob 数据并创建下载链接
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'athena_report.pdf';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      
-    } catch (err: any) {
-      console.error('生成报告时出错:', err);
-      setError(`Failed to generate PDF report: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleCopyMessage = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      notifications.show({
+        title: 'Copied!',
+        message: 'Content has been copied to your clipboard.',
+        color: 'green',
+        autoClose: 2000,
+      });
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      notifications.show({
+        title: 'Failed to Copy...',
+        message: 'Cannot copy your content.',
+        color: 'red',
+        autoClose: 2000,
+      });
+    });
   };
 
-  // 从API响应中提取文本内容
-  const extractTextFromResponse = (data: any): string => {
-    // 如果data.result是字符串，直接返回
+  const extractTextFromResponse = (data: ApiResponse): string => {
     if (typeof data.result === 'string') {
       return data.result;
     }
-    
-    // 如果data.result是对象且包含result字段
+
     if (data.result && typeof data.result === 'object' && 'result' in data.result) {
-      return typeof data.result.result === 'string' 
-        ? data.result.result 
+      return typeof data.result.result === 'string'
+        ? data.result.result
         : JSON.stringify(data.result.result);
     }
-    
-    // 如果没有找到合适的文本，则返回整个结果的字符串形式
+
     return JSON.stringify(data.result);
   };
 
-  // 发送消息处理函数
   const handleSendMessage = async () => {
     if (!input.trim()) return;
-    
-    // 添加用户消息到聊天
+
     const userMessage: Message = {
       id: generateId(),
       text: input,
@@ -141,28 +123,25 @@ const Chatbot: React.FC = () => {
       timestamp: new Date(),
       mode: queryMode
     };
-    
+
     setMessages(prevMessages => [...prevMessages, userMessage]);
     const currentQuery = input.trim();
     setInput('');
     setIsLoading(true);
     setError(null);
-    
+
     try {
-      let response;
-      let data;
-      
-      // 根据不同的查询模式选择不同的API
+      let response: Response;
+      let data: ApiResponse;
+
       switch (queryMode) {
         case 'rag':
           response = await generateAnswer(currentQuery);
           if (!response.ok) {
-            throw new Error(`服务器响应错误: ${response.status} ${response.statusText}`);
+            throw new Error(`Server response error: ${response.status} ${response.statusText}`);
           }
           data = await response.json();
-          console.log("API返回数据:", data); // 调试日志
-          
-          // 添加机器人回复到聊天 - 使用提取函数处理嵌套结构
+
           setMessages(prevMessages => [...prevMessages, {
             id: generateId(),
             text: extractTextFromResponse(data),
@@ -171,16 +150,14 @@ const Chatbot: React.FC = () => {
             mode: 'rag'
           }]);
           break;
-          
+
         case 'norag':
           response = await generateWithoutRAG(currentQuery);
           if (!response.ok) {
-            throw new Error(`服务器响应错误: ${response.status} ${response.statusText}`);
+            throw new Error(`Server response error: ${response.status} ${response.statusText}`);
           }
           data = await response.json();
-          console.log("非RAG API返回数据:", data); // 调试日志
-          
-          // 添加机器人回复到聊天 - 使用提取函数处理嵌套结构
+
           setMessages(prevMessages => [...prevMessages, {
             id: generateId(),
             text: extractTextFromResponse(data),
@@ -189,24 +166,21 @@ const Chatbot: React.FC = () => {
             mode: 'norag'
           }]);
           break;
-          
+
         case 'docs':
           response = await retrieveDocumentsOnly(currentQuery);
           if (!response.ok) {
-            throw new Error(`服务器响应错误: ${response.status} ${response.statusText}`);
+            throw new Error(`Server response error: ${response.status} ${response.statusText}`);
           }
           data = await response.json();
-          console.log("文档检索API返回数据:", data); // 调试日志
-          
-          // 确保documents是字符串数组
+
           let documents: string[] = [];
           if (data.documents && Array.isArray(data.documents)) {
             documents = data.documents.map((doc: any) => 
               typeof doc === 'string' ? doc : JSON.stringify(doc)
             );
           }
-          
-          // 添加包含检索文档的回复
+
           setMessages(prevMessages => [...prevMessages, {
             id: generateId(),
             text: "Here are document excerpts relevant to your question:",
@@ -218,14 +192,13 @@ const Chatbot: React.FC = () => {
           break;
       }
     } catch (err: any) {
-      console.error('发送消息时出错:', err);
-      
-      // 显示更具体的错误信息
-      if (err.message.includes('无法连接到后端服务器')) {
+      console.error('Error sending message:', err);
+
+      if (err.message.includes('Unable to connect to backend server')) {
         setError('Unable to connect to AI server. Please ensure the backend server is running. If the problem persists, contact technical support.');
-      } else if (err.message.includes('服务器响应错误')) {
-        setError(err.message.replace('服务器响应错误', 'Server response error'));
-      } else if (err.message.includes('提交的表单数据无效')) {
+      } else if (err.message.includes('Server response error')) {
+        setError(err.message);
+      } else if (err.message.includes('Invalid form data')) {
         setError('The submitted form data is invalid. Please ensure your question is not empty and is properly formatted.');
       } else if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
         setError('Network connection failed. Please check your network connection and ensure the backend server is running.');
@@ -237,7 +210,6 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  // 处理回车键按下事件
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -245,7 +217,6 @@ const Chatbot: React.FC = () => {
     }
   };
 
-  // 建议问题列表
   const suggestedQuestions = [
     "What is photosynthesis?",
     "What are the Four Great Inventions of ancient China?",
@@ -253,12 +224,10 @@ const Chatbot: React.FC = () => {
     "What is Newton's Third Law?"
   ];
 
-  // 处理点击建议问题
   const handleSuggestedQuestion = (question: string) => {
     setInput(question);
   };
 
-  // 渲染文档列表
   const renderDocuments = (documents: string[] = []) => {
     return (
       <Box className="documents-list">
@@ -271,7 +240,6 @@ const Chatbot: React.FC = () => {
     );
   };
 
-  // 获取查询模式的标签文本
   const getModeLabel = (mode?: 'rag' | 'norag' | 'docs') => {
     switch (mode) {
       case 'rag': return 'Using RAG';
@@ -280,29 +248,44 @@ const Chatbot: React.FC = () => {
       default: return '';
     }
   };
-  
-  // 安全渲染文本内容，确保不会直接渲染对象
+
+  const sanitizeAndRenderHTML = (content: string) => {
+    // 移除可能的Markdown代码块标记
+    let cleanedContent = content.replace(/```html\n?|\n?```/g, '');
+
+    // 使用DOMPurify清理HTML
+    const sanitizedHTML = DOMPurify.sanitize(cleanedContent, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre'],
+      ALLOWED_ATTR: []
+    });
+
+    return sanitizedHTML;
+  };
+
   const renderMessageText = (text: any) => {
     if (typeof text === 'string') {
-      return text;
+      return (
+        <div
+          className="message-content-html"
+          dangerouslySetInnerHTML={{ __html: sanitizeAndRenderHTML(text) }}
+        />
+      );
     } else if (text === null || text === undefined) {
       return '';
     } else {
-      // 如果是对象，转为JSON字符串
       return JSON.stringify(text);
     }
   };
-  
+
   return (
     <Container className="chat-container" size="lg">
       <Paper shadow="sm" p="md" withBorder className="chat-paper">
-        <Group position="apart" mb="md">
+        <Group justify="space-between" mb="md">
           <Title order={2} className="chat-title">
             <IconRobot size={24} /> AthenaTutor
           </Title>
-          <Text c="dimmed" size="xs" mb="lg"> powered by Athena Intelligence</Text>
+          <Text c="dimmed" size="xs"> powered by Athena Intelligence</Text>
 
-          
           <Tabs
             value={queryMode}
             onChange={(value) => setQueryMode(value as 'rag' | 'norag' | 'docs')}
@@ -310,26 +293,24 @@ const Chatbot: React.FC = () => {
             variant="pills"
           >
             <Tabs.List>
-              <Tabs.Tab value="rag" icon={<IconBrain size={16} />}>Use RAG</Tabs.Tab>
-              <Tabs.Tab value="norag" icon={<IconRobot size={16} />}>No RAG</Tabs.Tab>
-              <Tabs.Tab value="docs" icon={<IconSearch size={16} />}>Docs Only</Tabs.Tab>
+              <Tabs.Tab value="rag" leftSection={<IconBrain size={16} />}>Use RAG</Tabs.Tab>
+              <Tabs.Tab value="norag" leftSection={<IconRobot size={16} />}>No RAG</Tabs.Tab>
+              <Tabs.Tab value="docs" leftSection={<IconSearch size={16} />}>Docs Only</Tabs.Tab>
             </Tabs.List>
           </Tabs>
         </Group>
-        
-        <Text color="dimmed" size="sm" mb="lg">
+
+        <Text c="dimmed" size="sm" mb="lg">
           Feel free to ask me any learning questions! Current mode: <b>{getModeLabel(queryMode)}</b>
         </Text>
-        
-        {/* 聊天消息区域 */}
+
         <ScrollArea className="chat-messages" offsetScrollbars scrollbarSize={6}>
-          {/* 欢迎信息（当没有消息时显示） */}
           {messages.length === 0 && (
-            <Stack spacing="md">
-              <Alert 
-                icon={<IconInfoCircle size={16} />} 
-                title="How to Use the Learning Assistant" 
-                color="blue" 
+            <Stack gap="md">
+              <Alert
+                icon={<IconInfoCircle size={16} />}
+                title="How to Use the Learning Assistant"
+                color="blue"
                 radius="md"
               >
                 <Text mb="xs">You can ask me any subject questions, and I'll do my best to provide detailed answers.</Text>
@@ -342,9 +323,9 @@ const Chatbot: React.FC = () => {
                   </List>
                 </Box>
               </Alert>
-              
+
               <Text size="sm" fw={500}>You can try asking:</Text>
-              <Group spacing="xs">
+              <Group gap="xs">
                 {suggestedQuestions.map((question) => (
                   <Button
                     key={question}
@@ -358,14 +339,13 @@ const Chatbot: React.FC = () => {
               </Group>
             </Stack>
           )}
-          
-          {/* 显示消息记录 */}
+
           {messages.map((message) => (
             <Box
               key={message.id}
               className={`message ${message.sender === 'user' ? 'user-message' : 'bot-message'}`}
             >
-              <Group align="flex-start" spacing="xs" style={{flexWrap: 'nowrap'}}>
+              <Group align="flex-start" gap="xs" style={{flexWrap: 'nowrap'}}>
                 <Avatar
                   radius="xl"
                   size="md"
@@ -373,30 +353,27 @@ const Chatbot: React.FC = () => {
                 >
                   {message.sender === 'user' ? <IconUser size={18} /> : <IconRobot size={18} />}
                 </Avatar>
-                
+
                 <Box className="message-content">
                   {message.mode && message.sender === 'user' && (
                     <Text size="xs" fw={500} c="dimmed" mb={4}>
                       Request mode: {getModeLabel(message.mode)}
                     </Text>
                   )}
-                  
+
                   <div className={message.sender === 'bot' ? 'markdown-content' : 'message-text'}>
-                    {/* 使用安全的文本渲染方法 */}
                     {renderMessageText(message.text)}
                   </div>
-                  
-                  {/* 显示检索到的文档 */}
+
                   {message.documents && message.documents.length > 0 && (
                     renderDocuments(message.documents)
                   )}
-                  
-                  <Group position="apart" mt={4}>
+
+                  <Group justify="space-between" mt={4}>
                     <Text size="xs" c="dimmed" className="message-time">
-                      {message.timestamp.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}
+                      {message.timestamp.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                     </Text>
-                    
-                    {/* 机器人回复的操作菜单 */}
+
                     {message.sender === 'bot' && (
                       <Menu position="bottom-end" shadow="md">
                         <Menu.Target>
@@ -404,15 +381,14 @@ const Chatbot: React.FC = () => {
                             <IconDotsVertical size={12} />
                           </ActionIcon>
                         </Menu.Target>
-                        
                         <Menu.Dropdown>
                           <Menu.Item
-                            icon={<IconDownload size={14} />}
-                            onClick={() => handleGenerateReport(
+                            leftSection={<IconCopy size={14} />}
+                            onClick={() => handleCopyMessage(
                               typeof message.text === 'string' ? message.text : JSON.stringify(message.text)
                             )}
                           >
-                            Generate PDF Report
+                            Copy Response
                           </Menu.Item>
                         </Menu.Dropdown>
                       </Menu>
@@ -422,11 +398,10 @@ const Chatbot: React.FC = () => {
               </Group>
             </Box>
           ))}
-          
-          {/* 加载指示器 */}
+
           {isLoading && (
             <Box className="message bot-message">
-              <Group align="flex-start" spacing="xs" style={{flexWrap: 'nowrap'}}>
+              <Group align="flex-start" gap="xs" style={{flexWrap: 'nowrap'}}>
                 <Avatar radius="xl" size="md" color="green">
                   <IconRobot size={18} />
                 </Avatar>
@@ -436,18 +411,16 @@ const Chatbot: React.FC = () => {
               </Group>
             </Box>
           )}
-          
-          {/* 错误信息 */}
+
           {error && (
             <Alert color="red" title="Error" className="error-alert">
               {error}
             </Alert>
           )}
-          
+
           <div ref={messagesEndRef} />
         </ScrollArea>
-        
-        {/* 输入区域 */}
+
         <Box className="input-area">
           <TextInput
             className="message-input"
@@ -457,14 +430,16 @@ const Chatbot: React.FC = () => {
             onKeyDown={handleKeyPress}
             disabled={isLoading}
             rightSection={
-              <Button
+              <ActionIcon
+                size="lg"
                 color="blue"
                 radius="xl"
                 onClick={handleSendMessage}
                 disabled={!input.trim() || isLoading}
               >
-                <IconSend size={16} />
-              </Button>
+
+                <IconSend />
+              </ActionIcon>
             }
           />
         </Box>

@@ -7,6 +7,7 @@ import { Card, Image, Text, Badge, Group, Stack, Loader, Button } from '@mantine
 import { useRouter } from 'next/navigation';
 import { getText } from './language';
 import {LoadingContext} from "@/components/Contexts/LoadingContext";
+import './my_course.css';
 
 interface Course {
   id: number;
@@ -14,7 +15,6 @@ interface Course {
   description: string;
   institution: string;
   level: string;
-  rating: number;
   type: string;
   images: Array<{ url: string }>;
 }
@@ -87,10 +87,13 @@ export default function MyCoursesPage() {
           onClick={() => router.push(`/course/${item.course.id}`)}
         >
           <Group align="flex-start" justify="space-between">
-            <Stack gap="xs">
+            <Stack gap="xs" style={{ flex: 1 }}>
               <Text fw={600} size="lg">{item.course.course_name}</Text>
-              <Text size="sm" c="dimmed">{item.course.institution}</Text>
-              <Text size="sm">{item.course.description}</Text>
+              <Text size="sm" c="dimmed">Institution: {item.course.institution}</Text>
+
+                <Text size="sm" lineClamp={1}>
+                  Description: {item.course.description}
+                </Text>
               <Group>
                 <Badge color="teal">{item.course.level}</Badge>
               </Group>
@@ -98,12 +101,12 @@ export default function MyCoursesPage() {
                 {getText("enrolled_on")}: {new Date(item.enrollment_date).toLocaleDateString()}
               </Text>
             </Stack>
-            <Image
+            <img
               src={item.course.images?.[0]?.url || "/course_pic.png"}
-              width={120}
-              height={80}
-              radius="md"
+              width={200}
+              height={120}
               alt={item.course.course_name}
+              style={{ borderRadius: 8, flexShrink: 0, objectFit: 'cover' }}
             />
           </Group>
         </Card>

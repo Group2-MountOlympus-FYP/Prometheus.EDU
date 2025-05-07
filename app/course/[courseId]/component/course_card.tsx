@@ -68,15 +68,7 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
             <Title order={2}>{courseData.course_name || getText("no_title")}</Title>
             <Text size="lg" color="dimmed">{courseData.institution || getText("unknown_institution")}</Text>
 
-            {(courseData.rating ?? 0) > 0 ? (
-                <Group>
-                  {Array.from({ length: Math.min(courseData.rating, 5) }).map((_, i) => (
-                      <IconStarFilled key={i} size={20} color="#f1c40f" />
-                  ))}
-                </Group>
-            ) : (
-                <Text size="sm" color="dimmed">{getText("no_rating")}</Text>
-            )}
+
 
             {userStatus === "TEACHER" ? (
                 <Button
@@ -110,11 +102,10 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
         </Grid.Col>
         <Grid.Col span={4}>
           <Stack gap={"sm"}>
-            <Image
+            <img
                 className="course_image"
                 src={courseData.images?.[0]?.url || "/course_pic.png"}
                 alt="Course Image"
-                radius="md"
             />
             <Group mt="sm">
               {(courseData.tags || []).map((tag: string, i: number) => (
