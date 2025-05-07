@@ -144,6 +144,13 @@ class RegistrationForm(FlaskForm):
     birthdate = DateField('Birthdate', format='%Y-%m-%d', validators=[InputRequired()])
     gender = SelectField('Gender', choices=[('male', 'Male'), ('female', 'Female'), ('other', 'Other')],
                          validators=[InputRequired()])
+    status = SelectField(
+        'Status',
+        # value = 'TEACHER' 等纯字符串   label = 'Teacher'
+        choices=[(s.name, s.name.title()) for s in UserStatus],
+        coerce=lambda v: UserStatus[v],  # 'TEACHER' ➜ UserStatus.TEACHER
+        validators=[InputRequired()]
+    )
     password = PasswordField('Password', validators=[InputRequired()])
 
 
@@ -210,6 +217,7 @@ def register():
                 username=form.username.data,
                 birthdate=form.birthdate.data,
                 gender=form.gender.data,
+                status=form.status.data,
                 avatar=None,
                 password_hash=generate_password_hash(form.password.data, method='pbkdf2:sha256', salt_length=8)
             )
