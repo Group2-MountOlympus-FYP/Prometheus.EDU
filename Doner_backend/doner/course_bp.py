@@ -72,9 +72,9 @@ def get_all_courses():
     teacher_id = data.get('teacher_id')
     page = int(request.args.get('page', 1))
     per_page = int(request.args.get('per_page', 20))
-    level = CourseLevel.__members__.get(data.get('level'), CourseLevel.LEVEL_1)
-    status = CourseStatus.__members__.get(data.get('status'), CourseStatus.NORMAL)
-    category = next((c for c in Category if c.value == data.get('category')), Category.Others)
+    level = CourseLevel.__members__.get(data.get('level'))
+    status = CourseStatus.__members__.get(data.get('status'))
+    category = Category._value2member_map_.get(data.get('category'))
 
     courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, category=category, page=page,
                                  per_page=per_page)
