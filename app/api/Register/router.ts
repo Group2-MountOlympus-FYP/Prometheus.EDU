@@ -17,7 +17,7 @@ export async function CheckUsernameExist(username:string){
     return response
 }
 
-export async function RegisterUser(username:string, password:string, gender:string, birthDate: string, csrf_token:any){
+export async function RegisterUser(username:string, password:string, gender:string, birthDate: string, csrf_token:any, type: string){
     const url = '/backend/login/register'
     const formData = new URLSearchParams()
     const data = {
@@ -25,7 +25,8 @@ export async function RegisterUser(username:string, password:string, gender:stri
         'birthdate': birthDate,
         'gender': gender,
         'password': password,
-        'csrf_token': csrf_token
+        'csrf_token': csrf_token,
+        'status': type,
     }
     for (const [key, value] of Object.entries(data)){
         formData.append(key,value)
