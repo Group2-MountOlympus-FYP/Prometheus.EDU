@@ -34,6 +34,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         currentPasswordError: 'Wrong current password!',
         newPasswordError: 'New password cannot be same with old password!',
         passwordChangeSuccess: 'Password change success!',
+        institution:'Institute Name',
       },
       zh: {
         UsernameExist: '用户名已存在！',
@@ -64,6 +65,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         currentPasswordError: '密码错误！',
         newPasswordError: '新密码与旧密码不能相同！',
         passwordChangeSuccess: '密码修改成功！',
+        institution: '机构名',
       },
 }
 
