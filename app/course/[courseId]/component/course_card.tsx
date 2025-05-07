@@ -66,8 +66,20 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
         <Grid.Col span={8} className={"course-card-header-left"}>
           <Stack gap={"sm"}>
             <Title order={2}>{courseData.course_name || getText("no_title")}</Title>
-            <Text size="lg" color="dimmed">{courseData.institution || getText("unknown_institution")}</Text>
+            <Badge
+              variant="filled"
+              style={{
+                backgroundColor: '#20c997', // 固定绿色背景
+                color: 'white',
+                border: '1px solid #20c997', // 边框同色
+              }}
+            >
+              {courseData.level || 'N/A'}
+            </Badge>
 
+            <Text size="sm" className="course-intro">
+              {courseData.description || getText("no_intro")}
+            </Text>
 
 
             {userStatus === "TEACHER" ? (
@@ -94,9 +106,6 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
               {enrolledNumber + " " + getText("people_have_enrolled")}
             </Text>
 
-            <Text size="sm" className="course-intro">
-              {courseData.description || getText("no_intro")}
-            </Text>
 
           </Stack>
         </Grid.Col>
