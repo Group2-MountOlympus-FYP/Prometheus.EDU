@@ -5,11 +5,12 @@ import './Register.css'
 import { CheckUsernameExist, RegisterUser } from '@/app/api/Register/router';
 import { GetCSRF, reloadWindow } from '@/app/api/General';
 import { getText } from './language';
-import { Modal } from '@mantine/core';
+import { Button, Input, InputWrapper, Modal, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 import { UserAgreement } from '../UserAgreement/UserAgreement';
 import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
 import { notifications } from '@mantine/notifications';
+import { updateProfile } from '@/app/api/User/router';
 
 export function RegisterPanel(){
     const { isLoading, setIsLoading } = useContext(LoadingContext)
@@ -23,6 +24,12 @@ export function RegisterPanel(){
     const [isAbleToSubmit, setIsAbleToSubmit] = useState(false)
     const [isProtocolAgree, setIsProtocolAgree] = useState(false)
     const [opened , { open, close }] = useDisclosure(false)
+    const [teacherPasswordOpened, {open: teacherPasswordOpen, close: teacherPasswordClose}] = useDisclosure(false)
+    const [isSignAsTeacher, setSignAsTeacher] = useState(false);
+    const [teacherPasswordError, setTeacherPasswordError] = useState('')
+    const [teacherPassword, setTeacherPassword] = useState('')
+    const teacherPasswordItself = 'COMP3032JFinalYearProject';
+    const [institute, setInstitute] = useState('')
 
     const handelDateChane = (e:any) => {
         setDate(e.target.value)
@@ -71,6 +78,14 @@ export function RegisterPanel(){
             })
             return
         }
+        if(isSignAsTeacher && institute === ''){
+            notifications.show({
+                color: "yellow",
+                title: 'Warning',
+                message: 'You must input an institution name!'
+            })
+            return
+        }
         
         setIsLoading(true)
         let csrf
@@ -93,24 +108,32 @@ export function RegisterPanel(){
             genderStr = 'other'
         }
         //console.log(birthDate)
-        RegisterUser(username, password, genderStr, birthDate, csrf)
-        .then((response) => {
-            if(response.status == 401){
-                //unauthorized
-                throw new Error('Unauthorized access')
-            }else if(response.status == 200){
-                return response.json()
-            }
-        })
-        .then((data) => {
-            //console.log(document.cookie)
-            notifications.show({
-                message: 'register success'
+        if(isSignAsTeacher === false){
+            RegisterUser(username, password, genderStr, birthDate, csrf)
+            .then((response) => {
+                if(response.status == 401){
+                    //unauthorized
+                    throw new Error('Unauthorized access')
+                }else if(response.status == 200){
+                    return response.json()
+                }
             })
-            setTimeout(() => {
-                reloadWindow()
-            }, 1000);
-        })
+            .then((data) => {
+                //console.log(document.cookie)
+                notifications.show({
+                    message: 'register success'
+                })
+                setTimeout(() => {
+                    reloadWindow()
+                }, 1000);
+            })
+        }else{
+            try{
+                // const response = await RegisterUser(username, password, genderStr, birthDate, csrf)
+            }catch(e){
+                console.log(e)
+            }
+        }
     }
 
     const onProtocolAgree = () => {
@@ -121,6 +144,25 @@ export function RegisterPanel(){
     const onProtocolCancel = () => {
         setIsProtocolAgree(false)
         close()
+    }
+
+    const handleSignTeacher = () => {
+        if(isSignAsTeacher){
+            setSignAsTeacher(false)
+            return
+        }else{
+            teacherPasswordOpen()
+        }
+    }
+
+    const handleTeacherPasswordSubmit = () => {
+        if(teacherPassword !== teacherPasswordItself){
+            setTeacherPasswordError(getText('teacherPasswordWrong'))
+        }else{
+            setTeacherPasswordError('')
+            setSignAsTeacher(true)
+            teacherPasswordClose()
+        }
     }
 
     return(
@@ -162,11 +204,31 @@ export function RegisterPanel(){
                             <input type="date" value={birthDate} onChange={handelDateChane} className='register-input'></input>
                         </td>
                     </tr>
+                    {isSignAsTeacher ?
+                    <tr>
+                        <td className='register-text'>
+                            {getText('inputInstitute')}: 
+                            </td>
+                        <td className="register-inputbox">
+                            <input type={'text'} maxLength={20}  value={institute} onChange={(e) => setInstitute(e.target.value)} className='register-input'/>
+                        </td>
+                    </tr>
+                    :
+                    ''}
                     <tr>
                         <td id='register-footer' colSpan={2}>
                             <span style={{display:'block'}}>
                                 {getText('protocol')} <a href='#' onClick={open}>{getText('protocol_name')}</a><input type='checkbox' checked={isProtocolAgree} onChange={(e:any) => setIsProtocolAgree(e.target.checked)}></input>
                             </span>
+                            <span style={{display:'block'}}>{getText("signAsTeacher")}<input type={'checkbox'} checked={isSignAsTeacher} onChange={handleSignTeacher}/></span>
+                            <Modal opened={teacherPasswordOpened} onClose={teacherPasswordClose} centered title={getText('teacherPasswordTitle')}>
+                                <Stack>
+                                    <InputWrapper error={teacherPasswordError}>
+                                        <Input type={'password'} value={teacherPassword} onChange={(e) => setTeacherPassword(e.target.value)}></Input>
+                                    </InputWrapper>
+                                    <Button onClick={handleTeacherPasswordSubmit}>{getText('submit')}</Button>
+                                </Stack>
+                            </Modal>
                             <Modal opened={opened} onClose={close} title={getText('protocol_name')} size={'xl'}>
                                 <LanguageSwitcher/>
                                 <UserAgreement onAgreeClick={onProtocolAgree} onCancelClick={onProtocolCancel}/>
