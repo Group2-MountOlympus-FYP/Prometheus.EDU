@@ -29,7 +29,6 @@ export function RegisterPanel(){
     const [teacherPasswordError, setTeacherPasswordError] = useState('')
     const [teacherPassword, setTeacherPassword] = useState('')
     const teacherPasswordItself = 'COMP3032JFinalYearProject';
-    const [institute, setInstitute] = useState('')
 
     const handelDateChane = (e:any) => {
         setDate(e.target.value)
@@ -78,14 +77,6 @@ export function RegisterPanel(){
             })
             return
         }
-        if(isSignAsTeacher && institute === ''){
-            notifications.show({
-                color: "yellow",
-                title: 'Warning',
-                message: 'You must input an institution name!'
-            })
-            return
-        }
         
         setIsLoading(true)
         let csrf
@@ -109,7 +100,7 @@ export function RegisterPanel(){
         }
         //console.log(birthDate)
         if(isSignAsTeacher === false){
-            RegisterUser(username, password, genderStr, birthDate, csrf)
+            RegisterUser(username, password, genderStr, birthDate, csrf, 'NORMAL')
             .then((response) => {
                 if(response.status == 401){
                     //unauthorized
@@ -129,7 +120,15 @@ export function RegisterPanel(){
             })
         }else{
             try{
-                // const response = await RegisterUser(username, password, genderStr, birthDate, csrf)
+                const response = await RegisterUser(username, password, 'other', '2001-01-01', csrf, 'TEACHER')
+                const data = await response.json()
+
+                notifications.show({
+                    message: 'register success'
+                })
+                setTimeout(() => {
+                    reloadWindow()
+                }, 1000);
             }catch(e){
                 console.log(e)
             }
@@ -176,7 +175,15 @@ export function RegisterPanel(){
                         </td>
                     </tr>
                     <tr>
-                        <td className='register-text'>{getText('username')}</td>
+                        <td className='register-text'>
+                            {
+                                isSignAsTeacher?
+                                getText('instituteName')
+                                :
+                                getText('username')
+                            }
+                            
+                            </td>
                         <td className="register-inputbox">
                             <input type="text" maxLength={20} value={username} onChange={handelUsername} className='register-input' onBlur={handelUsernameCheck}></input>
                             <div className={`username-warnning ${isUsernameExist ? "show" : "hide"}`}>{getText('user_exit')}</div>
@@ -190,31 +197,34 @@ export function RegisterPanel(){
                         title={getText('password_hint')}></input>
                         </td>
                     </tr>
-                    <tr>
-                        <td className='register-text'>{getText('gender')}</td>
-                        <td className="register-inputbox">
-                            <input type="radio" value={0} name="gender" checked={gender===0} onChange={handelGenderChange}/>  <label>{getText('male')}</label>   
-                            <input type="radio" value={1} name="gender" checked={gender===1} onChange={handelGenderChange}/> <label>{getText('female')}</label>
-                            <input type="radio" value={2} name="gender" checked={gender===2} onChange={handelGenderChange}/> <label>{getText('other')}</label>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td className='register-text'>{getText('birthday')}</td>
-                        <td className="register-inputbox">
-                            <input type="date" value={birthDate} onChange={handelDateChane} className='register-input'></input>
-                        </td>
-                    </tr>
-                    {isSignAsTeacher ?
-                    <tr>
-                        <td className='register-text'>
-                            {getText('inputInstitute')}: 
+                    {
+                        !isSignAsTeacher?
+                        <tr>
+                            <td className='register-text'>{getText('gender')}</td>
+                            <td className="register-inputbox">
+                                <input type="radio" value={0} name="gender" checked={gender===0} onChange={handelGenderChange}/>  <label>{getText('male')}</label>   
+                                <input type="radio" value={1} name="gender" checked={gender===1} onChange={handelGenderChange}/> <label>{getText('female')}</label>
+                                <input type="radio" value={2} name="gender" checked={gender===2} onChange={handelGenderChange}/> <label>{getText('other')}</label>
                             </td>
-                        <td className="register-inputbox">
-                            <input type={'text'} maxLength={20}  value={institute} onChange={(e) => setInstitute(e.target.value)} className='register-input'/>
-                        </td>
-                    </tr>
-                    :
-                    ''}
+                        </tr>
+                        :
+                        ''
+                    }
+
+                    {
+                        !isSignAsTeacher?
+                        <tr>
+                            <td className='register-text'>{getText('birthday')}</td>
+                            <td className="register-inputbox">
+                                <input type="date" value={birthDate} onChange={handelDateChane} className='register-input'></input>
+                            </td>
+                        </tr>
+                        :
+                        ''
+                    }
+                    
+                    
+                    
                     <tr>
                         <td id='register-footer' colSpan={2}>
                             <span style={{display:'block'}}>
