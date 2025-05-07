@@ -1,7 +1,7 @@
 
 import React from 'react';
 import "./CourseCard.css";
-import { Image } from '@mantine/core';
+import { Badge, Image } from '@mantine/core';
 import { useRouter } from "next/navigation";
 
 export type CourseCardInfo = {
@@ -12,6 +12,7 @@ export type CourseCardInfo = {
     category?: string;
     className?: string;
     id: number;
+    level: string,
 };
 
 
@@ -36,10 +37,11 @@ export type CourseCardInfo = {
 export function CourseCard({
     url = '/placeholder.png',
     name = 'Course Name',
-    category,
-    institute = 'Institute Name',
+    category = 'Unknown Category',
+    institute = 'Unknown Institute',
     className = '',
     id,
+    level,
 }: CourseCardInfo) {
     return (
         <div className={`course-card-for-main ${className}`}>
@@ -51,6 +53,7 @@ export function CourseCard({
                     {/* <IoCaretForwardCircle className="play-icon" /> */}
                     <span className="institute-name">{institute}</span>
                 </div>
+                <Badge>{level}</Badge>
             </div>
         </div>
     );
@@ -59,10 +62,11 @@ export function CourseCard({
 export function CourseCardForProfile({
     url = '/placeholder.png',
     name = 'Course Name',
-    category,
-    institute = 'Institute Name',
+    category = 'Unknown Category',
+    institute = 'Unknown Institute',
     className = '',
     id,
+    level,
 }: CourseCardInfo) {
 
     const router = useRouter()
@@ -81,6 +85,7 @@ export function CourseCardForProfile({
                         {/* <IoCaretForwardCircle className="play-icon" /> */}
                         <span className="institute-name">{institute}</span>
                     </div>
+                    <Badge>{level}</Badge>
                 </div>
                 {/* </Link> */}
             </div>
