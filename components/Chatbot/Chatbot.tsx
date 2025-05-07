@@ -421,14 +421,16 @@ const Chatbot: React.FC = () => {
             onKeyDown={handleKeyPress}
             disabled={isLoading}
             rightSection={
-              <Button
+              <ActionIcon
+                size="lg"
                 color="blue"
                 radius="xl"
                 onClick={handleSendMessage}
                 disabled={!input.trim() || isLoading}
               >
-                <IconSend size={16} />
-              </Button>
+
+                <IconSend />
+              </ActionIcon>
             }
           />
         </Box>
