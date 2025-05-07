@@ -7,6 +7,7 @@ import { Card, Image, Text, Badge, Group, Stack, Loader, Button } from '@mantine
 import { useRouter } from 'next/navigation';
 import { getText } from './language';
 import {LoadingContext} from "@/components/Contexts/LoadingContext";
+import './my_course.css';
 
 interface Course {
   id: number;
@@ -98,11 +99,10 @@ export default function MyCoursesPage() {
                 {getText("enrolled_on")}: {new Date(item.enrollment_date).toLocaleDateString()}
               </Text>
             </Stack>
-            <Image
+            <img
               src={item.course.images?.[0]?.url || "/course_pic.png"}
               width={120}
               height={80}
-              radius="md"
               alt={item.course.course_name}
             />
           </Group>

@@ -106,7 +106,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
           </Stack>
       </Container>
 
-      <Image src={'/categories.png'}
+      <img src={'/categories.png'}
         style={{
           position: "fixed",
           bottom: "3%",
