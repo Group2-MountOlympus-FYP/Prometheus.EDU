@@ -34,6 +34,7 @@ import {
   generateWithoutRAG,
   retrieveDocumentsOnly,
 } from '@/app/api/Athena/router';
+import DOMPurify from 'dompurify';
 import './Chatbot.css';
 
 // 定义消息类型
@@ -248,9 +249,27 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  const sanitizeAndRenderHTML = (content: string) => {
+    // 移除可能的Markdown代码块标记
+    let cleanedContent = content.replace(/```html\n?|\n?```/g, '');
+
+    // 使用DOMPurify清理HTML
+    const sanitizedHTML = DOMPurify.sanitize(cleanedContent, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre'],
+      ALLOWED_ATTR: []
+    });
+
+    return sanitizedHTML;
+  };
+
   const renderMessageText = (text: any) => {
     if (typeof text === 'string') {
-      return text;
+      return (
+        <div
+          className="message-content-html"
+          dangerouslySetInnerHTML={{ __html: sanitizeAndRenderHTML(text) }}
+        />
+      );
     } else if (text === null || text === undefined) {
       return '';
     } else {

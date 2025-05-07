@@ -198,3 +198,68 @@
     padding: 0.75rem;
   }
 }
+
+.message-content-html {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #495057;
+}
+
+.message-content-html p {
+  margin: 0.75rem 0;
+}
+
+.message-content-html p:first-child {
+  margin-top: 0;
+}
+
+.message-content-html p:last-child {
+  margin-bottom: 0;
+}
+
+.message-content-html ul, .message-content-html ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.message-content-html code {
+  background-color: #f1f3f5;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+  color: #e64980;
+}
+
+.message-content-html pre {
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.message-content-html blockquote {
+  border-left: 4px solid #e9ecef;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  color: #868e96;
+}
+
+.message-content-html h1, 
+.message-content-html h2, 
+.message-content-html h3, 
+.message-content-html h4, 
+.message-content-html h5, 
+.message-content-html h6 {
+  margin: 1.5rem 0 1rem;
+  color: #212529;
+  line-height: 1.2;
+}
+
+.message-content-html h1 { font-size: 1.75rem; }
+.message-content-html h2 { font-size: 1.5rem; }
+.message-content-html h3 { font-size: 1.25rem; }
+.message-content-html h4 { font-size: 1.1rem; }
+.message-content-html h5 { font-size: 1rem; }
+.message-content-html h6 { font-size: 0.9rem; }
