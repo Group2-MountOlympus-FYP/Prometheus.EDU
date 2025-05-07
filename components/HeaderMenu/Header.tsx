@@ -134,8 +134,8 @@ export default function Header() {
         <div>
         <header className={classes.naviBar} style={{width:"100%"}}>
             <div className={classes.inner}>
-                <div style={{ display: "flex", alignItems: "center", cursor: "pointer" }} onClick={goToHomepage}>
-                    <div className={classes.logoBox}>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                    <div className={classes.logoBox} onClick={goToHomepage} style={{cursor: "pointer"}}>
                         <img src="/website-logo.png" className={classes.logo}/>
                     </div>
                     <div className={classes.nameBox}>
