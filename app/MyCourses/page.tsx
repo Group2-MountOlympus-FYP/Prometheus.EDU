@@ -13,7 +13,13 @@ interface Course {
   id: number;
   course_name: string;
   description: string;
-  institution: string;
+  lectures: Array<{
+    author: {
+      id: number;
+      username: string;
+      avatar: string;
+    };
+  }>;
   level: string;
   type: string;
   images: Array<{ url: string }>;
@@ -89,13 +95,22 @@ export default function MyCoursesPage() {
           <Group align="flex-start" justify="space-between">
             <Stack gap="xs" style={{ flex: 1 }}>
               <Text fw={600} size="lg">{item.course.course_name}</Text>
-              <Text size="sm" c="dimmed">Institution: {item.course.institution}</Text>
+              <Text size="sm" c="dimmed">Institute: {item.course.lectures?.[0]?.author?.username}</Text>
 
                 <Text size="sm" lineClamp={1}>
                   Description: {item.course.description}
                 </Text>
               <Group>
-                <Badge color="teal">{item.course.level}</Badge>
+                <Badge
+                  variant="filled"
+                  style={{
+                    backgroundColor: '#20c997', // 固定绿色背景
+                    color: 'white',
+                    border: '1px solid #20c997', // 边框同色
+                  }}
+                >
+                  {item.course.level || 'N/A'}
+                </Badge>
               </Group>
               <Text size="xs" c="gray">
                 {getText("enrolled_on")}: {new Date(item.enrollment_date).toLocaleDateString()}

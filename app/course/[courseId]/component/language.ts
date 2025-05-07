@@ -8,7 +8,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
   en: {
     no_title: 'No Title',
     no_time: 'Unknown Time',
-    course_lecturers: 'Course Instructors',
+    course_lecturers: ' Provided By',
     unknown_user: 'No lecturers for this course',
     Lecture_Overview: 'Lecture Overview',
     Loading: 'Loading...',
@@ -37,7 +37,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
   zh: {
     no_title: '暂无标题',
     no_time: '暂无时间',
-    course_lecturers: '课程讲师',
+    course_lecturers: '课程提供者',
     unknown_user: '该课程暂无老师',
     Lecture_Overview: '课时概览',
     Loading: '加载中...',
