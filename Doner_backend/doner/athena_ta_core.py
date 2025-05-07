@@ -295,7 +295,9 @@ class Athena:
     def generate_without_rag(self, query: str) -> str:
         """Generate a response without using RAG retrieval"""
         formatted_prompt = AthenaPrompts.format_no_rag_prompt(query)
-        return self.llm.invoke(formatted_prompt)
+        response = self.llm.invoke(formatted_prompt)
+        # 确保返回字符串
+        return response.content if hasattr(response, 'content') else str(response)
 
     def retrieve_documents_only(self, query: str) -> List[Document]:
         """Only retrieve educational content documents without generating a response"""
