@@ -51,12 +51,18 @@ def generate_without_rag():
 
         query = data['query']
         result = athena_client.generate_without_rag(query)
+        # 将AIMessage对象转换为字符串
+        if hasattr(result, 'content'):
+            result = result.content
         return jsonify({"result": result})
     
     form = QueryForm()
     if form.validate_on_submit():
         query = form.query.data
         result = athena_client.generate_without_rag(query)
+        # 将AIMessage对象转换为字符串
+        if hasattr(result, 'content'):
+            result = result.content
         return jsonify({"result": result})
     
     return jsonify({"error": "Invalid form data"}), 400
@@ -121,7 +127,7 @@ def build_pdf(report_text: str) -> BytesIO:
         spaceAfter=12,
     )
 
-    # 4. Build the “flowables” list, which will be fed into the document
+    # 4. Build the "flowables" list, which will be fed into the document
     flowables = []
 
     # -- Title
@@ -150,7 +156,7 @@ def build_pdf(report_text: str) -> BytesIO:
     # 5. Build the PDF
     doc.build(flowables)
 
-    # 6. Reset the buffer’s cursor and return
+    # 6. Reset the buffer's cursor and return
     buffer.seek(0)
     return buffer
 

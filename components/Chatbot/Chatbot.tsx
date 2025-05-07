@@ -18,22 +18,23 @@ import {
   ActionIcon,
   List,
 } from '@mantine/core';
+import { notifications } from '@mantine/notifications';
 import {
   IconSend,
   IconRobot,
   IconUser,
   IconInfoCircle,
-  IconDownload,
   IconDotsVertical,
   IconSearch,
-  IconBrain
+  IconBrain,
+  IconCopy
 } from '@tabler/icons-react';
 import {
   generateAnswer,
   generateWithoutRAG,
   retrieveDocumentsOnly,
-  generateReport
 } from '@/app/api/Athena/router';
+import DOMPurify from 'dompurify';
 import './Chatbot.css';
 
 // 定义消息类型
@@ -68,7 +69,7 @@ const Chatbot: React.FC = () => {
       isFirstRender.current = false;
       return;
     }
-    scrollToBottom();
+    // scrollToBottom();
   }, [messages]);
 
   const scrollToBottom = () => {
@@ -79,32 +80,23 @@ const Chatbot: React.FC = () => {
     return Date.now().toString(36) + Math.random().toString(36).substring(2);
   };
 
-  const handleGenerateReport = async (query: string) => {
-    try {
-      setIsLoading(true);
-      const response = await generateReport(query);
-
-      if (!response.ok) {
-        throw new Error(`Failed to generate report: ${response.status} ${response.statusText}`);
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = 'athena_report.pdf';
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-    } catch (err: any) {
-      console.error('Error generating report:', err);
-      setError(`Failed to generate PDF report: ${err.message}`);
-    } finally {
-      setIsLoading(false);
-    }
+  const handleCopyMessage = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      notifications.show({
+        title: 'Copied!',
+        message: 'Content has been copied to your clipboard.',
+        color: 'green',
+        autoClose: 2000,
+      });
+    }).catch(err => {
+      console.error('Failed to copy text: ', err);
+      notifications.show({
+        title: 'Failed to Copy...',
+        message: 'Cannot copy your content.',
+        color: 'red',
+        autoClose: 2000,
+      });
+    });
   };
 
   const extractTextFromResponse = (data: ApiResponse): string => {
@@ -257,9 +249,27 @@ const Chatbot: React.FC = () => {
     }
   };
 
+  const sanitizeAndRenderHTML = (content: string) => {
+    // 移除可能的Markdown代码块标记
+    let cleanedContent = content.replace(/```html\n?|\n?```/g, '');
+
+    // 使用DOMPurify清理HTML
+    const sanitizedHTML = DOMPurify.sanitize(cleanedContent, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'code', 'pre'],
+      ALLOWED_ATTR: []
+    });
+
+    return sanitizedHTML;
+  };
+
   const renderMessageText = (text: any) => {
     if (typeof text === 'string') {
-      return text;
+      return (
+        <div
+          className="message-content-html"
+          dangerouslySetInnerHTML={{ __html: sanitizeAndRenderHTML(text) }}
+        />
+      );
     } else if (text === null || text === undefined) {
       return '';
     } else {
@@ -297,10 +307,10 @@ const Chatbot: React.FC = () => {
         <ScrollArea className="chat-messages" offsetScrollbars scrollbarSize={6}>
           {messages.length === 0 && (
             <Stack gap="md">
-              <Alert 
-                icon={<IconInfoCircle size={16} />} 
-                title="How to Use the Learning Assistant" 
-                color="blue" 
+              <Alert
+                icon={<IconInfoCircle size={16} />}
+                title="How to Use the Learning Assistant"
+                color="blue"
                 radius="md"
               >
                 <Text mb="xs">You can ask me any subject questions, and I'll do my best to provide detailed answers.</Text>
@@ -371,15 +381,14 @@ const Chatbot: React.FC = () => {
                             <IconDotsVertical size={12} />
                           </ActionIcon>
                         </Menu.Target>
-
                         <Menu.Dropdown>
                           <Menu.Item
-                            leftSection={<IconDownload size={14} />}
-                            onClick={() => handleGenerateReport(
+                            leftSection={<IconCopy size={14} />}
+                            onClick={() => handleCopyMessage(
                               typeof message.text === 'string' ? message.text : JSON.stringify(message.text)
                             )}
                           >
-                            Generate PDF Report
+                            Copy Response
                           </Menu.Item>
                         </Menu.Dropdown>
                       </Menu>
@@ -421,14 +430,16 @@ const Chatbot: React.FC = () => {
             onKeyDown={handleKeyPress}
             disabled={isLoading}
             rightSection={
-              <Button
+              <ActionIcon
+                size="lg"
                 color="blue"
                 radius="xl"
                 onClick={handleSendMessage}
                 disabled={!input.trim() || isLoading}
               >
-                <IconSend size={16} />
-              </Button>
+
+                <IconSend />
+              </ActionIcon>
             }
           />
         </Box>
