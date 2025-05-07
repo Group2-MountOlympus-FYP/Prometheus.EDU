@@ -16,7 +16,14 @@
 }
 
 .links {
+  margin-top: var(--mantine-spacing-xs);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+
   @media (max-width: $mantine-breakpoint-xs) {
     margin-top: var(--mantine-spacing-md);
   }
 }
+

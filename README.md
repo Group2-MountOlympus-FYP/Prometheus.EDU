@@ -12,16 +12,18 @@ A comprehensive online education platform developed by **Mount Olympus**.
 ## Problem Statement
 
 Despite ongoing global efforts, many young people still face significant barriers to quality education—ranging from geographical restrictions and gender-based prohibitions to poverty and inadequate local infrastructure. **Agape**, in pursuit of its mission to deliver educational equity, has discovered that existing platforms either do not cater to the specific constraints of these learners or lack the interactive support and guidance necessary for sustained learning success.
-Consequently, Agape needs a versatile yet user-friendly solution that not only offers structured course content but also provides real-time support from both educators and an AI-based assistant. This platform must be designed to accommodate various limitations in internet connectivity and device usage, ensuring inclusivity and effectiveness for learners from diverse backgrounds.
+Consequently, Agape needs a versatile yet user-friendly solution that not only offers structured course content but also provides real-time support from both educators and AI-based services. This platform must be designed to accommodate various limitations and ensure inclusivity and effectiveness for learners from diverse backgrounds.
 
 ## Proposed Solution
 
 **MountOlympus Software Company** will develop **Prometheus.EDU**, a unified learning platform combining video courses, peer interaction, and AI-powered guidance. Prometheus.EDU will contain the following functionalities that address Agape’s needs:
 
-- **Structured Learning via NousTube**: Educational videos and lectures will be curated and hosted on the a module called *NousTube*, with features for taking notes and tracking course completion. The user-friendly interface ensures compatibility with mobile devices and low-bandwidth environments.
-- **Community Support through MetisHub**: *MetisHub* will serve as the primary forum for discussions, where learners can post questions, exchange ideas, and receive timely assistance. Additionally, they can reach out directly to partnering NGOs for help regarding study-related hurdles, such as financial constraints or access to learning materials.
-- **AI-Powered Experience with Athena Intelligence**: Leveraging Retrieval-Augmented Generation (RAG) techniques, *Athena Intelligence* will reference approved course content to provide quick and accurate answers to learners’ questions via *AthenaTutor* service and review assignments submitted by learners via *AthenaReviewer*. This minimizes the need for constant human intervention while maintaining consistent, fact-checked responses. Besides, learners can get recommendations about the courses they may be interested in with *AthenaRecommender*.
-
+- **Structured Learning via NousTube**: Educational videos and lectures will be curated and hosted on a module called *NousTube*. The user-friendly interface provides functions such as video streaming, learning material distribution, and assignment management.
+- **Community Support through MetisHub**: *MetisHub* will serve as the primary forum for discussions, where learners can post questions, exchange ideas, and receive timely assistance. Additionally, they can reach out directly to partnering NGOs for help with study-related challenges, such as financial constraints or access to learning materials.
+- **AI-Powered Experience with Athena Intelligence**: Leveraging Retrieval-Augmented Generation (RAG) techniques, *Athena Intelligence* delivers an exceptional learning experience. Athena Intelligence consists of three components:
+    - **AthenaTutor**: references approved course content to provide quick and accurate answers to learners’ questions.
+    - **AthenaReviewer**: reviews assignments submitted by learners, reducing the need for constant human intervention while maintaining consistent, fact-checked feedback.
+    - **AthenaRecommender**: offers search and recommendation functionalities based on course information.
 Through **Prometheus.EDU**, **MountOlympus** will deliver an end-to-end educational ecosystem that breaks barriers to access, fosters community collaboration, and leverages cutting-edge AI to support learners across the globe.
 
 ## Tech Stack
@@ -31,8 +33,13 @@ Through **Prometheus.EDU**, **MountOlympus** will deliver an end-to-end educatio
     - Mantine
 - **Web Backend**
     - Flask
+    - Redis
+    - PostgreSQL
+    - Celery
+    - Amazon S3
 - **AI Features**
     - LangChain
+    - Faiss
 
 ## Ethics, Bias, Social Impacts & UN SDGs
 

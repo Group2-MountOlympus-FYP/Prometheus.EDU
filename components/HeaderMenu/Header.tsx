@@ -52,7 +52,7 @@ export default function Header() {
             try {
                 const userData = getUserInfo()
                 if(userData === null){
-                    //当userData为null时说明用户没有登陆
+                    //当userData为null时说明用户没有登录
                     setIsLogin(false)
                     //停止加载
                     setIsLoading(false)
