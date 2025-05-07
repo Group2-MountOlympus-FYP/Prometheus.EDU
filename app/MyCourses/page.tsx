@@ -15,7 +15,6 @@ interface Course {
   description: string;
   institution: string;
   level: string;
-  rating: number;
   type: string;
   images: Array<{ url: string }>;
 }
