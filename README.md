@@ -40,6 +40,7 @@ Through **Prometheus.EDU**, **MountOlympus** will deliver an end-to-end educatio
 - **AI Features**
     - LangChain
     - Faiss
+    - Gemini 2.0 Flash
 
 ## Ethics, Bias, Social Impacts & UN SDGs
 
