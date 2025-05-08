@@ -95,38 +95,8 @@ export async function retrieveDocumentsOnly(query: string) {
     }
 }
 
-/**
- * 生成PDF报告
- * @param query 用户查询问题
- * @returns 返回PDF文件流
- */
-export async function generateReport(query: string) {
-    const payload = { query };
-    const url = `/backend/athena/generate_report`;
-
-    try {
-        const response = await Fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        });
-
-        if (!response.ok) {
-            throw new Error(`Server response error: ${response.status} ${response.statusText}`);
-        }
-
-        return response;
-    } catch (error) {
-        console.error('Report generation request failed:', error);
-        throw error;
-    }
-}
-
 export default {
     generateAnswer,
     generateWithoutRAG,
     retrieveDocumentsOnly,
-    generateReport
 };
