@@ -301,7 +301,7 @@ def create_course():
     course = Course.create_course(session['id'], course_name, description, institution, level, status, category)
     if file:
         Image.save_image(file, course)
-
+    athena_client.update_course_vector_store()
     return {"id": course.id}, 201
 
 
@@ -385,7 +385,7 @@ def add_lecture(course_id):
     files = request.files.getlist('resources')
     name = data.get('name')
     description = data.get('description')
-    lecture = Lecture.create(name, description, result.id, video, session['id'], files)
+    lecture = Lecture.create(name, description, result.id, video, session['id'], athena_client, files)
 
     return jsonify(LectureSchema().dump(lecture))
 
