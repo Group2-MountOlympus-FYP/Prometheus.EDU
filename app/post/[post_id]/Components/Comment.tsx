@@ -5,7 +5,7 @@ import { formatDistanceToNow } from 'date-fns';
 import {CommentWrite} from "@/app/post/[post_id]/Components/CommentWrite";
 import {useDisclosure} from "@mantine/hooks";
 import { getText } from "@/components/CookieConsent/language";
-import {useEffect} from "react";
+import { useRouter } from 'next/navigation';
 
 interface Props{
     author_id: any
@@ -20,6 +20,7 @@ interface Props{
 export function Comment(props: Props) {
     const createdAgo = formatDistanceToNow(new Date(props.created_at), { addSuffix: true });
     const [opened, { toggle, close }] = useDisclosure(false);
+    const router = useRouter()
 
     return (
             <>
@@ -27,6 +28,10 @@ export function Comment(props: Props) {
                 <Avatar
                     src={props.author_id.avatar}
                     radius="xl"
+                    onClick={() => {
+                        router.push(`/Profile/${props.author_id.id}`)
+                    }}
+                    style={{cursor:'pointer'}}
                 />
                 <div>
                     {
