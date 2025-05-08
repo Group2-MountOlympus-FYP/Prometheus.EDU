@@ -30,17 +30,18 @@ export function LectureListForCourseDetail(props: LecturerListProps) {
           };
 
           return (
-            <Stack align="center" key={index} gap={4}>
+            <Group align="center" key={index} gap={'md'}>
               <Avatar
                 radius="xl"
                 src={avatarSrc}
+                size={50}
                 onClick={toAuthorProfile}
                 style={{ cursor: "pointer" }}
               >
                 {name[0]?.toUpperCase() || "?"}
               </Avatar>
               <Text>{name}</Text>
-            </Stack>
+            </Group>
           );
         })}
       </Group>

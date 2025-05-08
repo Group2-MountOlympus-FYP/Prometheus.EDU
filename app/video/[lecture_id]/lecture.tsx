@@ -45,11 +45,14 @@ export default function Lecture({ lectureId }: LectureProps) {
   const [videoList, setVideoList] = useState<VideoInfo[]>([]);
   const [lecturers, setLecturers] = useState<any[]>([]);
 
+  //控制lecture List类名
+  const [scrolled, setScrolled] = useState(false);
+
   const handlePostSubmit = async ({
-                                    title,
-                                    content,
-                                    mentionList,
-                                  }: {
+    title,
+    content,
+    mentionList,
+  }: {
     title: string;
     content: string;
     mentionList: any[];
@@ -82,10 +85,10 @@ export default function Lecture({ lectureId }: LectureProps) {
   }
 
   const handleAssignmentSubmit = async ({
-                                          title,
-                                          content,
-                                          mentionList
-                                        }: {
+    title,
+    content,
+    mentionList
+  }: {
     title: string;
     content: string;
     mentionList: any[];
@@ -112,6 +115,19 @@ export default function Lecture({ lectureId }: LectureProps) {
 
 
   useEffect(() => {
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      if (scrollY > 100) { // 这里 100 是你要判断的滚动位置
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     setIsLoading(true)
     getLectureDetailsById(lectureId, 1, 10)
       .then((lectureRes) => {
@@ -139,17 +155,22 @@ export default function Lecture({ lectureId }: LectureProps) {
         });
       })
       .catch(() => {setError(true);setIsLoading(false);});
+
+      const observer = new IntersectionObserver(
+        ([entry]) => setIsVideoLeaveWindow(!entry.isIntersecting),
+        { threshold: 0.5 }
+      );
+      if (videoRef.current) observer.observe(videoRef.current);
+      return () => {
+        if (videoRef.current) observer.unobserve(videoRef.current);
+        window.removeEventListener('scroll', handleScroll);
+      };
+
+
   }, [lectureId]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVideoLeaveWindow(!entry.isIntersecting),
-      { threshold: 0.5 }
-    );
-    if (videoRef.current) observer.observe(videoRef.current);
-    return () => {
-      if (videoRef.current) observer.unobserve(videoRef.current);
-    };
+    
   }, []);
 
   if (error) {
@@ -249,8 +270,9 @@ export default function Lecture({ lectureId }: LectureProps) {
                 </div>
             </Grid.Col>
             <Grid.Col span={4}>
+              <div className={scrolled ? 'lectureList' : ''}>
                 <VideoList videoList={videoList}/>
-                <div className={"lecture_list_div"}>
+                {/* {<div className={"lecture_list_div"}>
                   <Group  align="center" mt="xl" mb="md">
                     <Title order={3} style={{ margin: 0 }}>
                       {getText("course_lecturers") || "Course Lecturers"}
@@ -259,8 +281,8 @@ export default function Lecture({ lectureId }: LectureProps) {
                       <LectureListForCourseDetail lecturers={lecturers || []} />
                     </div>
                   </Group>
-                </div>
-
+                </div>} */}
+              </div>
             </Grid.Col>
         </Grid>
       </Container>
