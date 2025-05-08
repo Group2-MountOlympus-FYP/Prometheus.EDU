@@ -62,7 +62,6 @@ from .Image import Image
             'schema': {
                 "type": "array",
                 "items": {"$ref": "static/definitions.yml#/Course"}
-
             }
         }
     }
@@ -78,7 +77,16 @@ def get_all_courses():
 
     courses = Course.get_courses(status=status, level=level, teacher_id=teacher_id, category=category, page=page,
                                  per_page=per_page)
-    return jsonify(CourseSchema(many=True).dump(courses))
+
+    # 修改 author 为 username
+    course_list = []
+    for course in courses:
+        course_dict = CourseSchema().dump(course)
+        course_dict['author'] = course.author.username  # 替换为用户名
+        course_list.append(course_dict)
+
+    return jsonify(course_list)
+
 
 
 @course_bp.route('/search', methods=['GET'])
@@ -145,7 +153,18 @@ def recommend():
         filter(None, post_parts + comment_parts + [str(user.birthdate or ""), str(user.gender or "")])
     )
 
-    return get_recommend(combined_text)
+    # 获取推荐课程（返回应该是 Course 对象列表或含 author_id 的课程信息列表）
+    recommended_courses = get_recommend(combined_text)
+
+    # 修改 author 字段为 username（假设是 Course 对象列表）
+    result = []
+    for course in recommended_courses:
+        course_dict = CourseSchema().dump(course)
+        course_dict['author'] = course.author.username  # 替换为用户名
+        result.append(course_dict)
+
+    return jsonify(result)
+
 
 
 # 获取课程详细信息接口
@@ -179,11 +198,14 @@ def get_course_by_id(course_id):
     course = Course.query.get_or_404(course_id)
     course_dict = CourseSchema().dump(course)
 
+    # 将 author 字段从 ID 替换为 username
+    course_dict['author'] = course.author.username  # 或 nickname
+
     course_dict['lecture_nums'] = len(course_dict['lectures'])
 
-    # 提取不重复的作者
+    # 提取不重复的讲座作者
     authors = {lecture["author"]["id"]: lecture["author"] for lecture in course_dict["lectures"]}
-    course_dict["teachers"] = list(authors.values())  # 只保留字典中的值并转换为列表
+    course_dict["teachers"] = list(authors.values())
     course_dict["enrollment_count"] = len(course.enrollments)
 
     return jsonify(course_dict)
@@ -305,7 +327,7 @@ def create_course():
 })
 def update_course(course_id):
     data = request.form
-    course = Course.get_course_by_id(course_id)
+    course = Course.query.get(course_id)
     if not course:
         return {'message': '课程未找到'}, 404
 
@@ -313,12 +335,9 @@ def update_course(course_id):
     description = data.get('description')
     level = CourseLevel.__members__.get(data.get('level', ''))
     status = CourseStatus.__members__.get(data.get('status', ''))
-    lower_level_course_id = data.get('lower_level_course_id')
-    higher_level_course_id = data.get('higher_level_course_id')
     file = request.files.get('main_picture')
     institution = request.form.get('institution')
-    course = course.update_course(course_name, description, institution, level, status, lower_level_course_id,
-                                  higher_level_course_id)
+    course = course.update_course(course_name, description, institution, level, status)
 
     if file:
         Image.save_image(file, course)
@@ -401,8 +420,17 @@ def enrolled_courses():
         # 获取所有由该教师发布的课程
         courses = Course.query.filter_by(author_id=user.id).all()
 
-        # 使用 CourseSchema() 序列化每一个课程，并包装成 {"course": <course>}
-        result = [{"course": CourseSchema().dump(course)} for course in courses]
+        result = []
+        for course in courses:
+            course_dict = CourseSchema().dump(course)
+
+            # 手动添加作者用户名
+            course_dict['author'] = course.author.username  # 或 course.author.nickname
+
+            result.append({"course": course_dict})
+
         return jsonify(result)
     else:
         return jsonify(EnrollmentSchema().dump(user.enrollments, many=True))
+
+

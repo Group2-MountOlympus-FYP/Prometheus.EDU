@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import {Grid, Container, Button, Tabs, Text, Title, Stack} from '@mantine/core';
+import { Grid, Container, Button, Tabs, Text, Title, Stack, Group } from '@mantine/core';
 import { WritingAssignmentPanel, WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
 import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
 import './page.css';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
-import LecterList from '../../course/[courseId]/component/teachers_list'
+import { LectureListForCourseDetail } from "@/app/course/[courseId]/component/teachers_list";
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import { publishPost } from "@/app/api/Posts/router"
@@ -251,7 +251,14 @@ export default function Lecture({ lectureId }: LectureProps) {
             <Grid.Col span={4}>
                 <VideoList videoList={videoList}/>
                 <div className={"lecture_list_div"}>
-                    <LecterList lecturers={lecturers}/>
+                  <Group  align="center" mt="xl" mb="md">
+                    <Title order={3} style={{ margin: 0 }}>
+                      {getText("course_lecturers") || "Course Lecturers"}
+                    </Title>
+                    <div style={{ marginTop: 0 }}>
+                      <LectureListForCourseDetail lecturers={lecturers || []} />
+                    </div>
+                  </Group>
                 </div>
 
             </Grid.Col>

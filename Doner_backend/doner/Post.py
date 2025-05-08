@@ -35,7 +35,7 @@ class Post(ReplyTarget):
     @staticmethod
     def get_all_posts():
         return Post.query.all()
-    
+
     @property
     def first_image(self):
         """返回帖子的第一张图片，如果没有图片则返回 None"""
@@ -54,15 +54,14 @@ class Post(ReplyTarget):
     def short_content(self):
         """返回帖子内容的前20个字"""
         return self.content[:20] if self.content else ''
-    
+
     def get_like_count(self):
         return len(self.liked_by.all())
-    
+
     def get_favorit_count(self):
         return len(self.favorited_by.all())
-    
+
     def get_all_comments(self):
         return Comment.query.filter_by(parent_target_id=self.id).all()
 
-            
-     
+

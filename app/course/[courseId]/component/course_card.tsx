@@ -10,6 +10,9 @@ import { checkEnrollmentStatus } from "@/app/api/MyCourses/router";
 import "./course_card.css";
 import { getText } from "./language";
 import {notifications} from "@mantine/notifications";
+import { useDisclosure } from '@mantine/hooks';
+import CourseUpdateModal from '../../create/component/update_course_detail'; // 路径改为你实际文件路径
+
 
 interface CourseHeaderProps {
   courseData: any;
@@ -23,6 +26,8 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
   const courseId = courseData.id;
   const [isEnrollLoading, setIsEnrollLoading] = useState(true)
   const [enrolledNumber, setEnrolledNumber] = useState(courseData.enrollment_count)
+  const [opened, { open, close }] = useDisclosure(false);
+
 
 
   if (!courseData) return null;
@@ -66,55 +71,83 @@ const CourseHeader: React.FC<CourseHeaderProps> = ({ courseData, isEnrolled, use
         <Grid.Col span={8} className={"course-card-header-left"}>
           <Stack gap={"sm"}>
             <Title order={2}>{courseData.course_name || getText("no_title")}</Title>
-            <Text size="lg" color="dimmed">{courseData.institution || getText("unknown_institution")}</Text>
+            <Badge
+              variant="filled"
+              style={{
+                backgroundColor: '#20c997', // 固定绿色背景
+                color: 'white',
+                border: '1px solid #20c997', // 边框同色
+              }}
+            >
+              {courseData.level || 'N/A'}
+            </Badge>
 
+            <Text size="sm" className="course-intro">
+              {courseData.description || getText("no_intro")}
+            </Text>
 
 
             {userStatus === "TEACHER" ? (
+              <>
                 <Button
-                    color="teal"
-                    size="md"
-                    className="create-lecture-button"
-                    onClick={toAddLecture}
+                  color="teal"
+                  size="md"
+                  className="create-lecture-button"
+                  onClick={toAddLecture}
                 >
                   {getText("post")}
                 </Button>
-            ) : (
+
                 <Button
-                    color={enrolled ? "gray" : "indigo"}
-                    className="enroll-button"
-                    onClick={handleEnroll}
-                    disabled={enrolled}
+                  color="blue"
+                  size="md"
+                  className="update-course-button"
+                  onClick={open}
                 >
-                    {enrolled ? getText("enrolled") : getText("enroll")}
+                  {getText("update_course")}
                 </Button>
+
+              </>
+            ) : (
+              <Button
+                color={enrolled ? "gray" : "indigo"}
+                className="enroll-button"
+                onClick={handleEnroll}
+                disabled={enrolled}
+              >
+                {enrolled ? getText("enrolled") : getText("enroll")}
+              </Button>
             )}
 
             <Text size="sm" color="dimmed">
               {enrolledNumber + " " + getText("people_have_enrolled")}
             </Text>
 
-            <Text size="sm" className="course-intro">
-              {courseData.description || getText("no_intro")}
-            </Text>
 
           </Stack>
         </Grid.Col>
         <Grid.Col span={4}>
           <Stack gap={"sm"}>
             <img
-                className="course_image"
-                src={courseData.images?.[0]?.url || "/course_pic.png"}
-                alt="Course Image"
+              className="course_image"
+              src={courseData.images?.[0]?.url || "/course_pic.png"}
+              alt="Course Image"
             />
             <Group mt="sm">
               {(courseData.tags || []).map((tag: string, i: number) => (
-                  <Badge variant="outline" key={i}>{tag.toUpperCase()}</Badge>
+                <Badge variant="outline" key={i}>{tag.toUpperCase()}</Badge>
               ))}
             </Group>
           </Stack>
         </Grid.Col>
       </Grid>
+
+      <CourseUpdateModal
+        opened={opened}
+        onClose={close}
+        courseId={courseId}
+      />
+
 
       <div id={"circle-left"} className={"circle"}></div>
       <div id={"circle-right"} className={"circle"}></div>
