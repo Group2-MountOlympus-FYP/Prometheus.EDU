@@ -15,6 +15,9 @@ jobs:
 
       # ⚠️ 只在第一次或依赖变化时安装依赖
       - name: Ensure venv & deps
+        env:
+          ALL_PROXY: socks5h://127.0.0.1:1080
+          NO_PROXY: mirrors.tencentyun.com
         run: |
           cd Doner_backend
           VENV_DIR=$HOME/doner
@@ -26,6 +29,8 @@ jobs:
       - name: Run tests
         env:
           SECRET_ENV: ${{ secrets.secrets_env }}
+          ALL_PROXY: socks5h://127.0.0.1:1080
+          NO_PROXY: mirrors.tencentyun.com
         run: |
           cd Doner_backend
           source ~/doner/bin/activate

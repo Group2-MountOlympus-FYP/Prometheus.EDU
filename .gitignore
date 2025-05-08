@@ -143,4 +143,5 @@ Doner_backend/static
 .idea/
 *.iml
 
-
+#Vector Stores
+*.faiss
