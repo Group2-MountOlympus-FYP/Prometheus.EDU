@@ -32,7 +32,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     unknown_institution: "No institution available",
     no_rating: 'No rating',
     no_intro: 'No introduction',
-    Instructor_List: 'Instructor List',
+    update_course: 'Update Course Detail',
   },
   zh: {
     no_title: '暂无标题',
@@ -57,8 +57,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     unknown_institution: "暂无机构",
     no_rating: '没有评分',
     no_intro: '没有介绍',
-    Instructor_List: '教师列表',
     post: '增加课程',
+    update_course: '更新课程信息',
   },
 }
 
