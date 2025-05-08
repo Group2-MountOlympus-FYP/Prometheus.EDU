@@ -12,6 +12,7 @@
     background-size: cover;
     background-position: center;
     height: 400px;
+    min-height: 52.5vh;
     display: flex;
     position: relative;
     justify-self: center;
