@@ -439,6 +439,77 @@ class Athena:
 
         return course_ids
 
+    def update_course_vector_store(self) -> None:
+        """
+        从数据库更新课程向量数据库。
+        这个方法会：
+        1. 从数据库获取最新的课程数据
+        2. 创建新的向量存储
+        3. 保存更新后的向量存储
+        """
+        if not self.db_uri:
+            raise ValueError("Database URI not provided. Cannot update course vector store.")
+
+        try:
+            # 从数据库获取最新的课程数据
+            course_extractor = CourseDataExtractor(self.db_uri)
+            course_documents = course_extractor.extract_course_documents()
+
+            # 创建新的向量存储
+            vector_store_manager = VectorStoreManager(self.embeddings)
+            self.course_vector_store = vector_store_manager.create_vector_store(
+                course_documents,
+                self.config
+            )
+
+            # 保存更新后的向量存储
+            if not os.path.isabs(self.config.course_vector_store_path):
+                vector_store_path = os.path.join(os.path.dirname(__file__), self.config.course_vector_store_path)
+            else:
+                vector_store_path = self.config.course_vector_store_path
+
+            self.course_vector_store.save_local(vector_store_path)
+            print(f"Successfully updated course vector store at {vector_store_path}")
+
+            # 更新检索器
+            self.course_retriever = self.course_vector_store.as_retriever()
+
+        except Exception as e:
+            print(f"Error updating course vector store: {str(e)}")
+            raise
+
+    def update_vector_store_with_new_material(self, file_path: str, metadata: Dict[str, Any] = None) -> None:
+        """
+        将新的课程材料添加到向量数据库中。
+
+        Args:
+            file_path: 文件路径
+            metadata: 文件的元数据，例如课程ID、讲座ID等
+        """
+        try:
+            # 加载文件内容
+            document_text = DocumentLoader._load_file(file_path, os.path.basename(file_path))
+            if not document_text:
+                print(f"无法加载文件内容: {file_path}")
+                return
+
+            # 创建文档对象
+            doc = Document(
+                page_content=document_text,
+                metadata=metadata or {}
+            )
+
+            # 将新文档添加到向量存储中
+            self.content_vector_store.add_documents([doc])
+
+            # 保存更新后的向量存储
+            self.content_vector_store.save_local(self.config.content_vector_store_path)
+            print(f"New material added to vector database: {file_path}")
+
+        except Exception as e:
+            print(f"Error adding new material to vector database: {str(e)}")
+            raise
+
 
 def create_athena_client():
     api_key = os.getenv('GOOGLE_API_KEY', '')

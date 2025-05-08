@@ -169,7 +169,9 @@ const LectureCreatePage = () => {
                         </Text>
 
                         <Button
-                            onClick={() => router.push("http://localhost:3000")}
+                            onClick={() => {
+                                window.location.href = window.location.origin;
+                            }}
                             size="lg"
                             variant="light"
                             style={{width: "100%"}}

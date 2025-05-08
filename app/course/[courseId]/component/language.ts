@@ -8,7 +8,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
   en: {
     no_title: 'No Title',
     no_time: 'Unknown Time',
-    course_lecturers: 'Course Instructors',
+    course_lecturers: ' Provided By',
     unknown_user: 'No lecturers for this course',
     Lecture_Overview: 'Lecture Overview',
     Loading: 'Loading...',
@@ -32,12 +32,12 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     unknown_institution: "No institution available",
     no_rating: 'No rating',
     no_intro: 'No introduction',
-    Instructor_List: 'Instructor List',
+    update_course: 'Update Course Detail',
   },
   zh: {
     no_title: '暂无标题',
     no_time: '暂无时间',
-    course_lecturers: '课程讲师',
+    course_lecturers: '课程提供者',
     unknown_user: '该课程暂无老师',
     Lecture_Overview: '课时概览',
     Loading: '加载中...',
@@ -57,8 +57,8 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     unknown_institution: "暂无机构",
     no_rating: '没有评分',
     no_intro: '没有介绍',
-    Instructor_List: '教师列表',
     post: '增加课程',
+    update_course: '更新课程信息',
   },
 }
 

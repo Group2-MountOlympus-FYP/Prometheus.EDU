@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from 'react';
 import {
     Container, Title, Text, Grid, Divider, Group, Stack, Skeleton, Image, Avatar
 } from "@mantine/core";
@@ -12,6 +12,7 @@ import { getCourseDetailsById } from "@/app/api/Course/router";
 import { checkEnrollmentStatus } from '@/app/api/MyCourses/router';
 import { getText } from "./component/language";
 import { getUserInfo } from "@/app/api/General";
+import { LoadingContext } from "@/components/Contexts/LoadingContext";
 
 interface CourseProps {
   courseId: number;
@@ -21,11 +22,12 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
   const [courseData, setCourseData] = useState<any>(null);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [userStatus, setUserStatus] = useState<"STUDENT" | "TEACHER" | null>(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const { isLoading, setIsLoading } = useContext(LoadingContext);
 
 
   useEffect(() => {
+    setIsLoading(true)
     async function fetchData() {
       try {
         const [course, enrolled, profile] = await Promise.all([
@@ -50,16 +52,13 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
         console.error("数据获取失败：", err);
         setError(true);
       } finally {
-        setLoading(false);
+        setIsLoading(false);
       }
     }
 
     fetchData();
   }, [courseId]);
 
-  if (loading) {
-    return <div style={{ textAlign: "center", marginTop: "100px" }}>Loading...</div>;
-  }
 
   if (error || !courseData) {
     return (
@@ -83,15 +82,17 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
       </Stack>
 
       <Container size={"90vw"}>
-          <Title order={3} mt="xl" mb="md">
-              {getText("course_lecturers") || "Course Lecturers"}
+        <Group  align="center" mt="xl" mb="md">
+          <Title order={3} style={{ margin: 0 }}>
+            {getText("course_lecturers") || "Course Lecturers"}
           </Title>
-          {/* Teachers */}
-          <div style={{marginTop:'40px'}}>
-              <LectureListForCourseDetail lecturers={courseData.teachers || []} />
+          <div style={{ marginTop: 0 }}>
+            <LectureListForCourseDetail lecturers={courseData.teachers || []} />
           </div>
+        </Group>
 
-          <Divider my="xl" />
+
+        <Divider my="xl" />
 
           {/* Videos */}
           <Stack>

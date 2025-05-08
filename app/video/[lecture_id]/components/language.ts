@@ -27,9 +27,10 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     No_materials: "No materials available for this lecture.",
     write_assignment: 'Open to Release Assignment',
     post_success: 'Post Sent Successfully',
+    course_lecturers: ' Provided By',
   },
   zh: {
-
+    course_lecturers: '课程提供者',
     Lecture_Overview: '课时概览',
     Loading: '加载中...',
     Lecture_List: '课时列表',

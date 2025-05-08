@@ -31,18 +31,25 @@ const Material: React.FC<MaterialProps> = ({ lectureData }) => {
       <Title order={3} mb="md">{getText('Course_Materials')}</Title>
       <List spacing="sm" size="sm" center>
         {resources.map((resource) => {
+          let fileUrl = resource.url;
+          let fileName = resource.name;
+
+          // 如果 resource.url 是形如 "(url,\"filename\")"，则解析
           const matches = resource.url.match(/\(([^,]+),\"([^\"]+)\"\)/);
-          const fileUrl = matches?.[1] || "#";
-          const fileName = matches?.[2] || resource.name;
+          if (matches) {
+            fileUrl = matches[1].replace(/^"|"$/g, ""); // 去除引号
+            fileName = matches[2];
+          }
 
           return (
             <List.Item key={resource.id}>
-              <Anchor href={fileUrl} download target="_blank">
+              <Anchor href={fileUrl} download>
                 {fileName}
               </Anchor>
             </List.Item>
           );
         })}
+
       </List>
     </div>
   );

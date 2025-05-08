@@ -19,13 +19,14 @@ interface userDataProps{
     isLoading: boolean,
     isSelf: boolean,
     userType: string,
+    institution?:string,
 }
 
 export function UserProfile(props:userDataProps){
 
     useEffect(() => {
         if(props.userType === "TEACHER"){
-            setUserType("Teacher")
+            setUserType("Institute")
         }else{
             setUserType("Student")
         }
@@ -52,15 +53,26 @@ export function UserProfile(props:userDataProps){
         <div className={style.profileImg1}></div>
         <div className={style.profileImg2}></div>
 
-        <Card withBorder radius={"md"} padding={"lg"} className={style.card}>
+        <Card withBorder radius={"md"} padding={"md"} className={style.card}>
             {
                 !props.isLoading ? 
             <Grid>
                 <Grid.Col span={6} className={style.centered}>
                     <div className={style.textDiv}>
-                        <Text className={style.text}><strong>{getText('username')}: </strong>{props.username}</Text>
-                        <Text className={style.text}><strong>{getText('gender')}: </strong>{props.gender}</Text>
-                        <Text className={style.text}><strong>{getText('birthdate')}: </strong>{props.birthDate}</Text>
+                        {
+                            props.userType === 'TEACHER' ?
+                            <Text className={style.text}><strong>{getText('institution')}: </strong>{props.username}</Text>
+                            :
+                            <Text className={style.text}><strong>{getText('username')}: </strong>{props.username}</Text>
+                        }
+                        {
+                            props.userType === 'TEACHER' ?
+                            <div></div> : <Text className={style.text}><strong>{getText('gender')}: </strong>{props.gender}</Text>
+                        }
+                        {
+                            props.userType === 'TEACHER' ?
+                            <div></div> : <Text className={style.text}><strong>{getText('birthdate')}: </strong>{props.birthDate}</Text>
+                        }
                         <Text className={style.text}><strong>{getText("identity")}: </strong><span style={{color:'#777CB9'}}>{userType}</span></Text>
                     </div>
                     { props.isSelf?

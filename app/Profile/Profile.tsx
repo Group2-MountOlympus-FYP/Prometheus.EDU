@@ -35,7 +35,7 @@ export function Profile(props: ProfileProps) {
         const fetchUserProfile = async () => {
             try{
                 const userData = await getUserProfile()
-                console.log(userData)
+                //console.log(userData)
                 setAvatar(userData.avatar)
                 setBirthDate(userData.birthdate)
                 setUsername(userData.username)

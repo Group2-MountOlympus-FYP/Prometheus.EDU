@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState, useRef, useContext } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import {Grid, Container, Button, Tabs, Text, Title, Stack} from '@mantine/core';
+import { Grid, Container, Button, Tabs, Text, Title, Stack, Group } from '@mantine/core';
 import { WritingAssignmentPanel, WritingPostPanel } from '@/components/WritingPost/WritingPostPanel';
 import { PostsWithPagination } from '@/components/PostsOverview/PostsWithPagination';
 import './page.css';
 import VideoList from './components/video_list';
 import VideoIntro from './components/video_introduction';
 import Material from '@/app/video/[lecture_id]/components/material';
-import LecterList from '../../course/[courseId]/component/teachers_list'
+import { LectureListForCourseDetail } from "@/app/course/[courseId]/component/teachers_list";
 import { getLectureDetailsById } from '@/app/api/Lecture/router';
 import { getCourseDetailsById } from '@/app/api/Course/router';
 import { publishPost } from "@/app/api/Posts/router"
@@ -45,11 +45,14 @@ export default function Lecture({ lectureId }: LectureProps) {
   const [videoList, setVideoList] = useState<VideoInfo[]>([]);
   const [lecturers, setLecturers] = useState<any[]>([]);
 
+  //控制lecture List类名
+  const [scrolled, setScrolled] = useState(false);
+
   const handlePostSubmit = async ({
-                                    title,
-                                    content,
-                                    mentionList,
-                                  }: {
+    title,
+    content,
+    mentionList,
+  }: {
     title: string;
     content: string;
     mentionList: any[];
@@ -82,10 +85,10 @@ export default function Lecture({ lectureId }: LectureProps) {
   }
 
   const handleAssignmentSubmit = async ({
-                                          title,
-                                          content,
-                                          mentionList
-                                        }: {
+    title,
+    content,
+    mentionList
+  }: {
     title: string;
     content: string;
     mentionList: any[];
@@ -112,6 +115,19 @@ export default function Lecture({ lectureId }: LectureProps) {
 
 
   useEffect(() => {
+
+    const handleScroll = () => {
+      const scrollY = window.scrollY;
+
+      if (scrollY > 100) { // 这里 100 是你要判断的滚动位置
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
     setIsLoading(true)
     getLectureDetailsById(lectureId, 1, 10)
       .then((lectureRes) => {
@@ -139,17 +155,22 @@ export default function Lecture({ lectureId }: LectureProps) {
         });
       })
       .catch(() => {setError(true);setIsLoading(false);});
+
+      const observer = new IntersectionObserver(
+        ([entry]) => setIsVideoLeaveWindow(!entry.isIntersecting),
+        { threshold: 0.5 }
+      );
+      if (videoRef.current) observer.observe(videoRef.current);
+      return () => {
+        if (videoRef.current) observer.unobserve(videoRef.current);
+        window.removeEventListener('scroll', handleScroll);
+      };
+
+
   }, [lectureId]);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => setIsVideoLeaveWindow(!entry.isIntersecting),
-      { threshold: 0.5 }
-    );
-    if (videoRef.current) observer.observe(videoRef.current);
-    return () => {
-      if (videoRef.current) observer.unobserve(videoRef.current);
-    };
+    
   }, []);
 
   if (error) {
@@ -249,11 +270,19 @@ export default function Lecture({ lectureId }: LectureProps) {
                 </div>
             </Grid.Col>
             <Grid.Col span={4}>
+              <div className={scrolled ? 'lectureList' : ''}>
                 <VideoList videoList={videoList}/>
-                <div className={"lecture_list_div"}>
-                    <LecterList lecturers={lecturers}/>
-                </div>
-
+                {/* {<div className={"lecture_list_div"}>
+                  <Group  align="center" mt="xl" mb="md">
+                    <Title order={3} style={{ margin: 0 }}>
+                      {getText("course_lecturers") || "Course Lecturers"}
+                    </Title>
+                    <div style={{ marginTop: 0 }}>
+                      <LectureListForCourseDetail lecturers={lecturers || []} />
+                    </div>
+                  </Group>
+                </div>} */}
+              </div>
             </Grid.Col>
         </Grid>
       </Container>
