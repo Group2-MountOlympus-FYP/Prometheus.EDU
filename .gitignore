@@ -143,4 +143,4 @@ Doner_backend/static
 .idea/
 *.iml
 
-
+*.faiss
