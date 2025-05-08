@@ -23,13 +23,13 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
   };
 
   return (
-    <Container style={{ minHeight: "56vh", maxHeight: "56vh", border: '1px solid black', borderRadius:'5px' }}>
+    <Container style={{ minHeight: "56vh", maxHeight: "56vh" }}>
       <Title order={2} style={{ marginBottom: '15px' }}>
         {getText('Lecture_List')}
       </Title>
 
       {videoList.length > 0 ? (
-        <ScrollArea h={'45vh'} style={{paddingRight: '10px'}}>
+        <ScrollArea h={'45vh'} style={{paddingRight: '10px', paddingLeft:'10px', paddingTop:'15px', paddingBottom:'15px', background:'#DEE0EF', borderRadius:'5px'}}>
           <Stack gap={"sm"} style={{ overflowX: 'auto' }}>
             {videoList.map((video) => (
               <Card

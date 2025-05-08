@@ -63,5 +63,6 @@
 .lectureList{
     top: 15vh;
     width: 28vw;
+    right: 7vw;
     position: fixed;
 }

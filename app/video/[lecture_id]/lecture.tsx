@@ -272,7 +272,7 @@ export default function Lecture({ lectureId }: LectureProps) {
             <Grid.Col span={4}>
               <div className={scrolled ? 'lectureList' : ''}>
                 <VideoList videoList={videoList}/>
-                <div className={"lecture_list_div"}>
+                {/* {<div className={"lecture_list_div"}>
                   <Group  align="center" mt="xl" mb="md">
                     <Title order={3} style={{ margin: 0 }}>
                       {getText("course_lecturers") || "Course Lecturers"}
@@ -281,7 +281,7 @@ export default function Lecture({ lectureId }: LectureProps) {
                       <LectureListForCourseDetail lecturers={lecturers || []} />
                     </div>
                   </Group>
-                </div>
+                </div>} */}
               </div>
             </Grid.Col>
         </Grid>
