@@ -73,7 +73,7 @@ export function CourseCardForProfile({
         return (
             <div className={`course-card-for-profile ${className}`} onClick={toCourseDetail} style={{cursor:'pointer'}}>
                 {/* <Link href={`/course/${id}`}> */}
-                <Image src={url} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></Image>
+                <img src={url} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></img>
                 <div className="course-info-for-profile">
                     <h3 className="course-name">{name}</h3>
                     {category && <p className="course-category">{category}</p>}

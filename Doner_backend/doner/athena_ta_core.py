@@ -1,5 +1,4 @@
 import os
-import time
 from typing import List, Dict, Any, Optional
 from dataclasses import dataclass, field
 import json, re
@@ -63,7 +62,7 @@ class DocumentLoader:
 
         for root, _, files in os.walk(directory):
             for filename in files:
-                if filename.endswith('.DS_Store') or not filename.endswith(supported_extensions):
+                if not filename.endswith(supported_extensions):
                     continue
 
                 filepath = os.path.join(root, filename)
@@ -228,7 +227,7 @@ class Athena:
             raise ValueError(f"Directory not found: {self.config.resolve_directory}")
 
         if self.config.model != "gemini-2.0-flash":
-            raise ValueError(f"Only gemini-2.0-flash model is currently supported")
+            raise ValueError(f"Unsupported model: {self.config.model}. Only gemini-2.0-flash model is currently supported")
 
     def _initialize_system(self):
         """Initialize system components and multiple vector stores"""
@@ -296,7 +295,9 @@ class Athena:
     def generate_without_rag(self, query: str) -> str:
         """Generate a response without using RAG retrieval"""
         formatted_prompt = AthenaPrompts.format_no_rag_prompt(query)
-        return self.llm.invoke(formatted_prompt)
+        response = self.llm.invoke(formatted_prompt)
+        # 确保返回字符串
+        return response.content if hasattr(response, 'content') else str(response)
 
     def retrieve_documents_only(self, query: str) -> List[Document]:
         """Only retrieve educational content documents without generating a response"""
@@ -462,48 +463,4 @@ def create_athena_client():
 
 # Create the client instance
 athena_client = create_athena_client()
-
-
-if __name__ == "__main__":
-    api_key = os.getenv('GOOGLE_API_KEY', '')
-
-    print("RAG Module Activated")
-    print("Type 'exit' or 'quit' to terminate the program")
-
-    if api_key:
-        print("API Key is set")
-    else:
-        print("API Key is not set")
-        exit(1)
-
-    try:
-        athena = Athena(api_key=api_key, directory='study_materials', model='gemini-2.0-flash')
-    except Exception as e:
-        print(f"Error initializing Athena: {e}")
-        exit(1)
-
-    while True:
-        query = input("Enter your query: ")
-        if query.lower() in ['exit', 'quit']:
-            print("Goodbye!")
-            break
-
-        try:
-            start_time = time.time()
-
-            answer = athena.generate(query)
-            retrieved_docs = athena.retrieve_documents_only(query)
-
-            end_time = time.time()
-            total_time = end_time - start_time
-
-            print("\nGenerated Answer:\n")
-            print(answer['result'])
-            print("\n" + "=" * 50 + "\n")
-
-            print(f"Total time: {total_time:.2f} seconds")
-
-        except Exception as e:
-            print(f"An error occurred: {e}")
-            print("\n" + "=" * 50 + "\n")
 

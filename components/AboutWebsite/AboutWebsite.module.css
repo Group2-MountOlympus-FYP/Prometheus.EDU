@@ -11,7 +11,7 @@
     background-image: url(./../../public/background.png);
     background-size: cover;
     background-position: center;
-    height: 55vh;
+    height: 400px;
     display: flex;
     position: relative;
     justify-self: center;

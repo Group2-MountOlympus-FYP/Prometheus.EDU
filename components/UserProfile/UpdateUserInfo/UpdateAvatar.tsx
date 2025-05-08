@@ -39,17 +39,49 @@ export function UpdateAvatar(){
         }
     }
     const handleDropImage = (files: FileWithPath[]) => {
-        if(files.length === 0){
+        // if(files.length === 0){
+        //     notifications.show({
+        //     message: 'No file selected!',
+        //     color: 'red',
+        //     });
+        //     return;
+        // }
+        // const file = files[0]
+        // setFile(file)
+        // const url = URL.createObjectURL(file)
+        // setURL(url)
+        if (files.length === 0) {
             notifications.show({
-            message: 'No file selected!',
-            color: 'red',
+              message: 'No file selected!',
+              color: 'red',
             });
             return;
-        }
-        const file = files[0]
-        setFile(file)
-        const url = URL.createObjectURL(file)
-        setURL(url)
+          }
+        
+          const file = files[0];
+          setFile(file);
+        
+          try {
+            const reader = new FileReader();
+            reader.onload = () => {
+              if (typeof reader.result === 'string') {
+                setURL(reader.result); // Base64 图片
+              }
+            };
+            reader.onerror = () => {
+              notifications.show({
+                message: 'Failed to read image file.',
+                color: 'red',
+              });
+            };
+            reader.readAsDataURL(file); // 用 Base64 格式替代 createObjectURL
+          } catch (err) {
+            console.error('Error reading file', err);
+            notifications.show({
+              message: 'Unable to preview image in current environment. Please try HTTPS.',
+              color: 'red',
+            });
+          }
     }
     return (
         <div >
@@ -74,7 +106,10 @@ export function UpdateAvatar(){
                     <Dropzone.Idle>
                         <IconPhoto size={52} color="var(--mantine-color-dimmed)" stroke={1.5} />
                     </Dropzone.Idle> :
-                    <Image src={url}></Image>
+                    <img src={url}
+                         alt="Image"
+                         width={320}
+                         height={250}></img>
                 }
             </Group>
         </Dropzone>

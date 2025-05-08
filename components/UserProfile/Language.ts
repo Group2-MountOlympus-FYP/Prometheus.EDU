@@ -8,7 +8,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
         UsernameExist: 'Username is already exist!',
         uploadFileFail: 'Upload File Fail!',
-        DropFileToUpload: 'Drop file to upload avatar',
+        DropFileToUpload: 'Click to upload avatar',
         ConfirmAvatarChange: 'Confirm avatar change',
         male: 'male',
         female: 'female',
@@ -38,7 +38,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
       zh: {
         UsernameExist: '用户名已存在！',
         uploadFileFail: '上传文件失败！',
-        DropFileToUpload: '拖拽或点击上传头像',
+        DropFileToUpload: '点击上传头像',
         ConfirmAvatarChange: '确认修改头像',
         male: '男',
         female: '女',

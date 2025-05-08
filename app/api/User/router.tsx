@@ -28,13 +28,23 @@ export async function getUserProfile(user_id?:number): Promise<userProfile> {
     return await response.json();
 }
 
-export async function updateProfile(username:string, birthDate: string, gender: string){
+export async function updateProfile(username:string, birthDate: string, gender: string, status?: string){
     const url = "/backend/change_profile"
-    const data = new URLSearchParams({
-        username: username,
-        birthdate: birthDate,
-        gender: gender,
-    })
+    let data;
+    if(status){
+        data = new URLSearchParams({
+            username: username,
+            birthdate: birthDate,
+            gender: gender,
+            status: status,
+        })
+    }else{
+        data = new URLSearchParams({
+            username: username,
+            birthdate: birthDate,
+            gender: gender,
+        })
+    }
 
     return await Fetch(url, {
         method: 'POST',

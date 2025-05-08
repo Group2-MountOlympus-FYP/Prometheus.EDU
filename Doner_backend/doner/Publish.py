@@ -534,7 +534,7 @@ def get_notifications():
             "id": mention.id,
             "type": "mentioned",
             "created_at": mention.created_at,
-            "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(mention.user),
+            "created_by": UserSchema(only=['username', 'avatar', 'id']).dump(mention.target.author),
             "post_id": post_id,
             "post_title": post_title,
             "read": mention.read

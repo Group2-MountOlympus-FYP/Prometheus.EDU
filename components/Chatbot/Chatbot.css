@@ -1,70 +1,90 @@
 .chat-container {
-  height: 200%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  max-width: 900px;
-  margin: 10px auto;
-  margin-top: 80px;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #f8f9fa;
 }
 
 .chat-paper {
   display: flex;
   flex-direction: column;
-  height: 80vh;
-  max-height: 800px;
-  margin-top: 1rem;
+  height: calc(100vh - 40px);
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
 }
 
 .chat-title {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  color: #228be6;
+  font-weight: 600;
 }
 
 .chat-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 1rem 0.5rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
 }
 
 .message {
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  border-radius: 12px;
   max-width: 85%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.message:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 .user-message {
   margin-left: auto;
   background-color: #e7f5ff;
+  border: 1px solid #d0ebff;
 }
 
 .bot-message {
   margin-right: auto;
-  background-color: #f8f9fa;
+  background-color: white;
+  border: 1px solid #e9ecef;
 }
 
 .message-content {
   flex: 1;
-  padding: 0 0.5rem;
+  padding: 0 0.75rem;
 }
 
 .loading-content {
   display: flex;
   align-items: center;
   height: 24px;
+  padding: 0.5rem;
 }
 
 .message-text {
   white-space: pre-wrap;
+  line-height: 1.5;
+  color: #495057;
 }
 
 .markdown-content {
   white-space: pre-wrap;
+  line-height: 1.6;
+  color: #495057;
 }
 
 .markdown-content p {
-  margin: 0.5rem 0;
+  margin: 0.75rem 0;
 }
 
 .markdown-content p:first-child {
@@ -76,58 +96,170 @@
 }
 
 .markdown-content ul, .markdown-content ol {
-  margin: 0.5rem 0;
+  margin: 0.75rem 0;
   padding-left: 1.5rem;
 }
 
 .markdown-content code {
-  background-color: rgba(0, 0, 0, 0.05);
+  background-color: #f1f3f5;
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
-  font-family: monospace;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+  color: #e64980;
 }
 
 .markdown-content pre {
-  background-color: rgba(0, 0, 0, 0.05);
-  padding: 0.5rem;
-  border-radius: 4px;
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 8px;
   overflow-x: auto;
+  margin: 1rem 0;
 }
 
 .message-time {
   display: block;
   text-align: right;
-  margin-top: 4px;
+  margin-top: 6px;
+  color: #868e96;
+  font-size: 0.75rem;
 }
 
 .input-area {
-  margin-top: 1rem;
-  padding-top: 0.5rem;
-  border-top: 1px solid #eaeaea;
+  margin-top: auto;
+  padding: 1rem 1.5rem;
+  background-color: white;
+  border-top: 1px solid #e9ecef;
 }
 
 .message-input {
   width: 100%;
 }
 
+.message-input input {
+  border-radius: 24px;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.message-input input:focus {
+  border-color: #228be6;
+  box-shadow: 0 0 0 2px rgba(34, 139, 230, 0.1);
+}
+
 .error-alert {
   margin: 1rem 0;
+  border-radius: 8px;
+  border: 1px solid #ffa8a8;
+}
+
+.documents-list {
+  margin-top: 12px;
+  border-left: 3px solid #228be6;
+  padding-left: 12px;
+  background-color: #f8f9fa;
+  border-radius: 0 8px 8px 0;
+}
+
+.documents-list .mantine-Paper-root {
+  background-color: white;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s ease;
+}
+
+.documents-list .mantine-Paper-root:hover {
+  border-color: #228be6;
+  box-shadow: 0 2px 4px rgba(34, 139, 230, 0.1);
 }
 
 @media (max-width: 768px) {
+  .chat-container {
+    padding: 10px;
+    height: 100vh;
+  }
+  
   .chat-paper {
-    height: calc(100vh - 2rem);
-    margin: 0;
-    border-radius: 0;
+    height: calc(100vh - 20px);
+    border-radius: 8px;
   }
   
   .message {
     max-width: 90%;
+    padding: 0.75rem;
+  }
+  
+  .chat-messages {
+    padding: 1rem;
+  }
+  
+  .input-area {
+    padding: 0.75rem;
   }
 }
 
-.documents-list {
-  margin-top: 10px;
-  border-left: 3px solid #ced4da;
-  padding-left: 10px;
+.message-content-html {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  color: #495057;
 }
+
+.message-content-html p {
+  margin: 0.75rem 0;
+}
+
+.message-content-html p:first-child {
+  margin-top: 0;
+}
+
+.message-content-html p:last-child {
+  margin-bottom: 0;
+}
+
+.message-content-html ul, .message-content-html ol {
+  margin: 0.75rem 0;
+  padding-left: 1.5rem;
+}
+
+.message-content-html code {
+  background-color: #f1f3f5;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: 'Fira Code', monospace;
+  font-size: 0.9em;
+  color: #e64980;
+}
+
+.message-content-html pre {
+  background-color: #f1f3f5;
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.message-content-html blockquote {
+  border-left: 4px solid #e9ecef;
+  margin: 1rem 0;
+  padding: 0.5rem 1rem;
+  color: #868e96;
+}
+
+.message-content-html h1, 
+.message-content-html h2, 
+.message-content-html h3, 
+.message-content-html h4, 
+.message-content-html h5, 
+.message-content-html h6 {
+  margin: 1.5rem 0 1rem;
+  color: #212529;
+  line-height: 1.2;
+}
+
+.message-content-html h1 { font-size: 1.75rem; }
+.message-content-html h2 { font-size: 1.5rem; }
+.message-content-html h3 { font-size: 1.25rem; }
+.message-content-html h4 { font-size: 1.1rem; }
+.message-content-html h5 { font-size: 1rem; }
+.message-content-html h6 { font-size: 0.9rem; }
