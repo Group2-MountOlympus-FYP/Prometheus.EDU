@@ -53,7 +53,12 @@ export function CourseCard({
                     {/* <IoCaretForwardCircle className="play-icon" /> */}
                     <span className="institute-name">{institute}</span>
                 </div>
-                <Badge>{level}</Badge>
+                <Badge variant="filled"
+                       style={{
+                           backgroundColor: '#20c997', // 固定绿色背景
+                           color: 'white',
+                           border: '1px solid #20c997', // 边框同色
+                       }}>{level}</Badge>
             </div>
         </div>
     );
@@ -79,13 +84,18 @@ export function CourseCardForProfile({
                 {/* <Link href={`/course/${id}`}> */}
                 <img src={url} alt="course" className="course-image-for-profile" style={{margin:'auto'}}></img>
                 <div className="course-info-for-profile">
-                    <h3 className="course-name">{name}</h3>
+                    <h3 className="course-name" >{name}</h3>
                     {category && <p className="course-category">{category}</p>}
                     <div className="course-play">
                         {/* <IoCaretForwardCircle className="play-icon" /> */}
                         <span className="institute-name">{institute}</span>
                     </div>
-                    <Badge>{level}</Badge>
+                    <Badge variant="filled"
+                           style={{
+                               backgroundColor: '#20c997', // 固定绿色背景
+                               color: 'white',
+                               border: '1px solid #20c997', // 边框同色
+                           }}>{level}</Badge>
                 </div>
                 {/* </Link> */}
             </div>
