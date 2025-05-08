@@ -45,6 +45,11 @@
     width: 30%;
 }
 
+.update-course-button{
+    display: inline-block;
+    width: 30%;
+}
+
 .create-lecture-button:hover{
     background-color: #009c9c
 }

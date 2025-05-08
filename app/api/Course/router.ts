@@ -55,3 +55,10 @@ export async function searchCourses(query: string) {
   return await response.json();
 }
 
+export async function updateCourseById(courseId: number, formData: FormData) {
+  const url = `/backend/course/${courseId}/update`;
+  return await Fetch(url, {
+    method: 'PUT',
+    body: formData,
+  });
+}

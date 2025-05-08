@@ -20,6 +20,11 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         submit: 'Submit',
         protocol: 'I have read and agree to the Privacy Policy and',
         protocol_name: 'User Agreement',
+        signAsTeacher: 'Register as a institute',
+        teacherPasswordTitle: 'Please input password given by institute',
+        teacherPasswordWrong: 'Wrong password!',
+        inputInstitute: 'Institute',
+        instituteName: 'Institute Name',
       },
       zh: {
         welcome: "注册",
@@ -36,6 +41,11 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         submit: '提交',
         protocol: '我已阅读并同意',
         protocol_name: '《隐私政策与用户协议》',
+        signAsTeacher: '注册为机构',
+        teacherPasswordTitle: '请输入机构给出的密码',
+        teacherPasswordWrong: '密码错误！',
+        inputInstitute: '机构',
+        instituteName: '机构名称',
       },
 }
 

@@ -8,7 +8,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     en: {
         UsernameExist: 'Username is already exist!',
         uploadFileFail: 'Upload File Fail!',
-        DropFileToUpload: 'Drop file to upload avatar',
+        DropFileToUpload: 'Click to upload avatar',
         ConfirmAvatarChange: 'Confirm avatar change',
         male: 'male',
         female: 'female',
@@ -34,11 +34,12 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         currentPasswordError: 'Wrong current password!',
         newPasswordError: 'New password cannot be same with old password!',
         passwordChangeSuccess: 'Password change success!',
+        institution:'Institute Name',
       },
       zh: {
         UsernameExist: '用户名已存在！',
         uploadFileFail: '上传文件失败！',
-        DropFileToUpload: '拖拽或点击上传头像',
+        DropFileToUpload: '点击上传头像',
         ConfirmAvatarChange: '确认修改头像',
         male: '男',
         female: '女',
@@ -64,6 +65,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
         currentPasswordError: '密码错误！',
         newPasswordError: '新密码与旧密码不能相同！',
         passwordChangeSuccess: '密码修改成功！',
+        institution: '机构名',
       },
 }
 

@@ -305,7 +305,7 @@ def create_course():
 })
 def update_course(course_id):
     data = request.form
-    course = Course.get_course_by_id(course_id)
+    course = Course.query.get(course_id)
     if not course:
         return {'message': '课程未找到'}, 404
 
@@ -313,12 +313,9 @@ def update_course(course_id):
     description = data.get('description')
     level = CourseLevel.__members__.get(data.get('level', ''))
     status = CourseStatus.__members__.get(data.get('status', ''))
-    lower_level_course_id = data.get('lower_level_course_id')
-    higher_level_course_id = data.get('higher_level_course_id')
     file = request.files.get('main_picture')
     institution = request.form.get('institution')
-    course = course.update_course(course_name, description, institution, level, status, lower_level_course_id,
-                                  higher_level_course_id)
+    course = course.update_course(course_name, description, institution, level, status)
 
     if file:
         Image.save_image(file, course)

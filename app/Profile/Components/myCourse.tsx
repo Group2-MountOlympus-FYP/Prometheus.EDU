@@ -16,11 +16,12 @@ export function MyCourse(props: Prop){
                     key={course.course.id}
                     courseId={course.course.id}
                     name={course.course.course_name}
-                    institute={course.course.institution}
+                    institute={course.course.lectures[0]?.author.username}
                     category={course.course.category}
                     className="courseCard"
                     url={course.course.images?.[0]?.url}
                     id={course.course.id}
+                    level={course.course.level}
                     ></CourseCardForProfile>
                 ))}
             </SimpleGrid>

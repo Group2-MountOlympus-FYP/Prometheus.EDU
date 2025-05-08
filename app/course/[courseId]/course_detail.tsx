@@ -83,15 +83,17 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
       </Stack>
 
       <Container size={"90vw"}>
-          <Title order={3} mt="xl" mb="md">
-              {getText("course_lecturers") || "Course Lecturers"}
+        <Group  align="center" mt="xl" mb="md">
+          <Title order={3} style={{ margin: 0 }}>
+            {getText("course_lecturers") || "Course Lecturers"}
           </Title>
-          {/* Teachers */}
-          <div style={{marginTop:'40px'}}>
-              <LectureListForCourseDetail lecturers={courseData.teachers || []} />
+          <div style={{ marginTop: 0 }}>
+            <LectureListForCourseDetail lecturers={courseData.teachers || []} />
           </div>
+        </Group>
 
-          <Divider my="xl" />
+
+        <Divider my="xl" />
 
           {/* Videos */}
           <Stack>
