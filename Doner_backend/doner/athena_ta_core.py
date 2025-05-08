@@ -234,7 +234,8 @@ class Athena:
         # Initialize embeddings
         self.embeddings = GoogleGenerativeAIEmbeddings(
             model=self.config.embedding_model,
-            google_api_key=self.config.api_key
+            google_api_key=self.config.api_key,
+            timeout=150
         )
 
         # Initialize vector store manager
