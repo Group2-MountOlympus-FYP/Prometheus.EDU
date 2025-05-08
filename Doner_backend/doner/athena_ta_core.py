@@ -439,6 +439,38 @@ class Athena:
 
         return course_ids
 
+    def update_vector_store_with_new_material(self, file_path: str, metadata: Dict[str, Any] = None) -> None:
+        """
+        将新的课程材料添加到向量数据库中。
+
+        Args:
+            file_path: 文件路径
+            metadata: 文件的元数据，例如课程ID、讲座ID等
+        """
+        try:
+            # 加载文件内容
+            document_text = DocumentLoader._load_file(file_path, os.path.basename(file_path))
+            if not document_text:
+                print(f"无法加载文件内容: {file_path}")
+                return
+
+            # 创建文档对象
+            doc = Document(
+                page_content=document_text,
+                metadata=metadata or {}
+            )
+
+            # 将新文档添加到向量存储中
+            self.content_vector_store.add_documents([doc])
+
+            # 保存更新后的向量存储
+            self.content_vector_store.save_local(self.config.content_vector_store_path)
+            print(f"New material added to vector database: {file_path}")
+
+        except Exception as e:
+            print(f"Error adding new material to vector database: {str(e)}")
+            raise
+
 
 def create_athena_client():
     api_key = os.getenv('GOOGLE_API_KEY', '')
