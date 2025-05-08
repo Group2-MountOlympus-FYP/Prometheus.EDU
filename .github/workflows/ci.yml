@@ -26,6 +26,7 @@ jobs:
       - name: Run tests
         env:
           SECRET_ENV: ${{ secrets.secrets_env }}
+          ALL_PROXY: socks5h://127.0.0.1:1080
         run: |
           cd Doner_backend
           source ~/doner/bin/activate
