@@ -53,7 +53,7 @@ export function UserProfile(props:userDataProps){
         <div className={style.profileImg1}></div>
         <div className={style.profileImg2}></div>
 
-        <Card withBorder radius={"md"} padding={"lg"} className={style.card}>
+        <Card withBorder radius={"md"} padding={"md"} className={style.card}>
             {
                 !props.isLoading ? 
             <Grid>
