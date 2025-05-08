@@ -60,3 +60,8 @@
     text-align: left;
     color: grey
 }
+.lectureList{
+    top: 15vh;
+    width: 28vw;
+    position: fixed;
+}

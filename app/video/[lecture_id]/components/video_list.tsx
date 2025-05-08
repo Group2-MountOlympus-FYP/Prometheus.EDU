@@ -1,5 +1,5 @@
 import React from 'react';
-import {Container, Grid, Card, Text, Title, Stack} from '@mantine/core';
+import { Container, Grid, Card, Text, Title, Stack, ScrollArea } from '@mantine/core';
 import { FaPlay } from 'react-icons/fa';
 import { useRouter } from 'next/navigation';
 import { getText } from "./language";
@@ -23,13 +23,13 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
   };
 
   return (
-    <Container style={{ minHeight: "56vh", maxHeight: "56vh" }}>
+    <Container style={{ minHeight: "56vh", maxHeight: "56vh", border: '1px solid black', borderRadius:'5px' }}>
       <Title order={2} style={{ marginBottom: '15px' }}>
         {getText('Lecture_List')}
       </Title>
 
       {videoList.length > 0 ? (
-        <div>
+        <ScrollArea h={'45vh'} style={{paddingRight: '10px'}}>
           <Stack gap={"sm"} style={{ overflowX: 'auto' }}>
             {videoList.map((video) => (
               <Card
@@ -50,7 +50,7 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
               </Card>
             ))}
           </Stack>
-        </div>
+        </ScrollArea>
       ) : (
         <Text color="red">{getText('No_lecture')}</Text>
       )}
