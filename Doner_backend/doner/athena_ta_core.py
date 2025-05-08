@@ -439,6 +439,45 @@ class Athena:
 
         return course_ids
 
+    def update_course_vector_store(self) -> None:
+        """
+        从数据库更新课程向量数据库。
+        这个方法会：
+        1. 从数据库获取最新的课程数据
+        2. 创建新的向量存储
+        3. 保存更新后的向量存储
+        """
+        if not self.db_uri:
+            raise ValueError("Database URI not provided. Cannot update course vector store.")
+
+        try:
+            # 从数据库获取最新的课程数据
+            course_extractor = CourseDataExtractor(self.db_uri)
+            course_documents = course_extractor.extract_course_documents()
+
+            # 创建新的向量存储
+            vector_store_manager = VectorStoreManager(self.embeddings)
+            self.course_vector_store = vector_store_manager.create_vector_store(
+                course_documents,
+                self.config
+            )
+
+            # 保存更新后的向量存储
+            if not os.path.isabs(self.config.course_vector_store_path):
+                vector_store_path = os.path.join(os.path.dirname(__file__), self.config.course_vector_store_path)
+            else:
+                vector_store_path = self.config.course_vector_store_path
+
+            self.course_vector_store.save_local(vector_store_path)
+            print(f"Successfully updated course vector store at {vector_store_path}")
+
+            # 更新检索器
+            self.course_retriever = self.course_vector_store.as_retriever()
+
+        except Exception as e:
+            print(f"Error updating course vector store: {str(e)}")
+            raise
+
     def update_vector_store_with_new_material(self, file_path: str, metadata: Dict[str, Any] = None) -> None:
         """
         将新的课程材料添加到向量数据库中。
