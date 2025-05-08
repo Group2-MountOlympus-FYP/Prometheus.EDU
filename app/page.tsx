@@ -109,7 +109,7 @@ export default function HomePage() {
                   <CourseCard
                     courseId={course.id}
                     name={course.course_name}
-                    institute={course.lectures[0]?.author.username}
+                    institute={course.author}
                     category={course.category}
                     className="courseCardMain"
                     url={course.images?.[0]?.url}
