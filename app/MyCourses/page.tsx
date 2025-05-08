@@ -13,13 +13,7 @@ interface Course {
   id: number;
   course_name: string;
   description: string;
-  lectures: Array<{
-    author: {
-      id: number;
-      username: string;
-      avatar: string;
-    };
-  }>;
+  author: string,
   level: string;
   type: string;
   images: Array<{ url: string }>;
@@ -93,9 +87,9 @@ export default function MyCoursesPage() {
           onClick={() => router.push(`/course/${item.course.id}`)}
         >
           <Group align="flex-start" justify="space-between">
-            <Stack gap="xs" style={{ flex: 1 }}>
+            <Stack gap="xs" style={{ flex: 1, cursor:'pointer' }}>
               <Text fw={600} size="lg">{item.course.course_name}</Text>
-              <Text size="sm" c="dimmed">Institute: {item.course.lectures?.[0]?.author?.username}</Text>
+              <Text size="sm" c="dimmed">Institute: {item.course.author}</Text>
 
                 <Text size="sm" lineClamp={1}>
                   Description: {item.course.description}
