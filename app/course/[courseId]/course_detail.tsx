@@ -116,7 +116,7 @@ const CourseDetail: React.FC<CourseProps> = ({ courseId }) => {
           zIndex: -9999,
           pointerEvents: "none",
           objectFit: "cover",
-          opacity: 0.2,
+          opacity: 0.15,
         }}/>
     </div>
   );
