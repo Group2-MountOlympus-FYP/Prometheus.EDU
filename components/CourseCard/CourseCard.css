@@ -23,7 +23,6 @@
     display: block;
     align-items: center;
     width: 20vw;
-    height: 20vw;
     border: 1px solid #ddd;
     border-radius: 8px;
     overflow: hidden;
@@ -61,7 +60,7 @@
 
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 1;
     overflow: hidden;
     text-overflow: ellipsis;
 }
