@@ -41,7 +41,7 @@ export default function Search() {
           {searchData.map((course:any, index:any) => (
 
             <CourseCard
-              key={course.id}
+              key={index}
               courseId={course.id}
               name={course.course_name}
               institute={course.author}
