@@ -2,6 +2,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
 from marshmallow.fields import Integer, String, Float, Boolean, List, Dict
+from marshmallow import fields, post_dump
 
 from .Course import Course, Enrollment
 from .ReplyTarget import Tag, ReplyTarget
@@ -93,7 +94,12 @@ class CourseSchema(SQLAlchemyAutoSchema):
 
     lectures = Nested(LectureSchema, many=True, exclude=['posts'])
     images = Nested(ImageSchema, many=True, only=['url'])
+    # 1) 定义一个 Method 字段
+    teacher_name = fields.Method("get_extra_field")
 
+    def get_extra_field(self, obj):
+        # obj 就是当前 Course 实例
+        return obj.author.username
 
 # 定义一个映射表，key 是字段类型，value 是对应的 JSON 类型字符串
 FIELD_TO_JSON_TYPE = {
