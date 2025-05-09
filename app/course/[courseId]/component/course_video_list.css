@@ -1,0 +1,10 @@
+.course-video-card{
+    background-color: rgba(255, 255, 255, 0.5);
+}
+.course-video-card:hover{
+    background-color: white;
+    transform: translateY(-3px);
+}
+.course-video-card:active{
+    transform: translateY(0);
+}
