@@ -8,30 +8,32 @@ import { searchCourses } from '@/app/api/Course/router';
 import { useSearchParams } from 'next/navigation';
 import { LoadingContext } from '@/components/Contexts/LoadingContext';
 import {Container, Stack, Title} from '@mantine/core';
+import { useRouter } from 'next/navigation';
 
 export default function Search() {
   const { setIsLoading } = useContext(LoadingContext);
   const [searchData, setSearchData] = useState<any>(null);
+  const router = useRouter();
+
 
   const Params = useSearchParams(); // ✅ 获取 Proxy 对象
   const queryParams = Params.get('q') ?? '';
   useEffect(() => {
-    setIsLoading(true)
-    const queryData = async(query:string) => {
+    setIsLoading(true);
+    const queryData = async (query: string) => {
       try {
         const result = await searchCourses(query);
-        //console.log("搜索结果：", result);
         setSearchData(result);
-
         setIsLoading(false);
       } catch (error) {
         console.error("搜索失败", error);
         setIsLoading(false);
       }
-    }
+    };
 
     queryData(queryParams);
-  }, [])
+  }, [queryParams]); // ✅ 添加 queryParams 为依赖
+
   if(searchData){
     return (
       <Container style={{width:'100%'}}>
@@ -39,7 +41,12 @@ export default function Search() {
         <Stack gap={"md"} style={{margin:'auto', width:'100%'}} align={"center"}>
 
           {searchData.map((course:any, index:any) => (
-
+            <div
+              key={index}
+              onClick={() => router.push(`/course/${course.id}`)}
+              className={classes.courseCardBox}
+              style={{ cursor: 'pointer' }}
+            >
             <CourseCard
               key={index}
               courseId={course.id}
@@ -51,6 +58,7 @@ export default function Search() {
               id={course.id}
               level={course.level}
             />
+            </div>
           ))}
         </Stack>
       </Container>
