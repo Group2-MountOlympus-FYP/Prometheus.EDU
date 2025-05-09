@@ -14,7 +14,7 @@ const translations: {[ key in 'en' | 'zh' ]: Translations} = {
     Loading: 'Loading...',
     Lecture_List: 'Lecture List',
     Lecture_time: 'Lecture Time',
-    No_lecture: 'No lectures available for this course.',
+    No_lecture: 'No other lectures available for this course.',
     Lecture_name: 'Lecture Name',
     Lecture_date: 'Lecture Date',
     Lecture_404: ' 404 Not Found',
