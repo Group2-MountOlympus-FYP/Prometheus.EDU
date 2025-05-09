@@ -66,6 +66,6 @@ export async function publishPost(title: string, content: string, tags: number[]
 //         throw new Error(`请求失败: ${response.status}`);
 //     }
 //
-//     const data = await response.json(); // ✅ 解析 JSON 数据
-//     return { data, status: response.status }; // ✅ 返回数据和状态码
+//     const data = await response.json(); //  解析 JSON 数据
+//     return { data, status: response.status }; //  返回数据和状态码
 // }

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Title, List, Anchor, Text } from '@mantine/core';
-import { getText } from './language'; // ✅ 引入多语言方法
+import { getText } from './language'; //  引入多语言方法
 
 interface Resource {
   id: number;

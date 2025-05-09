@@ -96,7 +96,7 @@
     border-radius: 16px;
     padding: 2rem;
     gap: 2rem;
-    flex-wrap: wrap; /* ✅ 保证在小屏下换行 */
+    flex-wrap: wrap; /*  保证在小屏下换行 */
 }
 
 .course-left {
