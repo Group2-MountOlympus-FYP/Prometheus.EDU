@@ -22,31 +22,34 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
     router.push(`/video/${id}`);
   };
 
+  // 按照 id 升序排列（假设 id 小的是早期课程）
+  const sortedList = [...videoList].sort((a, b) => a.id - b.id);
+
   return (
     <Container style={{ minHeight: "56vh", maxHeight: "56vh" }}>
       <Title order={2} style={{ marginBottom: '15px' }}>
         {getText('Lecture_List')}
       </Title>
 
-      {videoList.length > 0 ? (
+      {sortedList.length > 0 ? (
         <ScrollArea h={'45vh'} style={{paddingRight: '10px', paddingLeft:'10px', paddingTop:'15px', paddingBottom:'15px', background:'#DEE0EF', borderRadius:'5px'}}>
           <Stack gap={"sm"} style={{ overflowX: 'auto' }}>
-            {videoList.map((video) => (
+            {sortedList.map((video) => (
               <Card
                 key={video.id}
                 padding="lg"
                 className={classes.videoItem}
                 onClick={() => handleCardClick(video.id)}
               >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <div>
-                  <Title order={4} fw={500}>{video.title}</Title>
-                  <Text size="sm" color="gray">
-                    {getText('Lecture_time')}: {video.video_time}
-                  </Text>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div>
+                    <Title order={4} fw={500}>{video.title}</Title>
+                    <Text size="sm" color="gray">
+                      {getText('Lecture_time')}: {video.video_time}
+                    </Text>
+                  </div>
+                  <FaPlay style={{ fontSize: '20px', color: '#777CB9' }} />
                 </div>
-                <FaPlay style={{ fontSize: '20px', color: '#777CB9' }} /> {/* 播放图标 */}
-              </div>
               </Card>
             ))}
           </Stack>
@@ -57,5 +60,6 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
     </Container>
   );
 };
+
 
 export default VideoList;
