@@ -49,6 +49,7 @@ export default function Search() {
               className="courseCard"
               url={course.images?.[0]?.url}
               id={course.id}
+              level={course.level}
             />
           ))}
         </Stack>
