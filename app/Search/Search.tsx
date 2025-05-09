@@ -13,7 +13,7 @@ export default function Search() {
   const { setIsLoading } = useContext(LoadingContext);
   const [searchData, setSearchData] = useState<any>(null);
 
-  const Params = useSearchParams(); // ✅ 获取 Proxy 对象
+  const Params = useSearchParams(); //  获取 Proxy 对象
   const queryParams = Params.get('q') ?? '';
   const router = useRouter()
   useEffect(() => {

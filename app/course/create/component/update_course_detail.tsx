@@ -28,7 +28,7 @@ export default function CourseUpdateModal({ opened, onClose, courseId }: Props) 
   const [institution, setInstitution] = useState('');
   const [mainPicture, setMainPicture] = useState<File | null>(null);
 
-  // ✅ 自动加载课程详情
+  //  自动加载课程详情
   useEffect(() => {
     if (!opened) return;
 
@@ -52,7 +52,7 @@ export default function CourseUpdateModal({ opened, onClose, courseId }: Props) 
     })();
   }, [opened, courseId]);
 
-  // ✅ 提交课程更新
+  //  提交课程更新
   const handleUpdateCourse = async () => {
     const formData = new FormData();
     formData.append('course_name', courseName);
@@ -65,7 +65,7 @@ export default function CourseUpdateModal({ opened, onClose, courseId }: Props) 
     }
 
     try {
-      await updateCourseById(courseId, formData);  // ✅ 使用 FormData 提交
+      await updateCourseById(courseId, formData);  //  使用 FormData 提交
       notifications.show({
         title: 'Success',
         message: 'Course updated successfully!',
