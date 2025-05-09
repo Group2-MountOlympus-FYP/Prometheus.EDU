@@ -5,7 +5,7 @@ import { CourseCard } from '@/components/CourseCard/CourseCard';
 import classes from '@/app/page.module.css';
 import { getText } from './Language'
 import { searchCourses } from '@/app/api/Course/router';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { LoadingContext } from '@/components/Contexts/LoadingContext';
 import {Container, Stack, Title} from '@mantine/core';
 
@@ -15,6 +15,7 @@ export default function Search() {
 
   const Params = useSearchParams(); // ✅ 获取 Proxy 对象
   const queryParams = Params.get('q') ?? '';
+  const router = useRouter()
   useEffect(() => {
     setIsLoading(true)
     const queryData = async(query:string) => {
@@ -31,7 +32,7 @@ export default function Search() {
     }
 
     queryData(queryParams);
-  }, [])
+  }, [queryParams])
   if(searchData){
     return (
       <Container style={{width:'100%'}}>
@@ -39,18 +40,22 @@ export default function Search() {
         <Stack gap={"md"} style={{margin:'auto', width:'100%'}} align={"center"}>
 
           {searchData.map((course:any, index:any) => (
-
-            <CourseCard
+            <div
               key={index}
-              courseId={course.id}
-              name={course.course_name}
-              institute={course.author}
-              category={course.category}
-              className="courseCard"
-              url={course.images?.[0]?.url}
-              id={course.id}
-              level={course.level}
-            />
+              onClick={() => router.push(`/course/${course.id}`)}
+              style={{cursor:"pointer"}}
+            >
+              <CourseCard
+                courseId={course.id}
+                name={course.course_name}
+                institute={course.author}
+                category={course.category}
+                className="courseCard"
+                url={course.images?.[0]?.url}
+                id={course.id}
+                level={course.level}
+              />
+            </div>
           ))}
         </Stack>
       </Container>
