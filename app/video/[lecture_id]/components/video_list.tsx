@@ -52,7 +52,7 @@ const VideoList: React.FC<VideoListProps> = ({ videoList }) => {
           </Stack>
         </ScrollArea>
       ) : (
-        <Text color="red">{getText('No_lecture')}</Text>
+        <Text c="#777CB9">{getText('No_lecture')}</Text>
       )}
     </Container>
   );
