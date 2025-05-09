@@ -44,7 +44,7 @@ export default function Search() {
               key={course.id}
               courseId={course.id}
               name={course.course_name}
-              institute={course.institution}
+              institute={course.author}
               category={course.category}
               className="courseCard"
               url={course.images?.[0]?.url}
