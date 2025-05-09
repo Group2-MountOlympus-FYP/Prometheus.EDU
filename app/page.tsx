@@ -43,7 +43,7 @@ export default function HomePage() {
       try {
         if (selectedCategory === 'All') {
           // 如果已登录，返回推荐课程
-          if (isLogin) {
+          if (getUserInfo()) {
             const data = await getCourseByRecommend();
             //console.log("get Recommend")
             const recommendedCourses = await data.json();
@@ -64,7 +64,7 @@ export default function HomePage() {
         } else {
           const data = await getCourseByCategory(selectedCategory);
           const courses = await data.json();
-          console.log("get data", courses)
+          //console.log("get data", courses)
           setCourses(courses);
         }
         // 加载结束
