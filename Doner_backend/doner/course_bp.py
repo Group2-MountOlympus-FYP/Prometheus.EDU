@@ -132,9 +132,8 @@ def clean_text(text: str) -> str:
 def get_recommend(combined_text):
     cleaned_text = clean_text(combined_text)
     ids = athena_client.search_course_ids(cleaned_text)
-    courses = Course.query.filter(Course.id.in_(ids)).all()
+    return  Course.query.filter(Course.id.in_(ids)).all()
 
-    return CourseSchema(many=True).dump(courses)
 
 
 @course_bp.route('/recommend', methods=['GET'])
@@ -155,7 +154,6 @@ def recommend():
 
     # 获取推荐课程（返回应该是 Course 对象列表或含 author_id 的课程信息列表）
     recommended_courses = get_recommend(combined_text)
-
     # 修改 author 字段为 username（假设是 Course 对象列表）
     result = []
     for course in recommended_courses:
