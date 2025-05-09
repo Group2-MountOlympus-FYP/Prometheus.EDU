@@ -98,7 +98,13 @@ def search():
     print(ids)
     courses = Course.query.filter(Course.id.in_(ids)).all()
 
-    return CourseSchema(many=True).dump(courses)
+    result = []
+    for course in courses:
+        course_dict = CourseSchema().dump(course)
+        course_dict['author'] = course.author.username  # 替换为用户名
+        result.append(course_dict)
+    return result
+    #return CourseSchema(many=True).dump(courses)
 
 
 # 仅保留中文（CJK 统一表意文字区段）、英文大小写和空格
