@@ -3,7 +3,10 @@
     margin-top: 10vh;
     width: 100%;
 }
-.courseCard{
+.profileCourseCard{
     margin: auto;
     margin-bottom: 5vh;
+}
+.profileCourseCard:hover{
+    background-color: #f5f5f5;
 }
