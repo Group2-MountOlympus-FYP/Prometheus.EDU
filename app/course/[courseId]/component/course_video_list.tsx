@@ -4,6 +4,7 @@ import React from 'react';
 import { Container, Grid, Card, Text, Title, Stack } from '@mantine/core';
 import { useRouter } from 'next/navigation';
 import { getText } from "./language";
+import "./course_video_list.css";
 
 interface Lecture {
   id: number;
@@ -36,8 +37,8 @@ const VideoList: React.FC<VideoListProps> = ({ isEnrolled, videos }) => {
             <Card
               shadow="sm"
               padding="lg"
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.5)', 
+              className='course-video-card'
+              style={{ 
                 cursor: isEnrolled ? 'pointer' : 'not-allowed',
                 pointerEvents: isEnrolled ? 'auto' : 'none',
               }}
