@@ -11,6 +11,7 @@ import { getText } from './language'
 import { CookieConsent } from '@/components/CookieConsent/CookieConsent';
 import { getCourseByCategory, getCourseByRecommend } from '@/app/api/Course/router';
 import { useRouter } from 'next/navigation';
+import { getUserInfo } from './api/General';
 
 
 export default function HomePage() {
@@ -29,13 +30,16 @@ export default function HomePage() {
   const [courses, setCourses] = useState<any[]>([]);
   const router = useRouter();
   const [isCoursesLoading, setIsCoursesLoading] = useState<boolean>(true)
-  const { isLogin } = useContext(SessionContext)
+  const [isLogin, setIsLogin] = useState(false)
 
   // 监听分类变化，获取课程数据
   useEffect(() => {
     // 开始加载
     setIsCoursesLoading(true)
     const fetchCourses = async () => {
+      if(getUserInfo !== null){
+        setIsLogin(true)
+      }
       try {
         if (selectedCategory === 'All') {
           // 如果已登录，返回推荐课程
