@@ -18,7 +18,7 @@ export function MyCourse(props: Prop){
                     name={course.course.course_name}
                     institute={course.course.author}
                     category={course.course.category}
-                    className="courseCard"
+                    className="profileCourseCard"
                     url={course.course.images?.[0]?.url}
                     id={course.course.id}
                     level={course.course.level}

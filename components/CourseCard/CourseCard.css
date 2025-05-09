@@ -30,7 +30,7 @@
     padding: 10px;
 }
 .course-image-for-profile {
-    width: 18vw;
+    width: 100%;
     height: 10vw;
     object-fit: cover;
     border-radius: 5px;
